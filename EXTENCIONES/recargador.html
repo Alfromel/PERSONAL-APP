@@ -509,15 +509,28 @@
         }
 
         function formatTimeAgo(dateString) {
-            // Convertir el string de fecha a objeto Date
-            const date = new Date(dateString);
-            const now = new Date();
+            // Convertir el string de fecha del dispositivo del usuario a objeto Date
+            const dateParts = dateString.split(/[/,: ]/);
+            const day = parseInt(dateParts[0]);
+            const month = parseInt(dateParts[1]) - 1; // Los meses en JavaScript van de 0 a 11
+            const year = parseInt(dateParts[2]);
+            const hour = parseInt(dateParts[3]);
+            const minute = parseInt(dateParts[4]);
+            const second = parseInt(dateParts[5] || 0);
+            
+            const date = new Date(year, month, day, hour, minute, second);
+            const now = new Date(); // Hora actual del dispositivo del usuario
+            
             const diffMs = now - date;
             const diffMins = Math.floor(diffMs / 60000);
             const diffHours = Math.floor(diffMs / 3600000);
             const diffDays = Math.floor(diffMs / 86400000);
 
-
+            if (diffMins < 1) return 'Ahora mismo';
+            if (diffMins < 60) return `Hace ${diffMins} min`;
+            if (diffHours < 24) return `Hace ${diffHours} h`;
+            if (diffDays === 1) return 'Ayer';
+            return `Hace ${diffDays} días`;
         }
     </script>
 </body>
