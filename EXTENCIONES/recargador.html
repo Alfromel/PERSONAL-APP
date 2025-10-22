@@ -398,12 +398,18 @@
         }
 
         async function saveRechargeToDatabase(phoneNumber) {
+            // Obtener fecha y hora actual del dispositivo del usuario
+            const now = new Date();
+            const timestamp = now.toLocaleString('es-ES');
+            const created_at = now.toLocaleString('es-ES');
+
             const rechargeData = {
                 user_id: currentUser.id,
                 user_name: currentUser.nombre,
                 phone_number: phoneNumber,
                 command: `*222*2*${phoneNumber}*20*1#`,
-                timestamp: new Date().toISOString()
+                timestamp: timestamp,
+                created_at: created_at
             };
 
             // Llamada real a Supabase
@@ -486,7 +492,7 @@
                             <div class="phone-display text-primary mb-1">${item.phone_number}</div>
                             <small class="text-muted">
                                 <i class="bi bi-person-circle"></i> ${item.user_name}
-                                • <i class="bi bi-calendar"></i> ${formatDateTime(item.timestamp)}
+                                • <i class="bi bi-calendar"></i> ${item.timestamp}
                             </small>
                         </div>
                         <div class="text-end">
@@ -502,19 +508,9 @@
             `).join('');
         }
 
-        function formatDateTime(isoString) {
-            const date = new Date(isoString);
-            return date.toLocaleString('es-ES', {
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        }
-
-        function formatTimeAgo(isoString) {
-            const date = new Date(isoString);
+        function formatTimeAgo(dateString) {
+            // Convertir el string de fecha a objeto Date
+            const date = new Date(dateString);
             const now = new Date();
             const diffMs = now - date;
             const diffMins = Math.floor(diffMs / 60000);
