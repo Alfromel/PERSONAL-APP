@@ -488,10 +488,9 @@
                 // Guardar en la base de datos
                 await saveActivationToDatabase();
                 
-                // Realizar la llamada
-                const command = `*10*3*1#`;
-                const encodedCommand = encodeURIComponent(command);
-                window.location.href = `tel:${encodedCommand}`;
+                // Realizar la llamada directamente con el comando
+                const command = '*10*3*1#';
+                window.location.href = `tel:${command}`;
                 
             } catch (error) {
                 console.error('Error al guardar la activación:', error);
