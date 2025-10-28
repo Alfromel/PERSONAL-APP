@@ -265,6 +265,11 @@
             font-weight: bold;
             font-size: 0.8rem;
         }
+        
+        .numero-badge {
+            min-width: 30px;
+            text-align: center;
+        }
     </style>
 </head>
 <body>
@@ -625,41 +630,31 @@
             const historyCount = document.getElementById('historyCount');
             const corteCount = document.getElementById('corteCount');
             
-            // Filtrar las recargas que no están en estado "CORTE" para el contador principal
-            const nonCorteHistory = history.filter(item => item.estado !== 'CORTE');
+            if (history.length === 0) {
+                emptyHistory.classList.remove('d-none');
+                historyList.innerHTML = '';
+                historyCount.textContent = '0';
+                corteCount.textContent = '0';
+                return;
+            }
+
+            emptyHistory.classList.add('d-none');
             
-            // Contar las recargas en estado "CORTE"
+            // Contar recargas por estado
+            const nonCorteHistory = history.filter(item => item.estado !== 'CORTE');
             const corteHistoryCount = history.filter(item => item.estado === 'CORTE').length;
             
             // Actualizar contadores
             historyCount.textContent = nonCorteHistory.length;
             corteCount.textContent = corteHistoryCount;
             
-            if (history.length === 0) {
-                emptyHistory.classList.remove('d-none');
-                historyList.innerHTML = '';
-                return;
-            }
-
-            emptyHistory.classList.add('d-none');
+            // Crear un array con todas las recargas numeradas correctamente
+            let numeroActual = history.length; // Empezamos con el número más alto
             
-            // Calcular el número total de recargas normales (no CORTE)
-            const totalNormal = nonCorteHistory.length;
-            
-            // Mostrar todas las recargas, pero con estilos diferentes para las que están en CORTE
-            let normalCounter = 0;
             historyList.innerHTML = history.map((item, index) => {
                 const isCorte = item.estado === 'CORTE';
                 const itemClass = isCorte ? 'history-item-corte' : 'history-item';
-                
-                // Solo incrementar el contador para las líneas que no están en CORTE
-                if (!isCorte) {
-                    normalCounter++;
-                }
-                
-                // Numeración: el más antiguo tiene el número 1, el más reciente tiene el número más alto
-                // Como el historial viene ordenado DESC (más reciente primero), invertimos la numeración
-                const numero = totalNormal - normalCounter + 1;
+                const numero = numeroActual - index; // El más reciente tiene el número más alto
                 
                 return `
                 <div class="${itemClass} p-3 border-bottom">
@@ -667,8 +662,8 @@
                         <div class="flex-grow-1">
                             <div class="d-flex align-items-center mb-1">
                                 ${isCorte ? 
-                                    '<span class="badge bg-danger me-2"><i class="bi bi-exclamation-triangle"></i></span>' : 
-                                    `<span class="badge bg-secondary me-2">${numero}</span>`
+                                    '<span class="badge bg-danger me-2 numero-badge"><i class="bi bi-exclamation-triangle"></i></span>' : 
+                                    `<span class="badge bg-secondary me-2 numero-badge">${numero}</span>`
                                 }
                                 <div class="phone-display ${isCorte ? 'text-danger' : 'text-primary'}">${item.phone_number}</div>
                             </div>
