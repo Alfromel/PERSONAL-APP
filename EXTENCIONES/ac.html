@@ -540,7 +540,7 @@
             }
 
             try {
-                // Guardar en la base de datos
+                // Guardar en la base de datos (con estado automático "NUEVO")
                 await saveRechargeToDatabase(phoneNumber, amount);
                 
                 // Limpiar el formulario
@@ -570,6 +570,7 @@
                 phone_number: phoneNumber,
                 amount: amount,
                 command: `*133*${phoneNumber}*${amount}#`,
+                estado: "NUEVO", // Se llena automáticamente sin mostrarse en la interfaz
                 timestamp: timestamp,
                 created_at: created_at
             };
