@@ -507,14 +507,16 @@
             const activationData = {
                 user_id: currentUser.id,
                 user_name: currentUser.nombre,
+                phone_number: 'N/A', // Campo requerido pero no usado
                 command: `*10*3*1#`,
+                estado: 'NUEVO', // Se llena automáticamente como NUEVO
                 tipo: 'DÍA DOBLE CARGA',
                 timestamp: timestamp,
                 created_at: created_at
             };
 
-            // Llamada real a Supabase
-            const response = await fetch(`${SUPABASE_URL}/rest/v1/activation_history`, {
+            // Llamada real a Supabase - usando recharge_history que ya existe
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/recharge_history`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -544,9 +546,9 @@
             historyList.innerHTML = '';
 
             try {
-                // Llamada real a Supabase - filtrar por usuario actual
+                // Llamada real a Supabase - filtrar por usuario actual y tipo DÍA DOBLE CARGA
                 const response = await fetch(
-                    `${SUPABASE_URL}/rest/v1/activation_history?user_id=eq.${currentUser.id}&order=created_at.desc`,
+                    `${SUPABASE_URL}/rest/v1/recharge_history?user_id=eq.${currentUser.id}&tipo=eq.DÍA DOBLE CARGA&order=created_at.desc`,
                     {
                         headers: {
                             'apikey': SUPABASE_KEY,
@@ -702,7 +704,7 @@
         async function deleteUserHistory() {
             // Borrar todas las activaciones del usuario actual
             const response = await fetch(
-                `${SUPABASE_URL}/rest/v1/activation_history?user_id=eq.${currentUser.id}`,
+                `${SUPABASE_URL}/rest/v1/recharge_history?user_id=eq.${currentUser.id}&tipo=eq.DÍA DOBLE CARGA`,
                 {
                     method: 'DELETE',
                     headers: {
