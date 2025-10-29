@@ -13,8 +13,16 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root {
-            --entel-color: #00A9E0;
+            --entel-color: #0088CC;
+            --entel-secondary: #00B2FF;
+            --entel-dark: #006699;
+            --entel-light: #E6F7FF;
             --primary-color: #4a6fa5;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --gray-color: #6c757d;
+            --light-gray: #8b96a0;
         }
         
         body {
@@ -46,21 +54,33 @@
         .entel-brand {
             color: var(--entel-color);
             font-weight: bold;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .history-item {
             border-left: 4px solid var(--entel-color);
-            transition: transform 0.2s;
+            transition: all 0.3s;
+            background-color: white;
+            position: relative;
+            padding: 15px;
+            margin-bottom: 8px;
+            border-radius: 0 8px 8px 0;
         }
         
         .history-item-corte {
-            border-left: 4px solid #dc3545;
-            background-color: rgba(220, 53, 69, 0.05);
-            transition: transform 0.2s;
+            border-left: 4px solid var(--danger-color);
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.03) 0%, rgba(220, 53, 69, 0.08) 100%);
+            transition: all 0.3s;
+            position: relative;
+            padding: 15px;
+            margin-bottom: 8px;
+            border-radius: 0 8px 8px 0;
         }
         
         .history-item:hover, .history-item-corte:hover {
-            transform: translateX(5px);
+            transform: translateX(3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
         
         .user-badge {
@@ -71,39 +91,48 @@
         .phone-display {
             font-family: 'Courier New', monospace;
             font-weight: bold;
-            font-size: 1.1em;
+            font-size: 1.3em;
+            letter-spacing: 1px;
+            color: var(--entel-dark);
         }
         
         /* Estilos para app nativa */
         .app-header {
-            background: linear-gradient(135deg, var(--entel-color) 0%, #0080b3 100%);
+            background: linear-gradient(135deg, var(--entel-color) 0%, var(--entel-dark) 100%);
             color: white;
             padding: 15px 20px;
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
         }
         
         .app-content {
             padding: 20px;
-            padding-bottom: 80px; /* Para evitar que el contenido quede detrás del botón flotante */
+            padding-bottom: 80px;
         }
         
         .app-card {
             background: white;
             border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
             margin-bottom: 20px;
             border: none;
             overflow: hidden;
+            transition: transform 0.3s;
+        }
+        
+        .app-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
         }
         
         .app-card-header {
-            background-color: #f8f9fa;
+            background: linear-gradient(135deg, var(--entel-light) 0%, #f0f9ff 100%);
             border-bottom: 1px solid #e9ecef;
             padding: 15px 20px;
             font-weight: 600;
+            color: var(--entel-dark);
         }
         
         .app-card-body {
@@ -119,13 +148,14 @@
         }
         
         .app-btn-primary {
-            background: var(--entel-color);
+            background: linear-gradient(135deg, var(--entel-color) 0%, var(--entel-secondary) 100%);
+            color: white;
         }
         
         .app-btn-primary:hover {
-            background: #0080b3;
+            background: linear-gradient(135deg, var(--entel-dark) 0%, var(--entel-color) 100%);
             transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            box-shadow: 0 6px 15px rgba(0,136,204,0.4);
         }
         
         .app-form-control {
@@ -137,7 +167,7 @@
         
         .app-form-control:focus {
             border-color: var(--entel-color);
-            box-shadow: 0 0 0 2px rgba(0,169,224,0.2);
+            box-shadow: 0 0 0 3px rgba(0,136,204,0.2);
         }
         
         .floating-action-btn {
@@ -147,38 +177,42 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: var(--entel-color);
+            background: linear-gradient(135deg, var(--entel-color) 0%, var(--entel-secondary) 100%);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
-            box-shadow: 0 4px 15px rgba(0,169,224,0.4);
+            box-shadow: 0 6px 20px rgba(0,136,204,0.5);
             z-index: 100;
             border: none;
             transition: all 0.3s;
         }
         
         .floating-action-btn:hover {
-            transform: scale(1.1);
-            box-shadow: 0 6px 20px rgba(0,169,224,0.6);
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 25px rgba(0,136,204,0.7);
         }
         
         .history-badge {
-            background: var(--entel-color);
+            background: linear-gradient(135deg, var(--entel-color) 0%, var(--entel-secondary) 100%);
             color: white;
             border-radius: 20px;
             padding: 5px 12px;
             font-size: 0.8rem;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
         .corte-badge {
-            background: #dc3545;
+            background: linear-gradient(135deg, var(--danger-color) 0%, #e74c3c 100%);
             color: white;
             border-radius: 20px;
             padding: 5px 12px;
             font-size: 0.8rem;
+            font-weight: 600;
             margin-left: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
         .user-avatar {
@@ -190,6 +224,7 @@
             align-items: center;
             justify-content: center;
             font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
         .empty-state {
@@ -202,32 +237,37 @@
             font-size: 3rem;
             margin-bottom: 15px;
             opacity: 0.5;
+            color: var(--entel-color);
         }
         
         .clear-history-btn {
-            background-color: #dc3545;
+            background: linear-gradient(135deg, var(--danger-color) 0%, #e74c3c 100%);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 50px;
             padding: 8px 15px;
             font-size: 0.9rem;
             transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
         .clear-history-btn:hover {
-            background-color: #c82333;
+            background: linear-gradient(135deg, #c82333 0%, var(--danger-color) 100%);
             transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(220,53,69,0.3);
         }
         
         .modal-content {
             border-radius: 12px;
             border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
         }
         
         .modal-header {
-            background-color: var(--entel-color);
+            background: linear-gradient(135deg, var(--entel-color) 0%, var(--entel-dark) 100%);
             color: white;
             border-bottom: none;
+            border-radius: 12px 12px 0 0;
         }
         
         .modal-footer {
@@ -237,21 +277,23 @@
         /* Estilos para el selector de estado */
         .status-select {
             border-radius: 20px;
-            padding: 5px 12px;
+            padding: 6px 15px;
             font-size: 0.8rem;
             border: none;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            min-width: 90px;
         }
         
         .status-nuevo {
-            background-color: #28a745;
+            background: linear-gradient(135deg, var(--success-color) 0%, #34ce57 100%);
             color: white;
         }
         
         .status-corte {
-            background-color: #dc3545;
+            background: linear-gradient(135deg, var(--danger-color) 0%, #e74c3c 100%);
             color: white;
         }
         
@@ -261,14 +303,223 @@
         }
         
         .corte-indicator {
-            color: #dc3545;
+            color: var(--danger-color);
             font-weight: bold;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
+            background: rgba(220, 53, 69, 0.1);
+            padding: 3px 8px;
+            border-radius: 12px;
+            margin-left: 8px;
         }
         
         .numero-badge {
-            min-width: 30px;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gray-color) 0%, var(--light-gray) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        /* Nuevos estilos para el historial mejorado */
+        .history-container {
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+        
+        .history-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .history-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .history-container::-webkit-scrollbar-thumb {
+            background: var(--entel-color);
+            border-radius: 10px;
+        }
+        
+        .history-item-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        
+        .history-item-main {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+        }
+        
+        .history-item-content {
+            flex-grow: 1;
+        }
+        
+        .history-item-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .history-action-btn {
+            background: rgba(0, 136, 204, 0.1);
+            border: 1px solid rgba(0, 136, 204, 0.2);
+            color: var(--entel-color);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 6px 15px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+        }
+        
+        .history-action-btn:hover {
+            background: var(--entel-color);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 136, 204, 0.3);
+        }
+        
+        .history-timestamp {
+            font-size: 0.75rem;
+            color: var(--gray-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 6px;
+        }
+        
+        .history-filter {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 6px 15px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
             text-align: center;
+        }
+        
+        .filter-btn.active {
+            background: var(--entel-color);
+            color: white;
+            border-color: var(--entel-color);
+        }
+        
+        .filter-btn:hover:not(.active) {
+            background: var(--entel-light);
+            border-color: var(--entel-color);
+        }
+        
+        .history-summary {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: var(--entel-light);
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .summary-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .summary-value {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--entel-color);
+        }
+        
+        .summary-label {
+            font-size: 0.75rem;
+            color: var(--gray-color);
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 136, 204, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(0, 136, 204, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 136, 204, 0);
+            }
+        }
+        
+        .new-item-indicator {
+            position: absolute;
+            top: 12px;
+            left: -8px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--entel-color);
+            animation: pulse 1.5s infinite;
+        }
+        
+        .history-status-badge {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            margin-left: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .status-badge-nuevo {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .status-badge-corte {
+            background: var(--danger-color);
+            color: white;
+        }
+        
+        .phone-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .user-info {
+            font-size: 0.8rem;
+            color: var(--gray-color);
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
     </style>
 </head>
@@ -335,7 +586,7 @@
                                     <option value="CORTE">Corte</option>
                                 </select>
                             </div>
-                            <button type="submit" class="btn app-btn app-btn-primary w-100 text-white">
+                            <button type="submit" class="btn app-btn app-btn-primary w-100 text-white pulse-animation">
                                 <i class="bi bi-telephone-fill me-2"></i> Llamar para Recargar
                             </button>
                         </form>
@@ -364,12 +615,46 @@
                             </div>
                             <p class="mt-2 text-muted">Cargando historial...</p>
                         </div>
-                        <div id="historyList">
-                            <!-- El historial se cargará aquí -->
+                        
+                        <!-- Resumen del historial -->
+                        <div id="historySummary" class="history-summary d-none">
+                            <div class="summary-item">
+                                <div class="summary-value" id="totalRecargas">0</div>
+                                <div class="summary-label">Total</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-value" id="nuevosCount">0</div>
+                                <div class="summary-label">Nuevos</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-value" id="cortesCount">0</div>
+                                <div class="summary-label">Cortes</div>
+                            </div>
+                            <div class="summary-item">
+                                <div class="summary-value" id="hoyCount">0</div>
+                                <div class="summary-label">Hoy</div>
+                            </div>
                         </div>
-                        <div id="emptyHistory" class="empty-state">
-                            <i class="bi bi-inbox"></i>
-                            <p class="mt-2">No hay recargas registradas</p>
+                        
+                        <!-- Filtros del historial -->
+                        <div id="historyFilters" class="p-3 border-bottom d-none">
+                            <div class="history-filter">
+                                <button class="filter-btn active" data-filter="all">Todos</button>
+                                <button class="filter-btn" data-filter="nuevo">Nuevos</button>
+                                <button class="filter-btn" data-filter="corte">Cortes</button>
+                                <button class="filter-btn" data-filter="hoy">Hoy</button>
+                            </div>
+                        </div>
+                        
+                        <!-- Lista del historial -->
+                        <div class="history-container" id="historyContainer">
+                            <div id="historyList">
+                                <!-- El historial se cargará aquí -->
+                            </div>
+                            <div id="emptyHistory" class="empty-state">
+                                <i class="bi bi-inbox"></i>
+                                <p class="mt-2">No hay recargas registradas</p>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -418,6 +703,7 @@
         // Estado de la aplicación
         let currentUser = null;
         let currentUserHistory = [];
+        let currentFilter = 'all';
 
         // Inicializar la aplicación
         document.addEventListener('DOMContentLoaded', function() {
@@ -438,6 +724,18 @@
             document.getElementById('rechargeForm').addEventListener('submit', handleRecharge);
             document.getElementById('clearHistoryBtn').addEventListener('click', showClearHistoryModal);
             document.getElementById('confirmClearHistory').addEventListener('click', confirmClearHistory);
+            
+            // Configurar filtros
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remover clase active de todos los botones
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    // Agregar clase active al botón clickeado
+                    this.classList.add('active');
+                    currentFilter = this.getAttribute('data-filter');
+                    filterHistory();
+                });
+            });
         }
 
         // Función para cargar usuarios desde la base de datos
@@ -554,7 +852,8 @@
             // Obtener fecha y hora actual del dispositivo del usuario
             const now = new Date();
             const timestamp = now.toLocaleString('es-ES');
-            const created_at = now.toLocaleString('es-ES');
+            // Usar formato ISO para ordenamiento correcto
+            const created_at = now.toISOString();
 
             const rechargeData = {
                 user_id: currentUser.id,
@@ -592,6 +891,8 @@
             const loadingDiv = document.getElementById('loadingHistory');
             const historyList = document.getElementById('historyList');
             const emptyHistory = document.getElementById('emptyHistory');
+            const historyFilters = document.getElementById('historyFilters');
+            const historySummary = document.getElementById('historySummary');
             
             loadingDiv.classList.remove('d-none');
             historyList.innerHTML = '';
@@ -612,8 +913,28 @@
                     throw new Error('Error al cargar el historial');
                 }
 
-                const rechargeHistory = await response.json();
-                currentUserHistory = rechargeHistory; // Guardar historial completo
+                let rechargeHistory = await response.json();
+                
+                // Ordenar por fecha/hora del dispositivo del usuario (más reciente primero)
+                rechargeHistory.sort((a, b) => {
+                    const dateA = new Date(a.created_at);
+                    const dateB = new Date(b.created_at);
+                    return dateB.getTime() - dateA.getTime(); // Más reciente primero
+                });
+                
+                currentUserHistory = rechargeHistory; // Guardar historial completo y ordenado
+                
+                // Mostrar u ocultar elementos según si hay historial
+                if (rechargeHistory.length > 0) {
+                    historyFilters.classList.remove('d-none');
+                    historySummary.classList.remove('d-none');
+                    emptyHistory.classList.add('d-none');
+                } else {
+                    historyFilters.classList.add('d-none');
+                    historySummary.classList.add('d-none');
+                    emptyHistory.classList.remove('d-none');
+                }
+                
                 displayHistory(rechargeHistory);
                 
             } catch (error) {
@@ -626,72 +947,138 @@
 
         function displayHistory(history) {
             const historyList = document.getElementById('historyList');
-            const emptyHistory = document.getElementById('emptyHistory');
             const historyCount = document.getElementById('historyCount');
             const corteCount = document.getElementById('corteCount');
+            const totalRecargas = document.getElementById('totalRecargas');
+            const nuevosCount = document.getElementById('nuevosCount');
+            const cortesCount = document.getElementById('cortesCount');
+            const hoyCount = document.getElementById('hoyCount');
             
             if (history.length === 0) {
-                emptyHistory.classList.remove('d-none');
                 historyList.innerHTML = '';
                 historyCount.textContent = '0';
                 corteCount.textContent = '0';
+                totalRecargas.textContent = '0';
+                nuevosCount.textContent = '0';
+                cortesCount.textContent = '0';
+                hoyCount.textContent = '0';
                 return;
             }
 
-            emptyHistory.classList.add('d-none');
-            
             // Contar recargas por estado
             const nonCorteHistory = history.filter(item => item.estado !== 'CORTE');
             const corteHistoryCount = history.filter(item => item.estado === 'CORTE').length;
             
+            // Contar recargas de hoy
+            const today = new Date().toLocaleDateString('es-ES');
+            const todayHistory = history.filter(item => {
+                const itemDate = new Date(item.created_at).toLocaleDateString('es-ES');
+                return itemDate === today;
+            });
+            
             // Actualizar contadores
             historyCount.textContent = nonCorteHistory.length;
             corteCount.textContent = corteHistoryCount;
+            totalRecargas.textContent = history.length;
+            nuevosCount.textContent = nonCorteHistory.length;
+            cortesCount.textContent = corteHistoryCount;
+            hoyCount.textContent = todayHistory.length;
             
             // Crear un array con todas las recargas numeradas correctamente
-            let numeroActual = history.length; // Empezamos con el número más alto
+            let numeroActual = history.length;
             
             historyList.innerHTML = history.map((item, index) => {
                 const isCorte = item.estado === 'CORTE';
                 const itemClass = isCorte ? 'history-item-corte' : 'history-item';
                 const numero = numeroActual - index; // El más reciente tiene el número más alto
                 
+                // Verificar si es una recarga reciente (menos de 1 hora)
+                const now = new Date();
+                const itemDate = new Date(item.created_at);
+                const diffMs = now - itemDate;
+                const diffMins = Math.floor(diffMs / 60000);
+                const isRecent = diffMins < 60;
+                
                 return `
-                <div class="${itemClass} p-3 border-bottom">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div class="flex-grow-1">
-                            <div class="d-flex align-items-center mb-1">
-                                ${isCorte ? 
-                                    '<span class="badge bg-danger me-2 numero-badge"><i class="bi bi-exclamation-triangle"></i></span>' : 
-                                    `<span class="badge bg-secondary me-2 numero-badge">${numero}</span>`
-                                }
-                                <div class="phone-display ${isCorte ? 'text-danger' : 'text-primary'}">${item.phone_number}</div>
-                            </div>
-                            <div class="d-flex align-items-center mb-1">
-                                <select class="status-select ${item.estado === 'NUEVO' ? 'status-nuevo' : 'status-corte'}" 
-                                        data-id="${item.id}" onchange="updateStatus(this)">
-                                    <option value="NUEVO" ${item.estado === 'NUEVO' ? 'selected' : ''}>Nuevo</option>
-                                    <option value="CORTE" ${item.estado === 'CORTE' ? 'selected' : ''}>Corte</option>
-                                </select>
-                                ${isCorte ? '<span class="corte-indicator ms-2"><i class="bi bi-exclamation-circle"></i> EN CORTE</span>' : ''}
-                            </div>
-                            <small class="text-muted">
-                                <i class="bi bi-person-circle"></i> ${item.user_name}
-                                • <i class="bi bi-calendar"></i> ${item.timestamp}
-                            </small>
-                        </div>
-                        <div class="text-end">
-                            <span class="badge ${isCorte ? 'bg-danger' : 'bg-success'}">
-                                <i class="bi ${isCorte ? 'bi-exclamation-triangle' : 'bi-check-circle'}"></i>
-                            </span>
-                            <div class="mt-1">
-                                <small class="text-muted">${formatTimeAgo(item.timestamp)}</small>
+                <div class="${itemClass} p-3 border-bottom" data-status="${item.estado.toLowerCase()}" data-date="${item.created_at}">
+                    ${isRecent ? '<div class="new-item-indicator"></div>' : ''}
+                    <div class="history-item-header">
+                        <div class="history-item-main">
+                            <div class="numero-badge">${numero}</div>
+                            <div class="history-item-content">
+                                <div class="phone-info">
+                                    <div class="phone-display ${isCorte ? 'text-danger' : 'text-primary'}">${item.phone_number}</div>
+                                </div>
+                                <div class="history-timestamp">
+                                    <span class="user-info">
+                                        <i class="bi bi-person-circle"></i> ${item.user_name}
+                                    </span>
+                                    <span class="user-info">
+                                        <i class="bi bi-calendar"></i> ${item.timestamp}
+                                    </span>
+                                </div>
                             </div>
                         </div>
+                        <div class="history-status-badge ${isCorte ? 'status-badge-corte' : 'status-badge-nuevo'}">
+                            <i class="bi ${isCorte ? 'bi-exclamation-triangle' : 'bi-check-circle'}"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <select class="status-select ${item.estado === 'NUEVO' ? 'status-nuevo' : 'status-corte'}" 
+                                    data-id="${item.id}" onchange="updateStatus(this)">
+                                <option value="NUEVO" ${item.estado === 'NUEVO' ? 'selected' : ''}>Nuevo</option>
+                                <option value="CORTE" ${item.estado === 'CORTE' ? 'selected' : ''}>Corte</option>
+                            </select>
+                            ${isCorte ? '<span class="corte-indicator"><i class="bi bi-exclamation-circle me-1"></i>EN CORTE</span>' : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="history-item-actions">
+                        <button class="history-action-btn" onclick="copyToClipboard('${item.phone_number}')">
+                            <i class="bi bi-copy"></i> Copiar Número
+                        </button>
                     </div>
                 </div>
                 `;
             }).join('');
+            
+            // Aplicar filtro actual
+            filterHistory();
+        }
+
+        function filterHistory() {
+            const items = document.querySelectorAll('.history-item, .history-item-corte');
+            const today = new Date().toLocaleDateString('es-ES');
+            
+            items.forEach(item => {
+                const status = item.getAttribute('data-status');
+                const date = new Date(item.getAttribute('data-date')).toLocaleDateString('es-ES');
+                const isToday = date === today;
+                
+                let showItem = true;
+                
+                switch(currentFilter) {
+                    case 'nuevo':
+                        showItem = status === 'nuevo';
+                        break;
+                    case 'corte':
+                        showItem = status === 'corte';
+                        break;
+                    case 'hoy':
+                        showItem = isToday;
+                        break;
+                    default:
+                        showItem = true;
+                }
+                
+                if (showItem) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
         }
 
         async function updateStatus(selectElement) {
@@ -727,29 +1114,25 @@
             }
         }
 
-        function formatTimeAgo(dateString) {
-            // Convertir el string de fecha del dispositivo del usuario a objeto Date
-            const dateParts = dateString.split(/[/,: ]/);
-            const day = parseInt(dateParts[0]);
-            const month = parseInt(dateParts[1]) - 1; // Los meses en JavaScript van de 0 a 11
-            const year = parseInt(dateParts[2]);
-            const hour = parseInt(dateParts[3]);
-            const minute = parseInt(dateParts[4]);
-            const second = parseInt(dateParts[5] || 0);
-            
-            const date = new Date(year, month, day, hour, minute, second);
-            const now = new Date(); // Hora actual del dispositivo del usuario
-            
-            const diffMs = now - date;
-            const diffMins = Math.floor(diffMs / 60000);
-            const diffHours = Math.floor(diffMs / 3600000);
-            const diffDays = Math.floor(diffMs / 86400000);
-
-            if (diffMins < 1) return 'Ahora mismo';
-            if (diffMins < 60) return `Hace ${diffMins} min`;
-            if (diffHours < 24) return `Hace ${diffHours} h`;
-            if (diffDays === 1) return 'Ayer';
-            return `Echo`;
+        function copyToClipboard(text) {
+            navigator.clipboard.writeText(text).then(() => {
+                // Mostrar mensaje de éxito
+                const originalText = event.target.textContent;
+                event.target.innerHTML = '<i class="bi bi-check"></i> ¡Copiado!';
+                event.target.style.background = 'var(--success-color)';
+                event.target.style.color = 'white';
+                event.target.style.borderColor = 'var(--success-color)';
+                
+                setTimeout(() => {
+                    event.target.innerHTML = originalText;
+                    event.target.style.background = '';
+                    event.target.style.color = '';
+                    event.target.style.borderColor = '';
+                }, 2000);
+            }).catch(err => {
+                console.error('Error al copiar: ', err);
+                alert('Error al copiar al portapapeles');
+            });
         }
 
         function showClearHistoryModal() {
@@ -834,7 +1217,7 @@
                     
                     // Título
                     doc.setFontSize(20);
-                    doc.setTextColor(0, 169, 224); // Color Entel
+                    doc.setTextColor(0, 136, 204); // Color Entel
                     doc.text('Historial de Recargas - ENTEL', 20, 20);
                     
                     // Información del usuario
@@ -869,7 +1252,7 @@
                             cellPadding: 3
                         },
                         headStyles: {
-                            fillColor: [0, 169, 224], // Color Entel
+                            fillColor: [0, 136, 204], // Color Entel
                             textColor: 255
                         },
                         alternateRowStyles: {
