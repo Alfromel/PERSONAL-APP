@@ -791,12 +791,16 @@
             historyCount.textContent = history.length;
             
             // Mostrar los elementos en orden inverso (más recientes arriba)
+            // Pero con numeración correcta: 1 para el más antiguo, número más alto para el más reciente
             historyList.innerHTML = history.map((item, index) => {
                 const [date, time] = item.timestamp.split(', ');
+                // Calcular el número correcto (el más antiguo tiene el número 1)
+                const correctNumber = history.length - index;
+                
                 return `
                 <div class="history-item">
                     <div class="history-item-content">
-                        <div class="history-number">${index + 1}</div>
+                        <div class="history-number">${correctNumber}</div>
                         <div class="history-details">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div class="history-line">${item.line_id}</div>
@@ -880,7 +884,10 @@
                 const tableColumn = ["#", "Línea", "Fecha", "Hora"];
                 const tableRows = [];
                 
-                activationHistory.forEach((item, index) => {
+                // Para el PDF, mostramos en orden cronológico (más antiguo primero)
+                const sortedHistory = [...activationHistory].reverse();
+                
+                sortedHistory.forEach((item, index) => {
                     const [date, time] = item.timestamp.split(', ');
                     const rowData = [
                         index + 1,
