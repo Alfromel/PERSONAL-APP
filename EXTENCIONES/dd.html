@@ -50,9 +50,10 @@
         .app-header {
             background: var(--gradient-primary);
             color: white;
-            padding: 25px 20px;
+            padding: 30px 20px 20px 20px;
             position: relative;
             overflow: hidden;
+            text-align: center;
         }
         
         .app-header::before {
@@ -424,37 +425,6 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
-        .user-info {
-            display: flex;
-            align-items: center;
-        }
-        
-        .user-avatar {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 1.5rem;
-            box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
-            margin-right: 15px;
-            border: 2px solid white;
-        }
-        
-        .user-details h5 {
-            margin: 0;
-            font-weight: 800;
-            font-size: 1.4rem;
-        }
-        
-        .user-details small {
-            opacity: 0.9;
-            font-size: 1rem;
-        }
-        
         .quick-actions {
             display: flex;
             gap: 12px;
@@ -493,18 +463,17 @@
         .logo {
             font-size: 2.8rem;
             font-weight: 900;
-            background: linear-gradient(135deg, #00A9E0, #0066A1);
+            background: linear-gradient(135deg, #FFFFFF, #E6F7FD);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
         
-        .current-date {
-            text-align: center;
-            font-weight: 600;
-            color: rgba(255,255,255,0.9);
+        .app-title {
+            color: white;
+            font-size: 1.4rem;
+            font-weight: 700;
             margin-top: 5px;
-            font-size: 1.1rem;
         }
         
         .history-count {
@@ -517,22 +486,7 @@
     <div class="app-container">
         <!-- Pantalla Principal -->
         <div id="mainScreen">
-            <!-- Header de la app -->
-            <div class="app-header">
-                <div class="logo-container">
-                    <div class="logo">ENTEL</div>
-                    <div class="current-date" id="currentDate"></div>
-                </div>
-                <div class="user-info mt-4">
-                    <div class="user-avatar">
-                        <span>A</span>
-                    </div>
-                    <div class="user-details">
-                        <h5>Activador Doble Carga</h5>
-                        <small>Gestión de Líneas</small>
-                    </div>
-                </div>
-            </div>
+
 
             <!-- Contenido principal -->
             <div class="app-content">
@@ -606,10 +560,7 @@
                 </div>
             </div>
 
-            <!-- Botón flotante para recargar -->
-            <button id="refreshBtn" class="floating-action-btn" title="Actualizar">
-                <i class="bi bi-arrow-clockwise"></i>
-            </button>
+           
         </div>
     </div>
 
@@ -660,21 +611,12 @@
             // Cargar historial desde localStorage
             loadActivationHistory();
             
-            // Actualizar fecha actual
-            updateCurrentDate();
-            
             // Configurar event listeners
             document.getElementById('activationForm').addEventListener('submit', handleActivation);
             document.getElementById('clearHistoryBtn').addEventListener('click', showClearHistoryModal);
             document.getElementById('confirmClearHistory').addEventListener('click', confirmClearHistory);
             document.getElementById('refreshBtn').addEventListener('click', refreshApp);
             document.getElementById('exportPdfBtn').addEventListener('click', generateHistoryPDF);
-        }
-
-        function updateCurrentDate() {
-            const now = new Date();
-            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-            document.getElementById('currentDate').textContent = now.toLocaleDateString('es-ES', options);
         }
 
         function handleActivation(e) {
@@ -841,7 +783,6 @@
 
         function refreshApp() {
             loadActivationHistory();
-            updateCurrentDate();
             
             // Efecto visual de actualización
             const refreshBtn = document.getElementById('refreshBtn');
