@@ -565,44 +565,10 @@
         .app-navbar-icon {
             font-size: 1.5rem;
         }
-        
-        .status-bar {
-            height: 25px;
-            background: var(--gradient-dark);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 0 15px;
-            color: white;
-            font-size: 0.8rem;
-        }
-        
-        .status-bar-time {
-            font-weight: bold;
-        }
-        
-        .status-bar-icons {
-            display: flex;
-            gap: 5px;
-        }
-        
-        .status-bar-icon {
-            font-size: 0.9rem;
-        }
     </style>
 </head>
 <body>
     <div class="app-container">
-        <!-- Barra de estado simulada -->
-        <div class="status-bar">
-            <div class="status-bar-time" id="currentTime">12:00</div>
-            <div class="status-bar-icons">
-                <i class="bi bi-wifi status-bar-icon"></i>
-                <i class="bi bi-reception-4 status-bar-icon"></i>
-                <i class="bi bi-battery-half status-bar-icon"></i>
-            </div>
-        </div>
-        
         <!-- Barra de navegación -->
         <div class="app-navbar">
             <div class="app-navbar-title">
@@ -731,15 +697,7 @@
         // Inicializar la aplicación
         document.addEventListener('DOMContentLoaded', function() {
             initializeApp();
-            updateCurrentTime();
-            setInterval(updateCurrentTime, 60000); // Actualizar cada minuto
         });
-
-        function updateCurrentTime() {
-            const now = new Date();
-            const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
-            document.getElementById('currentTime').textContent = timeString;
-        }
 
         function initializeApp() {
             // Cargar historial desde localStorage
@@ -794,7 +752,7 @@
                 timestamp: timestamp
             };
 
-            // Agregar a la lista de activaciones
+            // Agregar a la lista de activaciones (al principio para que aparezca arriba)
             activationHistory.unshift(activationData);
             
             // Guardar en localStorage
@@ -832,6 +790,7 @@
             // Actualizar contador
             historyCount.textContent = history.length;
             
+            // Mostrar los elementos en orden inverso (más recientes arriba)
             historyList.innerHTML = history.map((item, index) => {
                 const [date, time] = item.timestamp.split(', ');
                 return `
