@@ -480,14 +480,142 @@
             font-size: 1.1rem;
             font-weight: 700;
         }
+        
+        /* Nuevos estilos para mejorar la apariencia nativa */
+        .history-container {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        
+        .history-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .history-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .history-container::-webkit-scrollbar-thumb {
+            background: var(--entel-blue);
+            border-radius: 10px;
+        }
+        
+        .history-item-content {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px;
+        }
+        
+        .history-number {
+            background: var(--gradient-primary);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        
+        .history-details {
+            flex-grow: 1;
+        }
+        
+        .history-line {
+            font-weight: bold;
+            color: var(--entel-dark);
+            margin-bottom: 5px;
+        }
+        
+        .history-timestamp {
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+        
+        .history-status {
+            background: var(--gradient-success);
+            color: white;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        
+        .app-navbar {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .app-navbar-title {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .app-navbar-icon {
+            font-size: 1.5rem;
+        }
+        
+        .status-bar {
+            height: 25px;
+            background: var(--gradient-dark);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 15px;
+            color: white;
+            font-size: 0.8rem;
+        }
+        
+        .status-bar-time {
+            font-weight: bold;
+        }
+        
+        .status-bar-icons {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .status-bar-icon {
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
     <div class="app-container">
+        <!-- Barra de estado simulada -->
+        <div class="status-bar">
+            <div class="status-bar-time" id="currentTime">12:00</div>
+            <div class="status-bar-icons">
+                <i class="bi bi-wifi status-bar-icon"></i>
+                <i class="bi bi-reception-4 status-bar-icon"></i>
+                <i class="bi bi-battery-half status-bar-icon"></i>
+            </div>
+        </div>
+        
+        <!-- Barra de navegación -->
+        <div class="app-navbar">
+            <div class="app-navbar-title">
+                <i class="bi bi-lightning-charge-fill me-2"></i>
+                Activador ENTEL
+            </div>
+            <div class="app-navbar-icon" id="refreshBtn">
+                <i class="bi bi-arrow-clockwise"></i>
+            </div>
+        </div>
+
         <!-- Pantalla Principal -->
         <div id="mainScreen">
-
-
             <!-- Contenido principal -->
             <div class="app-content">
                 <!-- Formulario de Activación -->
@@ -548,7 +676,7 @@
                         </div>
                     </div>
                     <div class="app-card-body p-0">
-                        <div id="historyList">
+                        <div class="history-container" id="historyList">
                             <!-- El historial se cargará aquí -->
                         </div>
                         <div id="emptyHistory" class="empty-state">
@@ -559,8 +687,6 @@
                     </div>
                 </div>
             </div>
-
-           
         </div>
     </div>
 
@@ -605,7 +731,15 @@
         // Inicializar la aplicación
         document.addEventListener('DOMContentLoaded', function() {
             initializeApp();
+            updateCurrentTime();
+            setInterval(updateCurrentTime, 60000); // Actualizar cada minuto
         });
+
+        function updateCurrentTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+            document.getElementById('currentTime').textContent = timeString;
+        }
 
         function initializeApp() {
             // Cargar historial desde localStorage
@@ -699,59 +833,25 @@
             historyCount.textContent = history.length;
             
             historyList.innerHTML = history.map((item, index) => {
+                const [date, time] = item.timestamp.split(', ');
                 return `
-                <div class="history-item p-4">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div class="flex-grow-1">
-                            <div class="d-flex align-items-center mb-3">
-                                <span class="numero-badge me-3">${index + 1}</span>
-                                <div>
-                                    <div class="fw-bold text-success fs-6">DÍA DOBLE CARGA</div>
-                                    <div class="history-line-id">
-                                        <i class="bi bi-phone me-1"></i> ${item.line_id}
-                                    </div>
-                                </div>
+                <div class="history-item">
+                    <div class="history-item-content">
+                        <div class="history-number">${index + 1}</div>
+                        <div class="history-details">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="history-line">${item.line_id}</div>
+                                <div class="history-status">Activo</div>
                             </div>
-                            <small class="text-muted">
-                                <i class="bi bi-calendar me-1"></i> ${item.timestamp}
-                            </small>
-                        </div>
-                        <div class="text-end">
-                            <span class="badge bg-success fs-6 p-2">
-                                <i class="bi bi-check-circle-fill"></i>
-                            </span>
-                            <div class="mt-2">
-                                <small class="text-muted fw-bold">${formatTimeAgo(item.timestamp)}</small>
+                            <div class="history-timestamp">
+                                <i class="bi bi-calendar me-1"></i> ${date} | 
+                                <i class="bi bi-clock me-1 ms-2"></i> ${time}
                             </div>
                         </div>
                     </div>
                 </div>
                 `;
             }).join('');
-        }
-
-        function formatTimeAgo(dateString) {
-            // Convertir el string de fecha a objeto Date
-            const dateParts = dateString.split(/[/,: ]/);
-            const day = parseInt(dateParts[0]);
-            const month = parseInt(dateParts[1]) - 1;
-            const year = parseInt(dateParts[2]);
-            const hour = parseInt(dateParts[3]);
-            const minute = parseInt(dateParts[4]);
-            
-            const date = new Date(year, month, day, hour, minute);
-            const now = new Date();
-            
-            const diffMs = now - date;
-            const diffMins = Math.floor(diffMs / 60000);
-            const diffHours = Math.floor(diffMs / 3600000);
-            const diffDays = Math.floor(diffMs / 86400000);
-
-            if (diffMins < 1) return 'Ahora';
-            if (diffMins < 60) return `Hace ${diffMins}m`;
-            if (diffHours < 24) return `Hace ${diffHours}h`;
-            if (diffDays === 1) return 'Ayer';
-            return `Echo`;
         }
 
         function showClearHistoryModal() {
@@ -786,7 +886,6 @@
             
             // Efecto visual de actualización
             const refreshBtn = document.getElementById('refreshBtn');
-            refreshBtn.innerHTML = '<i class="bi bi-arrow-clockwise"></i>';
             refreshBtn.style.transform = 'rotate(360deg)';
             
             setTimeout(() => {
@@ -864,4 +963,3 @@
     </script>
 </body>
 </html>
-
