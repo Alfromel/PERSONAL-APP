@@ -6,9 +6,9 @@
     <title>TOKTOK</title>
     
     <!-- Meta tags PWA -->
-    <meta name="theme-color" content="#6c5ce7">
+    <meta name="theme-color" content="#8a7cff">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="TOKTOK">
     <meta name="description" content="Panel de control para dueños y CEO de TOKTOK">
     <meta name="keywords" content="toktok, panel, control, dueño, ceo, reportes">
@@ -36,17 +36,24 @@
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
         }
         
+        :root {
+            --primary: #a28fff;
+            --secondary: #8a7cff;
+            --dark-bg: #0f0521;
+            --card-bg: rgba(30, 10, 60, 0.7);
+            --text-primary: #ffffff;
+            --text-secondary: #d0c8ff;
+        }
+        
         body {
-            background-color: #f8f9fa;
-            color: #1d1d1f;
-            max-width: 100%;
-            margin: 0 auto;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1e0a3c 100%);
+            color: var(--text-primary);
             height: 100vh;
-            overflow: hidden;
+            overflow-x: hidden;
             display: flex;
             flex-direction: column;
             -webkit-tap-highlight-color: transparent;
-            padding: 0;
+            padding: 20px;
             opacity: 0;
             animation: fadeInBody 0.5s ease forwards;
         }
@@ -58,7 +65,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1e0a3c 100%);
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -75,7 +82,7 @@
         .logo {
             font-size: 3.5rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #6c5ce7, #5b4cd8);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 15px;
@@ -84,7 +91,7 @@
         
         .subtitle {
             font-size: 1.1rem;
-            color: #8e8e93;
+            color: var(--text-secondary);
             font-weight: 500;
             margin-bottom: 30px;
         }
@@ -94,14 +101,14 @@
             height: 80px;
             border-radius: 50%;
             margin: 0 auto 25px;
-            border: 3px solid rgba(108, 92, 231, 0.2);
-            border-top: 3px solid #6c5ce7;
+            border: 3px solid rgba(162, 143, 255, 0.2);
+            border-top: 3px solid var(--primary);
             animation: spin 1s linear infinite;
         }
         
         .progress-text {
             font-size: 0.9rem;
-            color: #8e8e93;
+            color: var(--text-secondary);
         }
         
         /* Animaciones */
@@ -120,44 +127,41 @@
             100% { opacity: 1; }
         }
         
-        /* Encabezado */
+        /* Encabezado ultra compacto */
         .header {
             text-align: center;
-            padding: 20px 20px 15px;
-            background: white;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            position: relative;
-            z-index: 10;
+            margin-bottom: 20px;
+            padding-top: 5px;
             animation: fadeInUp 0.5s ease forwards;
             opacity: 0;
         }
         
         .company-name {
-            font-size: 2.2rem;
+            font-size: 1.6rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #6c5ce7, #5b4cd8);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 5px;
+            margin-bottom: 2px;
+            letter-spacing: 0.3px;
         }
         
         .user-role {
-            font-size: 1.1rem;
-            color: #8e8e93;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
             font-weight: 500;
         }
         
-        /* Contenido principal con scroll */
+        /* Contenido principal */
         .main-content {
             flex: 1;
             overflow-y: auto;
-            padding: 20px;
-            padding-bottom: 80px;
+            padding-bottom: 20px;
         }
         
         /* Secciones */
         .section {
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             animation: fadeInUp 0.5s ease forwards;
             opacity: 0;
         }
@@ -166,15 +170,13 @@
             display: flex;
             align-items: center;
             margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
         
         .section-icon {
             width: 36px;
             height: 36px;
             border-radius: 10px;
-            background: linear-gradient(135deg, rgba(108, 92, 231, 0.1), rgba(91, 76, 216, 0.15));
+            background: linear-gradient(135deg, rgba(162, 143, 255, 0.1), rgba(138, 124, 255, 0.15));
             display: flex;
             align-items: center;
             justify-content: center;
@@ -183,35 +185,30 @@
         
         .section-icon i {
             font-size: 1.1rem;
-            color: #6c5ce7;
+            color: var(--primary);
         }
         
         .section-title {
             font-size: 1.3rem;
             font-weight: 700;
-            color: #1d1d1f;
+            color: var(--text-primary);
         }
         
-        /* Grid de botones - AHORA EN UNA SOLA FILA */
-        .button-row {
-            display: flex;
-            gap: 12px;
-            overflow-x: auto;
-            padding-bottom: 10px;
-            scrollbar-width: none; /* Firefox */
+        /* Grid de botones ultra compactos */
+        .quick-access-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-top: 10px;
         }
         
-        .button-row::-webkit-scrollbar {
-            display: none; /* Chrome, Safari, Edge */
-        }
-        
-        .app-button {
-            background-color: white;
-            border-radius: 16px;
-            padding: 15px 12px;
+        .quick-access-item {
+            background: linear-gradient(135deg, rgba(162, 143, 255, 0.15), rgba(138, 124, 255, 0.1));
+            border-radius: 14px;
+            padding: 15px 8px;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             display: flex;
             flex-direction: column;
@@ -219,129 +216,111 @@
             justify-content: center;
             text-decoration: none;
             color: inherit;
-            -webkit-tap-highlight-color: rgba(108, 92, 231, 0.1);
-            border: 2px solid transparent;
+            border: 1px solid rgba(162, 143, 255, 0.2);
+            backdrop-filter: blur(10px);
             position: relative;
             overflow: hidden;
-            min-width: 100px;
-            flex-shrink: 0;
+            min-height: 80px;
         }
         
-        .app-button::before {
+        .quick-access-item::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
-            width: 100%;
+            right: 0;
             height: 100%;
-            background: linear-gradient(135deg, rgba(108, 92, 231, 0.05), rgba(91, 76, 216, 0.08));
+            background: linear-gradient(135deg, rgba(162, 143, 255, 0.2), rgba(138, 124, 255, 0.15));
             opacity: 0;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.2s ease;
         }
         
-        .app-button:active {
+        .quick-access-item:active {
             transform: scale(0.96);
+            background: linear-gradient(135deg, rgba(162, 143, 255, 0.25), rgba(138, 124, 255, 0.2));
         }
         
-        .app-button:active::before {
+        .quick-access-item:active::before {
             opacity: 1;
         }
         
-        .button-icon {
-            width: 50px;
-            height: 50px;
-            border-radius: 14px;
-            background: linear-gradient(135deg, rgba(108, 92, 231, 0.1), rgba(91, 76, 216, 0.15));
+        .icon-container {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, rgba(162, 143, 255, 0.2), rgba(138, 124, 255, 0.3));
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 10px;
-            transition: all 0.3s ease;
+            margin-bottom: 8px;
+            transition: all 0.2s ease;
             position: relative;
             z-index: 1;
         }
         
-        .app-button:active .button-icon {
-            transform: scale(1.05);
-            background: linear-gradient(135deg, #6c5ce7, #5b4cd8);
+        .quick-access-item:active .icon-container {
+            transform: scale(1.08);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
         }
         
-        .app-button:active .button-icon i {
+        .quick-access-item:active .icon-container i {
             color: white;
         }
         
-        .button-icon i {
-            font-size: 1.4rem;
-            color: #6c5ce7;
-            transition: all 0.3s ease;
+        .icon-container i {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
         }
         
-        .button-title {
-            font-size: 0.9rem;
-            color: #1d1d1f;
-            font-weight: 700;
-            margin-bottom: 4px;
+        .quick-access-item h3 {
+            font-size: 0.8rem;
+            color: var(--text-primary);
+            font-weight: 600;
             position: relative;
             z-index: 1;
         }
         
-        .button-subtitle {
-            font-size: 0.75rem;
-            color: #8e8e93;
-            line-height: 1.2;
-            position: relative;
-            z-index: 1;
+        /* Efectos de brillo en los bordes */
+        .quick-access-item::after {
+            content: '';
+            position: absolute;
+            top: -1px;
+            left: -1px;
+            right: -1px;
+            bottom: -1px;
+            background: linear-gradient(135deg, rgba(162, 143, 255, 0.5), rgba(138, 124, 255, 0.3));
+            border-radius: 15px;
+            z-index: -1;
+            opacity: 0;
+            transition: opacity 0.2s ease;
         }
         
-        /* Animación de entrada */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .quick-access-item:active::after {
+            opacity: 1;
         }
-        
-        .section:nth-child(1) { animation-delay: 0.2s; }
-        .section:nth-child(2) { animation-delay: 0.3s; }
         
         /* Botón de instalación PWA */
         #installButton {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: linear-gradient(135deg, #6c5ce7, #5b4cd8);
+            bottom: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
             border: none;
             border-radius: 50px;
-            padding: 12px 20px;
-            font-size: 0.9rem;
+            padding: 8px 14px;
+            font-size: 0.75rem;
             font-weight: 600;
-            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
+            box-shadow: 0 4px 12px rgba(162, 143, 255, 0.4);
             cursor: pointer;
             display: none;
             z-index: 1000;
             transition: all 0.3s ease;
         }
         
-        #installButton:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4);
-        }
-        
         #installButton:active {
-            transform: translateY(0);
-        }
-        
-        /* Efecto de pulso sutil en hover (para dispositivos con mouse) */
-        @media (hover: hover) {
-            .app-button:hover {
-                transform: translateY(-3px);
-                box-shadow: 0 8px 25px rgba(108, 92, 231, 0.15);
-            }
+            transform: scale(0.95);
         }
         
         /* Estilos para modo standalone (PWA instalada) */
@@ -358,30 +337,30 @@
             }
         }
         
-        /* Mejoras para dispositivos móviles */
-        @media (max-width: 480px) {
-            .app-button {
-                padding: 12px 10px;
-                min-width: 90px;
+        /* Animaciones sutiles */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
             }
-            
-            .button-icon {
-                width: 45px;
-                height: 45px;
-            }
-            
-            .button-icon i {
-                font-size: 1.2rem;
-            }
-            
-            .button-title {
-                font-size: 0.85rem;
-            }
-            
-            .button-subtitle {
-                font-size: 0.7rem;
+            to {
+                opacity: 1;
+                transform: translateY(0);
             }
         }
+        
+        .quick-access-item {
+            animation: fadeInUp 0.3s ease forwards;
+            opacity: 0;
+        }
+        
+        .quick-access-item:nth-child(1) { animation-delay: 0.1s; }
+        .quick-access-item:nth-child(2) { animation-delay: 0.15s; }
+        .quick-access-item:nth-child(3) { animation-delay: 0.2s; }
+        .quick-access-item:nth-child(4) { animation-delay: 0.25s; }
+        
+        .section:nth-child(1) { animation-delay: 0.2s; }
+        .section:nth-child(2) { animation-delay: 0.3s; }
     </style>
 </head>
 <body>
@@ -395,7 +374,7 @@
         </div>
     </div>
     
-    <!-- Encabezado -->
+    <!-- Encabezado ultra compacto -->
     <div class="header">
         <h1 class="company-name">TOKTOK</h1>
         <p class="user-role">Personal toktok</p>
@@ -411,29 +390,26 @@
                 </div>
                 <h2 class="section-title">Entel</h2>
             </div>
-            <div class="button-row">
-                <a href="EXTENCIONES/recargador.html" class="app-button">
-                    <div class="button-icon">
+            <div class="quick-access-grid">
+                <a href="EXTENCIONES/recargador.html" class="quick-access-item">
+                    <div class="icon-container">
                         <i class="fas fa-credit-card"></i>
                     </div>
-                    <h3 class="button-title">Recargar</h3>
-              
+                    <h3>Recargar</h3>
                 </a>
                 
-                <a href="EXTENCIONES/dd.html" class="app-button">
-                    <div class="button-icon">
+                <a href="EXTENCIONES/dd.html" class="quick-access-item">
+                    <div class="icon-container">
                         <i class="fas fa-calendar-day"></i>
                     </div>
-                    <h3 class="button-title">Día Doble</h3>
-        
+                    <h3>Día Doble</h3>
                 </a>
                 
-                <a href="EXTENCIONES/ac.html" class="app-button">
-                    <div class="button-icon">
+                <a href="EXTENCIONES/ac.html" class="quick-access-item">
+                    <div class="icon-container">
                         <i class="fas fa-bolt"></i>
                     </div>
-                    <h3 class="button-title">Activador</h3>
-
+                    <h3>Activador</h3>
                 </a>
             </div>
         </div>
@@ -446,13 +422,12 @@
                 </div>
                 <h2 class="section-title">Tienda</h2>
             </div>
-            <div class="button-row">
-                <a href="EXTENCIONES/E.html" class="app-button">
-                    <div class="button-icon">
+            <div class="quick-access-grid">
+                <a href="EXTENCIONES/E.html" class="quick-access-item">
+                    <div class="icon-container">
                         <i class="fas fa-qrcode"></i>
                     </div>
-                    <h3 class="button-title">Escáner Tienda</h3>
-                    <p class="button-subtitle">Escanear códigos QR</p>
+                    <h3>Escáner Tienda</h3>
                 </a>
             </div>
         </div>
@@ -465,13 +440,15 @@
 
     <script>
         // Efecto táctil mejorado para móviles
-        document.querySelectorAll('.app-button').forEach(item => {
+        document.querySelectorAll('.quick-access-item').forEach(item => {
             item.addEventListener('touchstart', function() {
                 this.style.transform = 'scale(0.96)';
+                this.style.background = 'linear-gradient(135deg, rgba(162, 143, 255, 0.25), rgba(138, 124, 255, 0.2))';
             });
             
             item.addEventListener('touchend', function() {
                 this.style.transform = '';
+                this.style.background = '';
             });
         });
         
@@ -526,7 +503,7 @@
         
         // Detectar si la aplicación ya está instalada
         window.addEventListener('load', () => {
-            if (window.matchMedia('(display-mode: standalone').matches) {
+            if (window.matchMedia('(display-mode: standalone)').matches) {
                 console.log('La aplicación se está ejecutando en modo standalone');
                 installButton.style.display = 'none';
             }
