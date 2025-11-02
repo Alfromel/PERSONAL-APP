@@ -34,6 +34,8 @@
             padding: 0;
             box-sizing: border-box;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
         
         :root {
@@ -54,77 +56,11 @@
             flex-direction: column;
             -webkit-tap-highlight-color: transparent;
             padding: 20px;
-            opacity: 0;
-            animation: fadeInBody 0.5s ease forwards;
-        }
-        
-        /* Pantalla de carga instantánea */
-        #loading-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--dark-bg) 0%, #1e0a3c 100%);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            animation: fadeOut 0.8s ease forwards;
-            animation-delay: 0.8s;
-        }
-        
-        .loading-container {
-            text-align: center;
-        }
-        
-        .logo {
-            font-size: 3.5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 15px;
-            letter-spacing: 1px;
-        }
-        
-        .subtitle {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-            margin-bottom: 30px;
-        }
-        
-        .loading-circle {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            margin: 0 auto 25px;
-            border: 3px solid rgba(162, 143, 255, 0.2);
-            border-top: 3px solid var(--primary);
-            animation: spin 1s linear infinite;
-        }
-        
-        .progress-text {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-        }
-        
-        /* Animaciones */
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        @keyframes fadeOut {
-            0% { opacity: 1; }
-            100% { opacity: 0; visibility: hidden; }
-        }
-        
-        @keyframes fadeInBody {
-            0% { opacity: 0; }
-            100% { opacity: 1; }
+            /* Optimizaciones de rendimiento */
+            transform: translateZ(0);
+            backface-visibility: hidden;
+            perspective: 1000;
+            will-change: transform;
         }
         
         /* Encabezado ultra compacto */
@@ -132,8 +68,9 @@
             text-align: center;
             margin-bottom: 20px;
             padding-top: 5px;
-            animation: fadeInUp 0.5s ease forwards;
+            animation: fadeInUp 0.4s ease forwards;
             opacity: 0;
+            transform: translateZ(0);
         }
         
         .company-name {
@@ -157,13 +94,17 @@
             flex: 1;
             overflow-y: auto;
             padding-bottom: 20px;
+            /* Optimización de scroll */
+            -webkit-overflow-scrolling: touch;
+            transform: translateZ(0);
         }
         
         /* Secciones */
         .section {
             margin-bottom: 25px;
-            animation: fadeInUp 0.5s ease forwards;
+            animation: fadeInUp 0.4s ease forwards;
             opacity: 0;
+            transform: translateZ(0);
         }
         
         .section-header {
@@ -208,7 +149,7 @@
             padding: 15px 8px;
             text-align: center;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
             cursor: pointer;
             display: flex;
             flex-direction: column;
@@ -221,6 +162,10 @@
             position: relative;
             overflow: hidden;
             min-height: 80px;
+            /* Optimizaciones de rendimiento */
+            transform: translateZ(0);
+            will-change: transform;
+            -webkit-backface-visibility: hidden;
         }
         
         .quick-access-item::before {
@@ -232,11 +177,11 @@
             height: 100%;
             background: linear-gradient(135deg, rgba(162, 143, 255, 0.2), rgba(138, 124, 255, 0.15));
             opacity: 0;
-            transition: opacity 0.2s ease;
+            transition: opacity 0.15s ease;
         }
         
         .quick-access-item:active {
-            transform: scale(0.96);
+            transform: scale(0.96) translateZ(0);
             background: linear-gradient(135deg, rgba(162, 143, 255, 0.25), rgba(138, 124, 255, 0.2));
         }
         
@@ -253,13 +198,14 @@
             align-items: center;
             justify-content: center;
             margin-bottom: 8px;
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
             position: relative;
             z-index: 1;
+            transform: translateZ(0);
         }
         
         .quick-access-item:active .icon-container {
-            transform: scale(1.08);
+            transform: scale(1.08) translateZ(0);
             background: linear-gradient(135deg, var(--primary), var(--secondary));
         }
         
@@ -270,7 +216,7 @@
         .icon-container i {
             font-size: 1.1rem;
             color: var(--text-secondary);
-            transition: all 0.2s ease;
+            transition: all 0.15s ease;
         }
         
         .quick-access-item h3 {
@@ -293,7 +239,7 @@
             border-radius: 15px;
             z-index: -1;
             opacity: 0;
-            transition: opacity 0.2s ease;
+            transition: opacity 0.15s ease;
         }
         
         .quick-access-item:active::after {
@@ -316,11 +262,12 @@
             cursor: pointer;
             display: none;
             z-index: 1000;
-            transition: all 0.3s ease;
+            transition: all 0.2s ease;
+            transform: translateZ(0);
         }
         
         #installButton:active {
-            transform: scale(0.95);
+            transform: scale(0.95) translateZ(0);
         }
         
         /* Estilos para modo standalone (PWA instalada) */
@@ -337,43 +284,53 @@
             }
         }
         
-        /* Animaciones sutiles */
+        /* Animaciones optimizadas */
         @keyframes fadeInUp {
             from {
                 opacity: 0;
-                transform: translateY(10px);
+                transform: translate3d(0, 10px, 0);
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translate3d(0, 0, 0);
             }
         }
         
         .quick-access-item {
-            animation: fadeInUp 0.3s ease forwards;
+            animation: fadeInUp 0.25s ease forwards;
             opacity: 0;
+            transform: translate3d(0, 10px, 0);
         }
         
-        .quick-access-item:nth-child(1) { animation-delay: 0.1s; }
-        .quick-access-item:nth-child(2) { animation-delay: 0.15s; }
-        .quick-access-item:nth-child(3) { animation-delay: 0.2s; }
-        .quick-access-item:nth-child(4) { animation-delay: 0.25s; }
+        .quick-access-item:nth-child(1) { animation-delay: 0.05s; }
+        .quick-access-item:nth-child(2) { animation-delay: 0.1s; }
+        .quick-access-item:nth-child(3) { animation-delay: 0.15s; }
+        .quick-access-item:nth-child(4) { animation-delay: 0.2s; }
         
-        .section:nth-child(1) { animation-delay: 0.2s; }
-        .section:nth-child(2) { animation-delay: 0.3s; }
+        .section:nth-child(1) { animation-delay: 0.1s; }
+        .section:nth-child(2) { animation-delay: 0.15s; }
+
+        /* Mejoras de rendimiento para dispositivos móviles */
+        @media (max-width: 768px) {
+            .quick-access-item {
+                -webkit-tap-highlight-color: transparent;
+            }
+            
+            .main-content {
+                -webkit-overflow-scrolling: touch;
+            }
+        }
+
+        /* Prevenir selección de texto para mejor rendimiento táctil */
+        .quick-access-item, .header, .section-header {
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+        }
     </style>
 </head>
 <body>
-    <!-- Pantalla de carga instantánea -->
-    <div id="loading-screen">
-        <div class="loading-container">
-            <div class="logo">TOKTOK</div>
-            <div class="subtitle">Panel de Control</div>
-            <div class="loading-circle"></div>
-            <div class="progress-text">CARGANDO...</div>
-        </div>
-    </div>
-    
     <!-- Encabezado ultra compacto -->
     <div class="header">
         <h1 class="company-name">TOKTOK</h1>
@@ -439,30 +396,39 @@
     </button>
 
     <script>
-        // Efecto táctil mejorado para móviles
+        // Efecto táctil optimizado para máxima fluidez
         document.querySelectorAll('.quick-access-item').forEach(item => {
-            item.addEventListener('touchstart', function() {
-                this.style.transform = 'scale(0.96)';
+            item.addEventListener('touchstart', function(e) {
+                e.preventDefault();
+                this.style.transform = 'scale(0.96) translateZ(0)';
                 this.style.background = 'linear-gradient(135deg, rgba(162, 143, 255, 0.25), rgba(138, 124, 255, 0.2))';
-            });
+            }, { passive: false });
             
             item.addEventListener('touchend', function() {
                 this.style.transform = '';
                 this.style.background = '';
             });
+            
+            item.addEventListener('touchcancel', function() {
+                this.style.transform = '';
+                this.style.background = '';
+            });
         });
         
-        // Código para PWA
+        // Código para PWA optimizado
         // Registrar Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                navigator.serviceWorker.register('/sw.js')
-                    .then(function(registration) {
-                        console.log('ServiceWorker registrado con éxito: ', registration.scope);
-                    })
-                    .catch(function(error) {
-                        console.log('Error al registrar ServiceWorker: ', error);
-                    });
+                // Timeout para no bloquear la UI
+                setTimeout(() => {
+                    navigator.serviceWorker.register('/sw.js')
+                        .then(function(registration) {
+                            console.log('ServiceWorker registrado con éxito: ', registration.scope);
+                        })
+                        .catch(function(error) {
+                            console.log('Error al registrar ServiceWorker: ', error);
+                        });
+                }, 100);
             });
         }
         
@@ -507,6 +473,14 @@
                 console.log('La aplicación se está ejecutando en modo standalone');
                 installButton.style.display = 'none';
             }
+        });
+
+        // Forzar composición GPU para mejor rendimiento
+        document.addEventListener('DOMContentLoaded', function() {
+            const elements = document.querySelectorAll('.quick-access-item, .header, .section');
+            elements.forEach(el => {
+                el.style.transform = 'translateZ(0)';
+            });
         });
     </script>
 </body>
