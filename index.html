@@ -39,16 +39,16 @@
         }
         
         :root {
-            --primary: #a28fff;
+            --primary: #ffffff;
             --secondary: #8a7cff;
-            --dark-bg: #0f0521;
-            --card-bg: rgba(30, 10, 60, 0.7);
-            --text-primary: #ffffff;
-            --text-secondary: #d0c8ff;
+            --dark-bg: #ffffff;
+            --card-bg: rgba(255, 255, 255, 0.9);
+            --text-primary: #333333;
+            --text-secondary: #666666;
         }
         
         body {
-            background: linear-gradient(135deg, var(--dark-bg) 0%, #1e0a3c 100%);
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #f5f5f5 100%);
             color: var(--text-primary);
             height: 100vh;
             overflow-x: hidden;
@@ -76,7 +76,7 @@
         .company-name {
             font-size: 1.6rem;
             font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--secondary), #6a5bff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             margin-bottom: 2px;
@@ -117,7 +117,7 @@
             width: 36px;
             height: 36px;
             border-radius: 10px;
-            background: linear-gradient(135deg, rgba(162, 143, 255, 0.1), rgba(138, 124, 255, 0.15));
+            background: linear-gradient(135deg, rgba(138, 124, 255, 0.1), rgba(106, 91, 255, 0.15));
             display: flex;
             align-items: center;
             justify-content: center;
@@ -126,7 +126,7 @@
         
         .section-icon i {
             font-size: 1.1rem;
-            color: var(--primary);
+            color: var(--secondary);
         }
         
         .section-title {
@@ -144,12 +144,12 @@
         }
         
         .quick-access-item {
-            background: linear-gradient(135deg, rgba(162, 143, 255, 0.15), rgba(138, 124, 255, 0.1));
+            background: var(--card-bg);
             border-radius: 14px;
             padding: 15px 8px;
             text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px rgba(138, 124, 255, 0.15);
+            transition: all 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             cursor: pointer;
             display: flex;
             flex-direction: column;
@@ -157,7 +157,7 @@
             justify-content: center;
             text-decoration: none;
             color: inherit;
-            border: 1px solid rgba(162, 143, 255, 0.2);
+            border: 1px solid rgba(138, 124, 255, 0.1);
             backdrop-filter: blur(10px);
             position: relative;
             overflow: hidden;
@@ -175,14 +175,15 @@
             left: 0;
             right: 0;
             height: 100%;
-            background: linear-gradient(135deg, rgba(162, 143, 255, 0.2), rgba(138, 124, 255, 0.15));
+            background: linear-gradient(135deg, rgba(138, 124, 255, 0.08), rgba(106, 91, 255, 0.12));
             opacity: 0;
-            transition: opacity 0.15s ease;
+            transition: opacity 0.12s ease;
         }
         
         .quick-access-item:active {
             transform: scale(0.96) translateZ(0);
-            background: linear-gradient(135deg, rgba(162, 143, 255, 0.25), rgba(138, 124, 255, 0.2));
+            box-shadow: 0 2px 8px rgba(138, 124, 255, 0.2);
+            background: rgba(138, 124, 255, 0.05);
         }
         
         .quick-access-item:active::before {
@@ -193,12 +194,12 @@
             width: 40px;
             height: 40px;
             border-radius: 10px;
-            background: linear-gradient(135deg, rgba(162, 143, 255, 0.2), rgba(138, 124, 255, 0.3));
+            background: linear-gradient(135deg, rgba(138, 124, 255, 0.1), rgba(106, 91, 255, 0.2));
             display: flex;
             align-items: center;
             justify-content: center;
             margin-bottom: 8px;
-            transition: all 0.15s ease;
+            transition: all 0.12s ease;
             position: relative;
             z-index: 1;
             transform: translateZ(0);
@@ -206,7 +207,7 @@
         
         .quick-access-item:active .icon-container {
             transform: scale(1.08) translateZ(0);
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--secondary), #6a5bff);
         }
         
         .quick-access-item:active .icon-container i {
@@ -215,8 +216,8 @@
         
         .icon-container i {
             font-size: 1.1rem;
-            color: var(--text-secondary);
-            transition: all 0.15s ease;
+            color: var(--secondary);
+            transition: all 0.12s ease;
         }
         
         .quick-access-item h3 {
@@ -235,11 +236,11 @@
             left: -1px;
             right: -1px;
             bottom: -1px;
-            background: linear-gradient(135deg, rgba(162, 143, 255, 0.5), rgba(138, 124, 255, 0.3));
+            background: linear-gradient(135deg, rgba(138, 124, 255, 0.3), rgba(106, 91, 255, 0.2));
             border-radius: 15px;
             z-index: -1;
             opacity: 0;
-            transition: opacity 0.15s ease;
+            transition: opacity 0.12s ease;
         }
         
         .quick-access-item:active::after {
@@ -251,14 +252,14 @@
             position: fixed;
             bottom: 15px;
             right: 15px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background: linear-gradient(135deg, var(--secondary), #6a5bff);
             color: white;
             border: none;
             border-radius: 50px;
             padding: 8px 14px;
             font-size: 0.75rem;
             font-weight: 600;
-            box-shadow: 0 4px 12px rgba(162, 143, 255, 0.4);
+            box-shadow: 0 4px 12px rgba(138, 124, 255, 0.4);
             cursor: pointer;
             display: none;
             z-index: 1000;
@@ -396,21 +397,44 @@
     </button>
 
     <script>
-        // Efecto táctil optimizado para máxima fluidez
+        // Efecto táctil optimizado para máxima fluidez y precisión
         document.querySelectorAll('.quick-access-item').forEach(item => {
+            // Touch events optimizados
             item.addEventListener('touchstart', function(e) {
                 e.preventDefault();
                 this.style.transform = 'scale(0.96) translateZ(0)';
-                this.style.background = 'linear-gradient(135deg, rgba(162, 143, 255, 0.25), rgba(138, 124, 255, 0.2))';
+                this.style.boxShadow = '0 2px 8px rgba(138, 124, 255, 0.2)';
+                this.style.background = 'rgba(138, 124, 255, 0.05)';
             }, { passive: false });
             
             item.addEventListener('touchend', function() {
                 this.style.transform = '';
+                this.style.boxShadow = '';
                 this.style.background = '';
-            });
+            }, { passive: true });
             
             item.addEventListener('touchcancel', function() {
                 this.style.transform = '';
+                this.style.boxShadow = '';
+                this.style.background = '';
+            }, { passive: true });
+            
+            // Mouse events para desktop
+            item.addEventListener('mousedown', function() {
+                this.style.transform = 'scale(0.96) translateZ(0)';
+                this.style.boxShadow = '0 2px 8px rgba(138, 124, 255, 0.2)';
+                this.style.background = 'rgba(138, 124, 255, 0.05)';
+            });
+            
+            item.addEventListener('mouseup', function() {
+                this.style.transform = '';
+                this.style.boxShadow = '';
+                this.style.background = '';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = '';
+                this.style.boxShadow = '';
                 this.style.background = '';
             });
         });
