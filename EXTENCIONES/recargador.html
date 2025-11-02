@@ -603,7 +603,7 @@
                         <div class="d-flex align-items-center">
                             <span class="history-badge" id="historyCount">0</span>
                             <span class="corte-badge" id="corteCount">0</span>
-                            <button id="clearHistoryBtn" class="clear-history-btn ms-2" title="Borrar historial">
+                            <button id="clearHistoryBtn" class="clear-history-btn ms-2" title="Descargar PDF y limpiar historial">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>
@@ -667,26 +667,21 @@
         </div>
     </div>
 
-    <!-- Modal para confirmar borrado de historial -->
+    <!-- Modal para confirmar descarga y limpiar historial -->
     <div class="modal fade" id="clearHistoryModal" tabindex="-1" aria-labelledby="clearHistoryModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="clearHistoryModalLabel">Borrar Historial</h5>
+                    <h5 class="modal-title" id="clearHistoryModalLabel">Descargar PDF y Limpiar Historial</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>¿Está seguro de que desea borrar todo su historial de recargas?</p>
-                    <p class="text-danger"><strong>Advertencia:</strong> Esta acción no se puede deshacer.</p>
-                    <div class="mb-3">
-                        <label for="clearPassword" class="form-label">Contraseña de confirmación:</label>
-                        <input type="password" class="form-control" id="clearPassword" placeholder="Ingrese la contraseña">
-                    </div>
-                    <div id="clearHistoryMessage" class="alert alert-danger mt-2 d-none"></div>
+                    <p>¿Está seguro de que desea descargar el historial en PDF y limpiarlo de la vista?</p>
+                    <p class="text-info"><strong>Nota:</strong> El historial se mantendrá en la base de datos pero se limpiará de esta vista.</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-danger" id="confirmClearHistory">Borrar Historial</button>
+                    <button type="button" class="btn btn-primary" id="confirmClearHistory">Descargar y Limpiar</button>
                 </div>
             </div>
         </div>
@@ -1134,15 +1129,11 @@
         }
 
         function showClearHistoryModal() {
-            // Verificar si hay historial para borrar
+            // Verificar si hay historial para limpiar
             if (currentUserHistory.length === 0) {
-                alert('No hay historial para borrar');
+                alert('No hay historial para descargar y limpiar');
                 return;
             }
-            
-            // Resetear el modal
-            document.getElementById('clearPassword').value = '';
-            document.getElementById('clearHistoryMessage').classList.add('d-none');
             
             // Mostrar el modal
             const modal = new bootstrap.Modal(document.getElementById('clearHistoryModal'));
@@ -1150,58 +1141,50 @@
         }
 
         async function confirmClearHistory() {
-            const password = document.getElementById('clearPassword').value;
-            const messageDiv = document.getElementById('clearHistoryMessage');
-            
-            // Verificar contraseña
-            if (password !== 'ivan5986') {
-                messageDiv.textContent = 'Contraseña incorrecta';
-                messageDiv.classList.remove('d-none');
-                return;
-            }
-            
             try {
-                // Generar PDF antes de borrar
+                // Generar PDF antes de limpiar
                 await generateHistoryPDF();
                 
-                // Borrar el historial de la base de datos
-                await deleteUserHistory();
+                // Limpiar el historial de la vista
+                clearUserHistory();
                 
                 // Cerrar el modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('clearHistoryModal'));
                 modal.hide();
                 
-                // Recargar el historial (que ahora estará vacío)
-                loadRechargeHistory();
-                
-                alert('Historial borrado exitosamente');
+                alert('Historial descargado y limpiado exitosamente');
                 
             } catch (error) {
-                console.error('Error al borrar el historial:', error);
-                messageDiv.textContent = 'Error al borrar el historial';
-                messageDiv.classList.remove('d-none');
+                console.error('Error al descargar y limpiar el historial:', error);
+                alert('Error al procesar la solicitud. Intente nuevamente.');
             }
         }
 
-        async function deleteUserHistory() {
-            // Borrar todas las recargas del usuario actual
-            const response = await fetch(
-                `${SUPABASE_URL}/rest/v1/recharge_history?user_id=eq.${currentUser.id}`,
-                {
-                    method: 'DELETE',
-                    headers: {
-                        'apikey': SUPABASE_KEY,
-                        'Authorization': `Bearer ${SUPABASE_KEY}`,
-                        'Prefer': 'return=minimal'
-                    }
-                }
-            );
-
-            if (!response.ok) {
-                throw new Error('Error al borrar el historial');
-            }
-
-            return { success: true };
+        function clearUserHistory() {
+            // Limpiar el historial de la vista sin borrarlo de la base de datos
+            const historyList = document.getElementById('historyList');
+            const emptyHistory = document.getElementById('emptyHistory');
+            const historyFilters = document.getElementById('historyFilters');
+            const historySummary = document.getElementById('historySummary');
+            
+            // Limpiar la vista
+            historyList.innerHTML = '';
+            
+            // Actualizar contadores a cero
+            document.getElementById('historyCount').textContent = '0';
+            document.getElementById('corteCount').textContent = '0';
+            document.getElementById('totalRecargas').textContent = '0';
+            document.getElementById('nuevosCount').textContent = '0';
+            document.getElementById('cortesCount').textContent = '0';
+            document.getElementById('hoyCount').textContent = '0';
+            
+            // Mostrar estado vacío
+            historyFilters.classList.add('d-none');
+            historySummary.classList.add('d-none');
+            emptyHistory.classList.remove('d-none');
+            
+            // Limpiar el historial en memoria
+            currentUserHistory = [];
         }
 
         function generateHistoryPDF() {
