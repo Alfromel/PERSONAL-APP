@@ -6,9 +6,9 @@
     <title>TOKTOK</title>
     
     <!-- Meta tags PWA -->
-    <meta name="theme-color" content="#8a7cff">
+    <meta name="theme-color" content="#6c5ce7">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="apple-mobile-web-app-title" content="TOKTOK">
     <meta name="description" content="Panel de control para dueños y CEO de TOKTOK">
     <meta name="keywords" content="toktok, panel, control, dueño, ceo, reportes">
@@ -34,90 +34,147 @@
             padding: 0;
             box-sizing: border-box;
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
-        }
-        
-        :root {
-            --primary: #ffffff;
-            --secondary: #8a7cff;
-            --dark-bg: #ffffff;
-            --card-bg: rgba(255, 255, 255, 0.9);
-            --text-primary: #333333;
-            --text-secondary: #666666;
         }
         
         body {
-            background: linear-gradient(135deg, var(--dark-bg) 0%, #f5f5f5 100%);
-            color: var(--text-primary);
+            background-color: #f8f9fa;
+            color: #1d1d1f;
+            max-width: 100%;
+            margin: 0 auto;
             height: 100vh;
-            overflow-x: hidden;
+            overflow: hidden;
             display: flex;
             flex-direction: column;
             -webkit-tap-highlight-color: transparent;
-            padding: 20px;
-            /* Optimizaciones de rendimiento */
-            transform: translateZ(0);
-            backface-visibility: hidden;
-            perspective: 1000;
-            will-change: transform;
+            padding: 0;
+            opacity: 0;
+            animation: fadeInBody 0.5s ease forwards;
         }
         
-        /* Encabezado ultra compacto */
+        /* Pantalla de carga instantánea */
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            animation: fadeOut 0.8s ease forwards;
+            animation-delay: 0.8s;
+        }
+        
+        .loading-container {
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 3.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #6c5ce7, #5b4cd8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            color: #8e8e93;
+            font-weight: 500;
+            margin-bottom: 30px;
+        }
+        
+        .loading-circle {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 25px;
+            border: 3px solid rgba(108, 92, 231, 0.2);
+            border-top: 3px solid #6c5ce7;
+            animation: spin 1s linear infinite;
+        }
+        
+        .progress-text {
+            font-size: 0.9rem;
+            color: #8e8e93;
+        }
+        
+        /* Animaciones */
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeOut {
+            0% { opacity: 1; }
+            100% { opacity: 0; visibility: hidden; }
+        }
+        
+        @keyframes fadeInBody {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        
+        /* Encabezado */
         .header {
             text-align: center;
-            margin-bottom: 20px;
-            padding-top: 5px;
-            animation: fadeInUp 0.4s ease forwards;
+            padding: 20px 20px 15px;
+            background: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            position: relative;
+            z-index: 10;
+            animation: fadeInUp 0.5s ease forwards;
             opacity: 0;
-            transform: translateZ(0);
         }
         
         .company-name {
-            font-size: 1.6rem;
+            font-size: 2.2rem;
             font-weight: 800;
-            background: linear-gradient(135deg, var(--secondary), #6a5bff);
+            background: linear-gradient(135deg, #6c5ce7, #5b4cd8);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 2px;
-            letter-spacing: 0.3px;
+            margin-bottom: 5px;
         }
         
         .user-role {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
+            font-size: 1.1rem;
+            color: #8e8e93;
             font-weight: 500;
         }
         
-        /* Contenido principal */
+        /* Contenido principal con scroll */
         .main-content {
             flex: 1;
             overflow-y: auto;
-            padding-bottom: 20px;
-            /* Optimización de scroll */
-            -webkit-overflow-scrolling: touch;
-            transform: translateZ(0);
+            padding: 20px;
+            padding-bottom: 80px;
         }
         
         /* Secciones */
         .section {
-            margin-bottom: 25px;
-            animation: fadeInUp 0.4s ease forwards;
+            margin-bottom: 30px;
+            animation: fadeInUp 0.5s ease forwards;
             opacity: 0;
-            transform: translateZ(0);
         }
         
         .section-header {
             display: flex;
             align-items: center;
             margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
         }
         
         .section-icon {
             width: 36px;
             height: 36px;
             border-radius: 10px;
-            background: linear-gradient(135deg, rgba(138, 124, 255, 0.1), rgba(106, 91, 255, 0.15));
+            background: linear-gradient(135deg, rgba(108, 92, 231, 0.1), rgba(91, 76, 216, 0.15));
             display: flex;
             align-items: center;
             justify-content: center;
@@ -126,30 +183,35 @@
         
         .section-icon i {
             font-size: 1.1rem;
-            color: var(--secondary);
+            color: #6c5ce7;
         }
         
         .section-title {
             font-size: 1.3rem;
             font-weight: 700;
-            color: var(--text-primary);
+            color: #1d1d1f;
         }
         
-        /* Grid de botones ultra compactos */
-        .quick-access-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 10px;
-            margin-top: 10px;
+        /* Grid de botones - AHORA EN UNA SOLA FILA */
+        .button-row {
+            display: flex;
+            gap: 12px;
+            overflow-x: auto;
+            padding-bottom: 10px;
+            scrollbar-width: none; /* Firefox */
         }
         
-        .quick-access-item {
-            background: var(--card-bg);
-            border-radius: 14px;
-            padding: 15px 8px;
+        .button-row::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Edge */
+        }
+        
+        .app-button {
+            background-color: white;
+            border-radius: 16px;
+            padding: 15px 12px;
             text-align: center;
-            box-shadow: 0 4px 15px rgba(138, 124, 255, 0.15);
-            transition: all 0.12s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
             cursor: pointer;
             display: flex;
             flex-direction: column;
@@ -157,118 +219,129 @@
             justify-content: center;
             text-decoration: none;
             color: inherit;
-            border: 1px solid rgba(138, 124, 255, 0.1);
-            backdrop-filter: blur(10px);
+            -webkit-tap-highlight-color: rgba(108, 92, 231, 0.1);
+            border: 2px solid transparent;
             position: relative;
             overflow: hidden;
-            min-height: 80px;
-            /* Optimizaciones de rendimiento */
-            transform: translateZ(0);
-            will-change: transform;
-            -webkit-backface-visibility: hidden;
+            min-width: 100px;
+            flex-shrink: 0;
         }
         
-        .quick-access-item::before {
+        .app-button::before {
             content: '';
             position: absolute;
             top: 0;
             left: 0;
-            right: 0;
+            width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, rgba(138, 124, 255, 0.08), rgba(106, 91, 255, 0.12));
+            background: linear-gradient(135deg, rgba(108, 92, 231, 0.05), rgba(91, 76, 216, 0.08));
             opacity: 0;
-            transition: opacity 0.12s ease;
+            transition: opacity 0.3s ease;
         }
         
-        .quick-access-item:active {
-            transform: scale(0.96) translateZ(0);
-            box-shadow: 0 2px 8px rgba(138, 124, 255, 0.2);
-            background: rgba(138, 124, 255, 0.05);
+        .app-button:active {
+            transform: scale(0.96);
         }
         
-        .quick-access-item:active::before {
+        .app-button:active::before {
             opacity: 1;
         }
         
-        .icon-container {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            background: linear-gradient(135deg, rgba(138, 124, 255, 0.1), rgba(106, 91, 255, 0.2));
+        .button-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            background: linear-gradient(135deg, rgba(108, 92, 231, 0.1), rgba(91, 76, 216, 0.15));
             display: flex;
             align-items: center;
             justify-content: center;
-            margin-bottom: 8px;
-            transition: all 0.12s ease;
+            margin-bottom: 10px;
+            transition: all 0.3s ease;
             position: relative;
             z-index: 1;
-            transform: translateZ(0);
         }
         
-        .quick-access-item:active .icon-container {
-            transform: scale(1.08) translateZ(0);
-            background: linear-gradient(135deg, var(--secondary), #6a5bff);
+        .app-button:active .button-icon {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #6c5ce7, #5b4cd8);
         }
         
-        .quick-access-item:active .icon-container i {
+        .app-button:active .button-icon i {
             color: white;
         }
         
-        .icon-container i {
-            font-size: 1.1rem;
-            color: var(--secondary);
-            transition: all 0.12s ease;
+        .button-icon i {
+            font-size: 1.4rem;
+            color: #6c5ce7;
+            transition: all 0.3s ease;
         }
         
-        .quick-access-item h3 {
-            font-size: 0.8rem;
-            color: var(--text-primary);
-            font-weight: 600;
+        .button-title {
+            font-size: 0.9rem;
+            color: #1d1d1f;
+            font-weight: 700;
+            margin-bottom: 4px;
             position: relative;
             z-index: 1;
         }
         
-        /* Efectos de brillo en los bordes */
-        .quick-access-item::after {
-            content: '';
-            position: absolute;
-            top: -1px;
-            left: -1px;
-            right: -1px;
-            bottom: -1px;
-            background: linear-gradient(135deg, rgba(138, 124, 255, 0.3), rgba(106, 91, 255, 0.2));
-            border-radius: 15px;
-            z-index: -1;
-            opacity: 0;
-            transition: opacity 0.12s ease;
+        .button-subtitle {
+            font-size: 0.75rem;
+            color: #8e8e93;
+            line-height: 1.2;
+            position: relative;
+            z-index: 1;
         }
         
-        .quick-access-item:active::after {
-            opacity: 1;
+        /* Animación de entrada */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
+        
+        .section:nth-child(1) { animation-delay: 0.2s; }
+        .section:nth-child(2) { animation-delay: 0.3s; }
         
         /* Botón de instalación PWA */
         #installButton {
             position: fixed;
-            bottom: 15px;
-            right: 15px;
-            background: linear-gradient(135deg, var(--secondary), #6a5bff);
+            bottom: 20px;
+            right: 20px;
+            background: linear-gradient(135deg, #6c5ce7, #5b4cd8);
             color: white;
             border: none;
             border-radius: 50px;
-            padding: 8px 14px;
-            font-size: 0.75rem;
+            padding: 12px 20px;
+            font-size: 0.9rem;
             font-weight: 600;
-            box-shadow: 0 4px 12px rgba(138, 124, 255, 0.4);
+            box-shadow: 0 4px 15px rgba(108, 92, 231, 0.3);
             cursor: pointer;
             display: none;
             z-index: 1000;
-            transition: all 0.2s ease;
-            transform: translateZ(0);
+            transition: all 0.3s ease;
+        }
+        
+        #installButton:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4);
         }
         
         #installButton:active {
-            transform: scale(0.95) translateZ(0);
+            transform: translateY(0);
+        }
+        
+        /* Efecto de pulso sutil en hover (para dispositivos con mouse) */
+        @media (hover: hover) {
+            .app-button:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 8px 25px rgba(108, 92, 231, 0.15);
+            }
         }
         
         /* Estilos para modo standalone (PWA instalada) */
@@ -285,54 +358,44 @@
             }
         }
         
-        /* Animaciones optimizadas */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translate3d(0, 10px, 0);
-            }
-            to {
-                opacity: 1;
-                transform: translate3d(0, 0, 0);
-            }
-        }
-        
-        .quick-access-item {
-            animation: fadeInUp 0.25s ease forwards;
-            opacity: 0;
-            transform: translate3d(0, 10px, 0);
-        }
-        
-        .quick-access-item:nth-child(1) { animation-delay: 0.05s; }
-        .quick-access-item:nth-child(2) { animation-delay: 0.1s; }
-        .quick-access-item:nth-child(3) { animation-delay: 0.15s; }
-        .quick-access-item:nth-child(4) { animation-delay: 0.2s; }
-        
-        .section:nth-child(1) { animation-delay: 0.1s; }
-        .section:nth-child(2) { animation-delay: 0.15s; }
-
-        /* Mejoras de rendimiento para dispositivos móviles */
-        @media (max-width: 768px) {
-            .quick-access-item {
-                -webkit-tap-highlight-color: transparent;
+        /* Mejoras para dispositivos móviles */
+        @media (max-width: 480px) {
+            .app-button {
+                padding: 12px 10px;
+                min-width: 90px;
             }
             
-            .main-content {
-                -webkit-overflow-scrolling: touch;
+            .button-icon {
+                width: 45px;
+                height: 45px;
             }
-        }
-
-        /* Prevenir selección de texto para mejor rendimiento táctil */
-        .quick-access-item, .header, .section-header {
-            -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
-            user-select: none;
+            
+            .button-icon i {
+                font-size: 1.2rem;
+            }
+            
+            .button-title {
+                font-size: 0.85rem;
+            }
+            
+            .button-subtitle {
+                font-size: 0.7rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Encabezado ultra compacto -->
+    <!-- Pantalla de carga instantánea -->
+    <div id="loading-screen">
+        <div class="loading-container">
+            <div class="logo">TOKTOK</div>
+            <div class="subtitle">Panel de Control</div>
+            <div class="loading-circle"></div>
+            <div class="progress-text">CARGANDO...</div>
+        </div>
+    </div>
+    
+    <!-- Encabezado -->
     <div class="header">
         <h1 class="company-name">TOKTOK</h1>
         <p class="user-role">Personal toktok</p>
@@ -348,26 +411,29 @@
                 </div>
                 <h2 class="section-title">Entel</h2>
             </div>
-            <div class="quick-access-grid">
-                <a href="EXTENCIONES/recargador.html" class="quick-access-item">
-                    <div class="icon-container">
+            <div class="button-row">
+                <a href="EXTENCIONES/recargador.html" class="app-button">
+                    <div class="button-icon">
                         <i class="fas fa-credit-card"></i>
                     </div>
-                    <h3>Recargar</h3>
+                    <h3 class="button-title">Recargar</h3>
+              
                 </a>
                 
-                <a href="EXTENCIONES/dd.html" class="quick-access-item">
-                    <div class="icon-container">
+                <a href="EXTENCIONES/dd.html" class="app-button">
+                    <div class="button-icon">
                         <i class="fas fa-calendar-day"></i>
                     </div>
-                    <h3>Día Doble</h3>
+                    <h3 class="button-title">Día Doble</h3>
+        
                 </a>
                 
-                <a href="EXTENCIONES/ac.html" class="quick-access-item">
-                    <div class="icon-container">
+                <a href="EXTENCIONES/ac.html" class="app-button">
+                    <div class="button-icon">
                         <i class="fas fa-bolt"></i>
                     </div>
-                    <h3>Activador</h3>
+                    <h3 class="button-title">Activador</h3>
+
                 </a>
             </div>
         </div>
@@ -380,12 +446,13 @@
                 </div>
                 <h2 class="section-title">Tienda</h2>
             </div>
-            <div class="quick-access-grid">
-                <a href="EXTENCIONES/E.html" class="quick-access-item">
-                    <div class="icon-container">
+            <div class="button-row">
+                <a href="EXTENCIONES/E.html" class="app-button">
+                    <div class="button-icon">
                         <i class="fas fa-qrcode"></i>
                     </div>
-                    <h3>Escáner Tienda</h3>
+                    <h3 class="button-title">Escáner Tienda</h3>
+                    <p class="button-subtitle">Escanear códigos QR</p>
                 </a>
             </div>
         </div>
@@ -397,62 +464,28 @@
     </button>
 
     <script>
-        // Efecto táctil optimizado para máxima fluidez y precisión
-        document.querySelectorAll('.quick-access-item').forEach(item => {
-            // Touch events optimizados
-            item.addEventListener('touchstart', function(e) {
-                e.preventDefault();
-                this.style.transform = 'scale(0.96) translateZ(0)';
-                this.style.boxShadow = '0 2px 8px rgba(138, 124, 255, 0.2)';
-                this.style.background = 'rgba(138, 124, 255, 0.05)';
-            }, { passive: false });
+        // Efecto táctil mejorado para móviles
+        document.querySelectorAll('.app-button').forEach(item => {
+            item.addEventListener('touchstart', function() {
+                this.style.transform = 'scale(0.96)';
+            });
             
             item.addEventListener('touchend', function() {
                 this.style.transform = '';
-                this.style.boxShadow = '';
-                this.style.background = '';
-            }, { passive: true });
-            
-            item.addEventListener('touchcancel', function() {
-                this.style.transform = '';
-                this.style.boxShadow = '';
-                this.style.background = '';
-            }, { passive: true });
-            
-            // Mouse events para desktop
-            item.addEventListener('mousedown', function() {
-                this.style.transform = 'scale(0.96) translateZ(0)';
-                this.style.boxShadow = '0 2px 8px rgba(138, 124, 255, 0.2)';
-                this.style.background = 'rgba(138, 124, 255, 0.05)';
-            });
-            
-            item.addEventListener('mouseup', function() {
-                this.style.transform = '';
-                this.style.boxShadow = '';
-                this.style.background = '';
-            });
-            
-            item.addEventListener('mouseleave', function() {
-                this.style.transform = '';
-                this.style.boxShadow = '';
-                this.style.background = '';
             });
         });
         
-        // Código para PWA optimizado
+        // Código para PWA
         // Registrar Service Worker
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', function() {
-                // Timeout para no bloquear la UI
-                setTimeout(() => {
-                    navigator.serviceWorker.register('/sw.js')
-                        .then(function(registration) {
-                            console.log('ServiceWorker registrado con éxito: ', registration.scope);
-                        })
-                        .catch(function(error) {
-                            console.log('Error al registrar ServiceWorker: ', error);
-                        });
-                }, 100);
+                navigator.serviceWorker.register('/sw.js')
+                    .then(function(registration) {
+                        console.log('ServiceWorker registrado con éxito: ', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.log('Error al registrar ServiceWorker: ', error);
+                    });
             });
         }
         
@@ -493,18 +526,10 @@
         
         // Detectar si la aplicación ya está instalada
         window.addEventListener('load', () => {
-            if (window.matchMedia('(display-mode: standalone)').matches) {
+            if (window.matchMedia('(display-mode: standalone').matches) {
                 console.log('La aplicación se está ejecutando en modo standalone');
                 installButton.style.display = 'none';
             }
-        });
-
-        // Forzar composición GPU para mejor rendimiento
-        document.addEventListener('DOMContentLoaded', function() {
-            const elements = document.querySelectorAll('.quick-access-item, .header, .section');
-            elements.forEach(el => {
-                el.style.transform = 'translateZ(0)';
-            });
         });
     </script>
 </body>
