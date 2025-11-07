@@ -616,26 +616,6 @@
                             <p class="mt-2 text-muted">Cargando historial...</p>
                         </div>
                         
-                        <!-- Resumen del historial -->
-                        <div id="historySummary" class="history-summary d-none">
-                            <div class="summary-item">
-                                <div class="summary-value" id="totalRecargas">0</div>
-                                <div class="summary-label">Total</div>
-                            </div>
-                            <div class="summary-item">
-                                <div class="summary-value" id="nuevosCount">0</div>
-                                <div class="summary-label">Nuevos</div>
-                            </div>
-                            <div class="summary-item">
-                                <div class="summary-value" id="cortesCount">0</div>
-                                <div class="summary-label">Cortes</div>
-                            </div>
-                            <div class="summary-item">
-                                <div class="summary-value" id="hoyCount">0</div>
-                                <div class="summary-label">Hoy</div>
-                            </div>
-                        </div>
-                        
                         <!-- Filtros del historial -->
                         <div id="historyFilters" class="p-3 border-bottom d-none">
                             <div class="history-filter">
@@ -699,6 +679,7 @@
         let currentUser = null;
         let currentUserHistory = [];
         let currentFilter = 'all';
+        let clearedHistoryIds = []; // Array para almacenar IDs de historial que se han limpiado
 
         // Inicializar la aplicación
         document.addEventListener('DOMContentLoaded', function() {
@@ -711,6 +692,12 @@
             if (savedUser) {
                 currentUser = JSON.parse(savedUser);
                 showMainScreen();
+            }
+
+            // Cargar IDs de historial limpiado
+            const savedClearedIds = localStorage.getItem('clearedHistoryIds');
+            if (savedClearedIds) {
+                clearedHistoryIds = JSON.parse(savedClearedIds);
             }
 
             // Configurar event listeners
@@ -887,7 +874,6 @@
             const historyList = document.getElementById('historyList');
             const emptyHistory = document.getElementById('emptyHistory');
             const historyFilters = document.getElementById('historyFilters');
-            const historySummary = document.getElementById('historySummary');
             
             loadingDiv.classList.remove('d-none');
             historyList.innerHTML = '';
@@ -910,6 +896,9 @@
 
                 let rechargeHistory = await response.json();
                 
+                // Filtrar el historial para excluir los elementos que se han limpiado
+                rechargeHistory = rechargeHistory.filter(item => !clearedHistoryIds.includes(item.id));
+                
                 // Ordenar por fecha/hora del dispositivo del usuario (más reciente primero)
                 rechargeHistory.sort((a, b) => {
                     const dateA = new Date(a.created_at);
@@ -922,11 +911,9 @@
                 // Mostrar u ocultar elementos según si hay historial
                 if (rechargeHistory.length > 0) {
                     historyFilters.classList.remove('d-none');
-                    historySummary.classList.remove('d-none');
                     emptyHistory.classList.add('d-none');
                 } else {
                     historyFilters.classList.add('d-none');
-                    historySummary.classList.add('d-none');
                     emptyHistory.classList.remove('d-none');
                 }
                 
@@ -944,19 +931,11 @@
             const historyList = document.getElementById('historyList');
             const historyCount = document.getElementById('historyCount');
             const corteCount = document.getElementById('corteCount');
-            const totalRecargas = document.getElementById('totalRecargas');
-            const nuevosCount = document.getElementById('nuevosCount');
-            const cortesCount = document.getElementById('cortesCount');
-            const hoyCount = document.getElementById('hoyCount');
             
             if (history.length === 0) {
                 historyList.innerHTML = '';
                 historyCount.textContent = '0';
                 corteCount.textContent = '0';
-                totalRecargas.textContent = '0';
-                nuevosCount.textContent = '0';
-                cortesCount.textContent = '0';
-                hoyCount.textContent = '0';
                 return;
             }
 
@@ -964,20 +943,9 @@
             const nonCorteHistory = history.filter(item => item.estado !== 'CORTE');
             const corteHistoryCount = history.filter(item => item.estado === 'CORTE').length;
             
-            // Contar recargas de hoy
-            const today = new Date().toLocaleDateString('es-ES');
-            const todayHistory = history.filter(item => {
-                const itemDate = new Date(item.created_at).toLocaleDateString('es-ES');
-                return itemDate === today;
-            });
-            
             // Actualizar contadores
             historyCount.textContent = nonCorteHistory.length;
             corteCount.textContent = corteHistoryCount;
-            totalRecargas.textContent = history.length;
-            nuevosCount.textContent = nonCorteHistory.length;
-            cortesCount.textContent = corteHistoryCount;
-            hoyCount.textContent = todayHistory.length;
             
             // Crear un array con todas las recargas numeradas correctamente
             let numeroActual = history.length;
@@ -1031,8 +999,8 @@
                     </div>
                     
                     <div class="history-item-actions">
-                        <button class="history-action-btn" onclick="copyToClipboard('${item.phone_number}')">
-                            <i class="bi bi-copy"></i> Copiar Número
+                        <button class="history-action-btn" onclick="copyNumberAndCommand('${item.phone_number}', '${item.command}')">
+                            <i class="bi bi-copy"></i> Copiar Número y Comando
                         </button>
                     </div>
                 </div>
@@ -1109,8 +1077,10 @@
             }
         }
 
-        function copyToClipboard(text) {
-            navigator.clipboard.writeText(text).then(() => {
+        function copyNumberAndCommand(number, command) {
+            const textToCopy = `Número: ${number}\nComando: ${command}`;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
                 // Mostrar mensaje de éxito
                 const originalText = event.target.textContent;
                 event.target.innerHTML = '<i class="bi bi-check"></i> ¡Copiado!';
@@ -1125,6 +1095,7 @@
                     event.target.style.borderColor = '';
                 }, 2000);
             }).catch(err => {
+                console.error('Error al copiar: ', err);
             });
         }
 
@@ -1161,11 +1132,20 @@
         }
 
         function clearUserHistory() {
-            // Limpiar el historial de la vista sin borrarlo de la base de datos
+            // Guardar los IDs del historial actual para excluirlos en el futuro
+            currentUserHistory.forEach(item => {
+                if (!clearedHistoryIds.includes(item.id)) {
+                    clearedHistoryIds.push(item.id);
+                }
+            });
+            
+            // Guardar en localStorage
+            localStorage.setItem('clearedHistoryIds', JSON.stringify(clearedHistoryIds));
+            
+            // Limpiar el historial de la vista
             const historyList = document.getElementById('historyList');
             const emptyHistory = document.getElementById('emptyHistory');
             const historyFilters = document.getElementById('historyFilters');
-            const historySummary = document.getElementById('historySummary');
             
             // Limpiar la vista
             historyList.innerHTML = '';
@@ -1173,14 +1153,9 @@
             // Actualizar contadores a cero
             document.getElementById('historyCount').textContent = '0';
             document.getElementById('corteCount').textContent = '0';
-            document.getElementById('totalRecargas').textContent = '0';
-            document.getElementById('nuevosCount').textContent = '0';
-            document.getElementById('cortesCount').textContent = '0';
-            document.getElementById('hoyCount').textContent = '0';
             
             // Mostrar estado vacío
             historyFilters.classList.add('d-none');
-            historySummary.classList.add('d-none');
             emptyHistory.classList.remove('d-none');
             
             // Limpiar el historial en memoria
