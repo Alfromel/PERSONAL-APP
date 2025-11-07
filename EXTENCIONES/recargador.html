@@ -403,62 +403,6 @@
             margin-top: 6px;
         }
         
-        .history-filter {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .filter-btn {
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 20px;
-            padding: 6px 15px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            flex: 1;
-            text-align: center;
-        }
-        
-        .filter-btn.active {
-            background: var(--entel-color);
-            color: white;
-            border-color: var(--entel-color);
-        }
-        
-        .filter-btn:hover:not(.active) {
-            background: var(--entel-light);
-            border-color: var(--entel-color);
-        }
-        
-        .history-summary {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            padding: 12px 15px;
-            background: var(--entel-light);
-            border-radius: 10px;
-            font-size: 0.9rem;
-        }
-        
-        .summary-item {
-            text-align: center;
-            flex: 1;
-        }
-        
-        .summary-value {
-            font-weight: bold;
-            font-size: 1.1rem;
-            color: var(--entel-color);
-        }
-        
-        .summary-label {
-            font-size: 0.75rem;
-            color: var(--gray-color);
-        }
-        
         .pulse-animation {
             animation: pulse 2s infinite;
         }
@@ -616,16 +560,6 @@
                             <p class="mt-2 text-muted">Cargando historial...</p>
                         </div>
                         
-                        <!-- Filtros del historial -->
-                        <div id="historyFilters" class="p-3 border-bottom d-none">
-                            <div class="history-filter">
-                                <button class="filter-btn active" data-filter="all">Todos</button>
-                                <button class="filter-btn" data-filter="nuevo">Nuevos</button>
-                                <button class="filter-btn" data-filter="corte">Cortes</button>
-                                <button class="filter-btn" data-filter="hoy">Hoy</button>
-                            </div>
-                        </div>
-                        
                         <!-- Lista del historial -->
                         <div class="history-container" id="historyContainer">
                             <div id="historyList">
@@ -678,7 +612,6 @@
         // Estado de la aplicación
         let currentUser = null;
         let currentUserHistory = [];
-        let currentFilter = 'all';
         let clearedHistoryIds = []; // Array para almacenar IDs de historial que se han limpiado
 
         // Inicializar la aplicación
@@ -706,18 +639,6 @@
             document.getElementById('rechargeForm').addEventListener('submit', handleRecharge);
             document.getElementById('clearHistoryBtn').addEventListener('click', showClearHistoryModal);
             document.getElementById('confirmClearHistory').addEventListener('click', confirmClearHistory);
-            
-            // Configurar filtros
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    // Remover clase active de todos los botones
-                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                    // Agregar clase active al botón clickeado
-                    this.classList.add('active');
-                    currentFilter = this.getAttribute('data-filter');
-                    filterHistory();
-                });
-            });
         }
 
         // Función para cargar usuarios desde la base de datos
@@ -813,14 +734,21 @@
             }
 
             try {
+                // Determinar el comando según el estado
+                let command;
+                if (status === 'CORTE') {
+                    command = `*222*2*${phoneNumber}*19*1#`;
+                } else {
+                    command = `*222*2*${phoneNumber}*20*1#`;
+                }
+                
                 // Guardar en la base de datos
-                await saveRechargeToDatabase(phoneNumber, status);
+                await saveRechargeToDatabase(phoneNumber, status, command);
                 
                 // Limpiar el formulario
                 document.getElementById('phoneNumber').value = '';
                 
                 // Realizar la llamada
-                const command = `*222*2*${phoneNumber}*20*1#`;
                 const encodedCommand = encodeURIComponent(command);
                 window.location.href = `tel:${encodedCommand}`;
                 
@@ -830,7 +758,7 @@
             }
         }
 
-        async function saveRechargeToDatabase(phoneNumber, status) {
+        async function saveRechargeToDatabase(phoneNumber, status, command) {
             // Obtener fecha y hora actual del dispositivo del usuario
             const now = new Date();
             const timestamp = now.toLocaleString('es-ES');
@@ -841,7 +769,7 @@
                 user_id: currentUser.id,
                 user_name: currentUser.nombre,
                 phone_number: phoneNumber,
-                command: `*222*2*${phoneNumber}*20*1#`,
+                command: command,
                 estado: status,
                 timestamp: timestamp,
                 created_at: created_at
@@ -873,7 +801,6 @@
             const loadingDiv = document.getElementById('loadingHistory');
             const historyList = document.getElementById('historyList');
             const emptyHistory = document.getElementById('emptyHistory');
-            const historyFilters = document.getElementById('historyFilters');
             
             loadingDiv.classList.remove('d-none');
             historyList.innerHTML = '';
@@ -910,10 +837,8 @@
                 
                 // Mostrar u ocultar elementos según si hay historial
                 if (rechargeHistory.length > 0) {
-                    historyFilters.classList.remove('d-none');
                     emptyHistory.classList.add('d-none');
                 } else {
-                    historyFilters.classList.add('d-none');
                     emptyHistory.classList.remove('d-none');
                 }
                 
@@ -963,7 +888,7 @@
                 const isRecent = diffMins < 60;
                 
                 return `
-                <div class="${itemClass} p-3 border-bottom" data-status="${item.estado.toLowerCase()}" data-date="${item.created_at}">
+                <div class="${itemClass} p-3 border-bottom">
                     ${isRecent ? '<div class="new-item-indicator"></div>' : ''}
                     <div class="history-item-header">
                         <div class="history-item-main">
@@ -999,49 +924,13 @@
                     </div>
                     
                     <div class="history-item-actions">
-                        <button class="history-action-btn" onclick="copyNumberAndCommand('${item.phone_number}', '${item.command}')">
-                            <i class="bi bi-copy"></i> Copiar Número y Comando
+                        <button class="history-action-btn" onclick="copyCommand('${item.command}')">
+                            <i class="bi bi-copy"></i> Copiar Comando
                         </button>
                     </div>
                 </div>
                 `;
             }).join('');
-            
-            // Aplicar filtro actual
-            filterHistory();
-        }
-
-        function filterHistory() {
-            const items = document.querySelectorAll('.history-item, .history-item-corte');
-            const today = new Date().toLocaleDateString('es-ES');
-            
-            items.forEach(item => {
-                const status = item.getAttribute('data-status');
-                const date = new Date(item.getAttribute('data-date')).toLocaleDateString('es-ES');
-                const isToday = date === today;
-                
-                let showItem = true;
-                
-                switch(currentFilter) {
-                    case 'nuevo':
-                        showItem = status === 'nuevo';
-                        break;
-                    case 'corte':
-                        showItem = status === 'corte';
-                        break;
-                    case 'hoy':
-                        showItem = isToday;
-                        break;
-                    default:
-                        showItem = true;
-                }
-                
-                if (showItem) {
-                    item.style.display = 'block';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
         }
 
         async function updateStatus(selectElement) {
@@ -1049,7 +938,16 @@
             const newStatus = selectElement.value;
             
             try {
-                // Actualizar el estado en la base de datos
+                // Determinar el comando según el nuevo estado
+                const item = currentUserHistory.find(item => item.id == id);
+                let newCommand;
+                if (newStatus === 'CORTE') {
+                    newCommand = `*222*2*${item.phone_number}*19*1#`;
+                } else {
+                    newCommand = `*222*2*${item.phone_number}*20*1#`;
+                }
+
+                // Actualizar el estado y comando en la base de datos
                 const response = await fetch(
                     `${SUPABASE_URL}/rest/v1/recharge_history?id=eq.${id}`,
                     {
@@ -1060,7 +958,10 @@
                             'Authorization': `Bearer ${SUPABASE_KEY}`,
                             'Prefer': 'return=minimal'
                         },
-                        body: JSON.stringify({ estado: newStatus })
+                        body: JSON.stringify({ 
+                            estado: newStatus,
+                            command: newCommand
+                        })
                     }
                 );
 
@@ -1077,10 +978,8 @@
             }
         }
 
-        function copyNumberAndCommand(number, command) {
-            const textToCopy = `Número: ${number}\nComando: ${command}`;
-            
-            navigator.clipboard.writeText(textToCopy).then(() => {
+        function copyCommand(command) {
+            navigator.clipboard.writeText(command).then(() => {
                 // Mostrar mensaje de éxito
                 const originalText = event.target.textContent;
                 event.target.innerHTML = '<i class="bi bi-check"></i> ¡Copiado!';
@@ -1145,7 +1044,6 @@
             // Limpiar el historial de la vista
             const historyList = document.getElementById('historyList');
             const emptyHistory = document.getElementById('emptyHistory');
-            const historyFilters = document.getElementById('historyFilters');
             
             // Limpiar la vista
             historyList.innerHTML = '';
@@ -1155,7 +1053,6 @@
             document.getElementById('corteCount').textContent = '0';
             
             // Mostrar estado vacío
-            historyFilters.classList.add('d-none');
             emptyHistory.classList.remove('d-none');
             
             // Limpiar el historial en memoria
