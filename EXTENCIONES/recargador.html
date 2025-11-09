@@ -1010,8 +1010,8 @@
                     </div>
                     
                     <div class="history-item-actions">
-                        <button class="history-action-btn" onclick="copyNumberAndCommand('${item.phone_number}', '${item.command}')">
-                            <i class="bi bi-copy"></i> Copiar Número y Comando
+                        <button class="history-action-btn" onclick="copyPedido('${item.command}')">
+                            <i class="bi bi-copy"></i> Copiar Pedido
                         </button>
                         <button class="history-action-btn" onclick="copyNumber('${item.phone_number}')">
                             <i class="bi bi-phone"></i> Copiar Número
@@ -1055,13 +1055,12 @@
             }
         }
 
-        function copyNumberAndCommand(number, command) {
-            const textToCopy = `Número: ${number}\nComando: ${command}`;
-            
-            navigator.clipboard.writeText(textToCopy).then(() => {
+        // Función para copiar el pedido (comando completo)
+        function copyPedido(command) {
+            navigator.clipboard.writeText(command).then(() => {
                 // Mostrar mensaje de éxito
                 const originalText = event.target.textContent;
-                event.target.innerHTML = '<i class="bi bi-check"></i> ¡Copiado!';
+                event.target.innerHTML = '<i class="bi bi-check"></i> ¡Pedido Copiado!';
                 event.target.style.background = 'var(--success-color)';
                 event.target.style.color = 'white';
                 event.target.style.borderColor = 'var(--success-color)';
@@ -1077,7 +1076,7 @@
             });
         }
 
-        // Nueva función para copiar solo el número
+        // Función para copiar solo el número
         function copyNumber(number) {
             navigator.clipboard.writeText(number).then(() => {
                 // Mostrar mensaje de éxito
