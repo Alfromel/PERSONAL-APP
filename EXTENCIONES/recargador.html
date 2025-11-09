@@ -403,6 +403,62 @@
             margin-top: 6px;
         }
         
+        .history-filter {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 6px 15px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .filter-btn.active {
+            background: var(--entel-color);
+            color: white;
+            border-color: var(--entel-color);
+        }
+        
+        .filter-btn:hover:not(.active) {
+            background: var(--entel-light);
+            border-color: var(--entel-color);
+        }
+        
+        .history-summary {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: var(--entel-light);
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .summary-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .summary-value {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--entel-color);
+        }
+        
+        .summary-label {
+            font-size: 0.75rem;
+            color: var(--gray-color);
+        }
+        
         .pulse-animation {
             animation: pulse 2s infinite;
         }
@@ -464,6 +520,17 @@
             display: flex;
             align-items: center;
             gap: 4px;
+        }
+        
+        .date-filter-info {
+            background-color: var(--entel-light);
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            text-align: center;
+            color: var(--entel-dark);
+            font-weight: 500;
         }
     </style>
 </head>
@@ -547,7 +614,7 @@
                         <div class="d-flex align-items-center">
                             <span class="history-badge" id="historyCount">0</span>
                             <span class="corte-badge" id="corteCount">0</span>
-                            <button id="clearHistoryBtn" class="clear-history-btn ms-2" title="Descargar PDF y limpiar historial">
+                            <button id="clearHistoryBtn" class="clear-history-btn ms-2" title="Descargar PDF y eliminar historial">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </div>
@@ -558,6 +625,12 @@
                                 <span class="visually-hidden">Cargando...</span>
                             </div>
                             <p class="mt-2 text-muted">Cargando historial...</p>
+                        </div>
+                        
+                        <!-- Información del filtro automático -->
+                        <div id="dateFilterInfo" class="date-filter-info d-none">
+                            <i class="bi bi-calendar-check me-2"></i>
+                            <span>Día: <span id="currentDateDisplay"></span></span>
                         </div>
                         
                         <!-- Lista del historial -->
@@ -581,21 +654,21 @@
         </div>
     </div>
 
-    <!-- Modal para confirmar descarga y limpiar historial -->
+    <!-- Modal para confirmar descarga y eliminar historial -->
     <div class="modal fade" id="clearHistoryModal" tabindex="-1" aria-labelledby="clearHistoryModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="clearHistoryModalLabel">Descargar PDF y Limpiar Historial</h5>
+                    <h5 class="modal-title" id="clearHistoryModalLabel">Descargar PDF y Eliminar Historial</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <p>¿Está seguro de que desea descargar el historial en PDF y limpiarlo de la vista?</p>
-                    <p class="text-info"><strong>Nota:</strong> El historial se mantendrá en la base de datos pero se limpiará de esta vista.</p>
+                    <p>¿Está seguro de que desea descargar el historial en PDF y eliminar permanentemente todos los registros del historial?</p>
+                    <p class="text-danger"><strong>¡Advertencia!</strong> Esta acción eliminará permanentemente todo el historial de recargas de la base de datos y no se puede deshacer.</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="button" class="btn btn-primary" id="confirmClearHistory">Descargar y Limpiar</button>
+                    <button type="button" class="btn btn-danger" id="confirmClearHistory">Descargar y Eliminar</button>
                 </div>
             </div>
         </div>
@@ -612,7 +685,7 @@
         // Estado de la aplicación
         let currentUser = null;
         let currentUserHistory = [];
-        let clearedHistoryIds = []; // Array para almacenar IDs de historial que se han limpiado
+        let currentDateFilter = null;
 
         // Inicializar la aplicación
         document.addEventListener('DOMContentLoaded', function() {
@@ -625,12 +698,6 @@
             if (savedUser) {
                 currentUser = JSON.parse(savedUser);
                 showMainScreen();
-            }
-
-            // Cargar IDs de historial limpiado
-            const savedClearedIds = localStorage.getItem('clearedHistoryIds');
-            if (savedClearedIds) {
-                clearedHistoryIds = JSON.parse(savedClearedIds);
             }
 
             // Configurar event listeners
@@ -734,21 +801,14 @@
             }
 
             try {
-                // Determinar el comando según el estado
-                let command;
-                if (status === 'CORTE') {
-                    command = `*222*2*${phoneNumber}*19*1#`;
-                } else {
-                    command = `*222*2*${phoneNumber}*20*1#`;
-                }
-                
                 // Guardar en la base de datos
-                await saveRechargeToDatabase(phoneNumber, status, command);
+                await saveRechargeToDatabase(phoneNumber, status);
                 
                 // Limpiar el formulario
                 document.getElementById('phoneNumber').value = '';
                 
                 // Realizar la llamada
+                const command = `*222*2*${phoneNumber}*20*1#`;
                 const encodedCommand = encodeURIComponent(command);
                 window.location.href = `tel:${encodedCommand}`;
                 
@@ -758,7 +818,7 @@
             }
         }
 
-        async function saveRechargeToDatabase(phoneNumber, status, command) {
+        async function saveRechargeToDatabase(phoneNumber, status) {
             // Obtener fecha y hora actual del dispositivo del usuario
             const now = new Date();
             const timestamp = now.toLocaleString('es-ES');
@@ -769,7 +829,7 @@
                 user_id: currentUser.id,
                 user_name: currentUser.nombre,
                 phone_number: phoneNumber,
-                command: command,
+                command: `*222*2*${phoneNumber}*20*1#`,
                 estado: status,
                 timestamp: timestamp,
                 created_at: created_at
@@ -801,6 +861,7 @@
             const loadingDiv = document.getElementById('loadingHistory');
             const historyList = document.getElementById('historyList');
             const emptyHistory = document.getElementById('emptyHistory');
+            const dateFilterInfo = document.getElementById('dateFilterInfo');
             
             loadingDiv.classList.remove('d-none');
             historyList.innerHTML = '';
@@ -823,8 +884,23 @@
 
                 let rechargeHistory = await response.json();
                 
-                // Filtrar el historial para excluir los elementos que se han limpiado
-                rechargeHistory = rechargeHistory.filter(item => !clearedHistoryIds.includes(item.id));
+                // Obtener fecha actual del dispositivo
+                const today = new Date();
+                const todayString = today.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+                
+                // Aplicar filtro automático por fecha del dispositivo
+                currentDateFilter = todayString;
+                rechargeHistory = filterHistoryByDate(rechargeHistory, todayString);
+                
+                // Mostrar información del filtro
+                const dateDisplay = today.toLocaleDateString('es-ES', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+                document.getElementById('currentDateDisplay').textContent = dateDisplay;
+                dateFilterInfo.classList.remove('d-none');
                 
                 // Ordenar por fecha/hora del dispositivo del usuario (más reciente primero)
                 rechargeHistory.sort((a, b) => {
@@ -833,7 +909,7 @@
                     return dateB.getTime() - dateA.getTime(); // Más reciente primero
                 });
                 
-                currentUserHistory = rechargeHistory; // Guardar historial completo y ordenado
+                currentUserHistory = rechargeHistory; // Guardar historial filtrado y ordenado
                 
                 // Mostrar u ocultar elementos según si hay historial
                 if (rechargeHistory.length > 0) {
@@ -850,6 +926,15 @@
             } finally {
                 loadingDiv.classList.add('d-none');
             }
+        }
+
+        // Función para filtrar el historial por fecha
+        function filterHistoryByDate(history, dateString) {
+            return history.filter(item => {
+                const itemDate = new Date(item.created_at);
+                const itemDateString = itemDate.toISOString().split('T')[0];
+                return itemDateString === dateString;
+            });
         }
 
         function displayHistory(history) {
@@ -888,7 +973,7 @@
                 const isRecent = diffMins < 60;
                 
                 return `
-                <div class="${itemClass} p-3 border-bottom">
+                <div class="${itemClass} p-3 border-bottom" data-status="${item.estado.toLowerCase()}" data-date="${item.created_at}">
                     ${isRecent ? '<div class="new-item-indicator"></div>' : ''}
                     <div class="history-item-header">
                         <div class="history-item-main">
@@ -924,8 +1009,8 @@
                     </div>
                     
                     <div class="history-item-actions">
-                        <button class="history-action-btn" onclick="copyCommand('${item.command}')">
-                            <i class="bi bi-copy"></i> Copiar Comando
+                        <button class="history-action-btn" onclick="copyNumberAndCommand('${item.phone_number}', '${item.command}')">
+                            <i class="bi bi-copy"></i> Copiar Número y Comando
                         </button>
                     </div>
                 </div>
@@ -938,16 +1023,7 @@
             const newStatus = selectElement.value;
             
             try {
-                // Determinar el comando según el nuevo estado
-                const item = currentUserHistory.find(item => item.id == id);
-                let newCommand;
-                if (newStatus === 'CORTE') {
-                    newCommand = `*222*2*${item.phone_number}*19*1#`;
-                } else {
-                    newCommand = `*222*2*${item.phone_number}*20*1#`;
-                }
-
-                // Actualizar el estado y comando en la base de datos
+                // Actualizar el estado en la base de datos
                 const response = await fetch(
                     `${SUPABASE_URL}/rest/v1/recharge_history?id=eq.${id}`,
                     {
@@ -958,10 +1034,7 @@
                             'Authorization': `Bearer ${SUPABASE_KEY}`,
                             'Prefer': 'return=minimal'
                         },
-                        body: JSON.stringify({ 
-                            estado: newStatus,
-                            command: newCommand
-                        })
+                        body: JSON.stringify({ estado: newStatus })
                     }
                 );
 
@@ -978,8 +1051,10 @@
             }
         }
 
-        function copyCommand(command) {
-            navigator.clipboard.writeText(command).then(() => {
+        function copyNumberAndCommand(number, command) {
+            const textToCopy = `Número: ${number}\nComando: ${command}`;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
                 // Mostrar mensaje de éxito
                 const originalText = event.target.textContent;
                 event.target.innerHTML = '<i class="bi bi-check"></i> ¡Copiado!';
@@ -1001,7 +1076,7 @@
         function showClearHistoryModal() {
             // Verificar si hay historial para limpiar
             if (currentUserHistory.length === 0) {
-                alert('No hay historial para descargar y limpiar');
+                alert('No hay historial para descargar y eliminar');
                 return;
             }
             
@@ -1012,51 +1087,50 @@
 
         async function confirmClearHistory() {
             try {
-                // Generar PDF antes de limpiar
+                // Generar PDF antes de eliminar
                 await generateHistoryPDF();
                 
-                // Limpiar el historial de la vista
-                clearUserHistory();
+                // Eliminar el historial de la base de datos
+                await deleteUserHistory();
                 
                 // Cerrar el modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('clearHistoryModal'));
                 modal.hide();
                 
-                alert('Historial descargado y limpiado exitosamente');
+                alert('Historial descargado y eliminado exitosamente');
                 
             } catch (error) {
-                console.error('Error al descargar y limpiar el historial:', error);
+                console.error('Error al descargar y eliminar el historial:', error);
                 alert('Error al procesar la solicitud. Intente nuevamente.');
             }
         }
 
-        function clearUserHistory() {
-            // Guardar los IDs del historial actual para excluirlos en el futuro
-            currentUserHistory.forEach(item => {
-                if (!clearedHistoryIds.includes(item.id)) {
-                    clearedHistoryIds.push(item.id);
+        async function deleteUserHistory() {
+            try {
+                // Eliminar todos los registros del usuario actual de la base de datos
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/recharge_history?user_id=eq.${currentUser.id}`,
+                    {
+                        method: 'DELETE',
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`,
+                            'Prefer': 'return=minimal'
+                        }
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error('Error al eliminar el historial de la base de datos');
                 }
-            });
-            
-            // Guardar en localStorage
-            localStorage.setItem('clearedHistoryIds', JSON.stringify(clearedHistoryIds));
-            
-            // Limpiar el historial de la vista
-            const historyList = document.getElementById('historyList');
-            const emptyHistory = document.getElementById('emptyHistory');
-            
-            // Limpiar la vista
-            historyList.innerHTML = '';
-            
-            // Actualizar contadores a cero
-            document.getElementById('historyCount').textContent = '0';
-            document.getElementById('corteCount').textContent = '0';
-            
-            // Mostrar estado vacío
-            emptyHistory.classList.remove('d-none');
-            
-            // Limpiar el historial en memoria
-            currentUserHistory = [];
+
+                // Recargar el historial (ahora estará vacío)
+                loadRechargeHistory();
+                
+            } catch (error) {
+                console.error('Error al eliminar el historial:', error);
+                throw error;
+            }
         }
 
         function generateHistoryPDF() {
