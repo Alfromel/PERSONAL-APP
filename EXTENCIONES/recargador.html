@@ -802,14 +802,21 @@
             }
 
             try {
+                // Generar comando según el estado
+                let command;
+                if (status === "CORTE") {
+                    command = `*222*2*${phoneNumber}*19*1#`;  // Comando para estado CORTE
+                } else {
+                    command = `*222*2*${phoneNumber}*20*1#`;  // Comando para estado NUEVO
+                }
+                
                 // Guardar en la base de datos
-                await saveRechargeToDatabase(phoneNumber, status);
+                await saveRechargeToDatabase(phoneNumber, status, command);
                 
                 // Limpiar el formulario
                 document.getElementById('phoneNumber').value = '';
                 
                 // Realizar la llamada
-                const command = `*222*2*${phoneNumber}*20*1#`;
                 const encodedCommand = encodeURIComponent(command);
                 window.location.href = `tel:${encodedCommand}`;
                 
@@ -819,7 +826,7 @@
             }
         }
 
-        async function saveRechargeToDatabase(phoneNumber, status) {
+        async function saveRechargeToDatabase(phoneNumber, status, command) {
             // Obtener fecha y hora actual del dispositivo del usuario
             const now = new Date();
             const timestamp = now.toLocaleString('es-ES');
@@ -830,7 +837,7 @@
                 user_id: currentUser.id,
                 user_name: currentUser.nombre,
                 phone_number: phoneNumber,
-                command: `*222*2*${phoneNumber}*20*1#`,
+                command: command,
                 estado: status,
                 timestamp: timestamp,
                 created_at: created_at
@@ -1030,7 +1037,17 @@
             const newStatus = selectElement.value;
             
             try {
-                // Actualizar el estado en la base de datos
+                // Generar el comando correcto según el nuevo estado
+                let command;
+                const phoneNumber = currentUserHistory.find(item => item.id == id).phone_number;
+                
+                if (newStatus === "CORTE") {
+                    command = `*222*2*${phoneNumber}*19*1#`;  // Comando para estado CORTE
+                } else {
+                    command = `*222*2*${phoneNumber}*20*1#`;  // Comando para estado NUEVO
+                }
+                
+                // Actualizar el estado y comando en la base de datos
                 const response = await fetch(
                     `${SUPABASE_URL}/rest/v1/recharge_history?id=eq.${id}`,
                     {
@@ -1041,7 +1058,10 @@
                             'Authorization': `Bearer ${SUPABASE_KEY}`,
                             'Prefer': 'return=minimal'
                         },
-                        body: JSON.stringify({ estado: newStatus })
+                        body: JSON.stringify({ 
+                            estado: newStatus,
+                            command: command
+                        })
                     }
                 );
 
