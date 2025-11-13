@@ -929,11 +929,14 @@
             }
         }
 
-        // Función para filtrar el historial por fecha
+        // Función para filtrar el historial por fecha (MEJORADA)
         function filterHistoryByDate(history, dateString) {
             return history.filter(item => {
+                // Obtener la fecha del registro (sin tener en cuenta la hora)
                 const itemDate = new Date(item.created_at);
                 const itemDateString = itemDate.toISOString().split('T')[0];
+                
+                // Comparar solo las fechas (sin horas)
                 return itemDateString === dateString;
             });
         }
