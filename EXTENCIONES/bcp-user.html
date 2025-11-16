@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCP - Usuario</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <style>
+        :root {
+            --bcp-blue: #0055A4;
+            --bcp-dark-blue: #003A70;
+            --bcp-light-blue: #E6F0FF;
+            --bcp-orange: #FF6B00;
+            --bcp-light-orange: #FFE6D5;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+        
+        /* Pantalla de Inicio */
+        #splashScreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #0042ff, #001f7f);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s;
+        }
+        
+        .splash-container {
+            text-align: center;
+            color: white;
+            animation: fadeIn 1.3s ease-in-out;
+        }
+
+        /* LOGO BCP HECHO CON CSS */
+        .bcp-logo {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            animation: float 3s infinite ease-in-out;
+        }
+
+        .arrow {
+            width: 35px;
+            height: 35px;
+            background: #ff7b00;
+            clip-path: polygon(0 0, 100% 50%, 0 100%, 30% 50%);
+        }
+
+        .arrow::before {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background: white;
+            clip-path: polygon(0 0, 100% 50%, 0 100%);
+            margin-left: 10px;
+            margin-top: 11px;
+        }
+
+        .bcp-text {
+            font-size: 2.8rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .loading-text {
+            color: white;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .app-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        
+        .login-container {
+            background: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .bcp-brand {
+            color: var(--bcp-blue);
+            font-weight: bold;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .app-header {
+            background: linear-gradient(135deg, var(--bcp-blue) 0%, var(--bcp-dark-blue) 100%);
+            color: white;
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+        
+        .app-content {
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+        
+        .app-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            border: none;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        
+        .app-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+        }
+        
+        .app-card-header {
+            background: linear-gradient(135deg, var(--bcp-light-blue) 0%, #f0f9ff 100%);
+            border-bottom: 1px solid #e9ecef;
+            padding: 15px 20px;
+            font-weight: 600;
+            color: var(--bcp-dark-blue);
+        }
+        
+        .app-card-body {
+            padding: 20px;
+        }
+        
+        .app-btn {
+            border-radius: 50px;
+            padding: 12px 25px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s;
+        }
+        
+        .app-btn-primary {
+            background: linear-gradient(135deg, var(--bcp-blue) 0%, var(--bcp-dark-blue) 100%);
+            color: white;
+        }
+        
+        .app-btn-primary:hover {
+            background: linear-gradient(135deg, var(--bcp-dark-blue) 0%, var(--bcp-blue) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,85,164,0.4);
+        }
+        
+        .app-btn-orange {
+            background: linear-gradient(135deg, var(--bcp-orange) 0%, #FF8C00 100%);
+            color: white;
+        }
+        
+        .app-btn-orange:hover {
+            background: linear-gradient(135deg, #FF8C00 0%, var(--bcp-orange) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255,107,0,0.4);
+        }
+        
+        .app-form-control {
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+        
+        .app-form-control:focus {
+            border-color: var(--bcp-blue);
+            box-shadow: 0 0 0 3px rgba(0,85,164,0.2);
+        }
+        
+        .floating-action-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--bcp-orange) 0%, #FF8C00 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 6px 20px rgba(255,107,0,0.5);
+            z-index: 100;
+            border: none;
+            transition: all 0.3s;
+        }
+        
+        .floating-action-btn:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 25px rgba(255,107,0,0.7);
+        }
+        
+        .balance-card {
+            background: linear-gradient(135deg, var(--bcp-blue) 0%, var(--bcp-dark-blue) 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 15px rgba(0,85,164,0.3);
+        }
+        
+        .balance-amount {
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .balance-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        .balance-type {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .transaction-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .transaction-item:last-child {
+            border-bottom: none;
+        }
+        
+        .transaction-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            margin-right: 15px;
+        }
+        
+        .transaction-deposit {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        .transaction-withdraw {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+        
+        .transaction-details {
+            flex-grow: 1;
+        }
+        
+        .transaction-amount {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .transaction-deposit .transaction-amount {
+            color: #28a745;
+        }
+        
+        .transaction-withdraw .transaction-amount {
+            color: #dc3545;
+        }
+        
+        .transaction-date {
+            font-size: 0.8rem;
+            color: #6c757d;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+            color: var(--bcp-blue);
+        }
+        
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, var(--bcp-blue) 0%, var(--bcp-dark-blue) 100%);
+            color: white;
+            border-bottom: none;
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .modal-footer {
+            border-top: none;
+        }
+        
+        .balance-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .balance-item {
+            flex: 1;
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+        }
+        
+        .balance-item-bank {
+            border-top: 4px solid var(--bcp-blue);
+        }
+        
+        .balance-item-cash {
+            border-top: 4px solid var(--bcp-orange);
+        }
+        
+        .balance-item-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .balance-item-bank .balance-item-value {
+            color: var(--bcp-blue);
+        }
+        
+        .balance-item-cash .balance-item-value {
+            color: var(--bcp-orange);
+        }
+        
+        .balance-item-label {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .action-btn {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            border-radius: 12px;
+            background: white;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s;
+            text-decoration: none;
+            color: #333;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+            color: #333;
+        }
+        
+        .action-btn-deposit:hover {
+            border-color: #28a745;
+        }
+        
+        .action-btn-withdraw:hover {
+            border-color: #dc3545;
+        }
+        
+        .action-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .action-deposit .action-icon {
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        .action-withdraw .action-icon {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+        
+        .action-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 85, 164, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(0, 85, 164, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 85, 164, 0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Pantalla de Inicio -->
+    <div id="splashScreen">
+        <div class="splash-container">
+            <div class="bcp-logo">
+                <div class="arrow"></div>
+                <div class="bcp-text">BCP</div>
+                <div class="arrow"></div>
+            </div>
+            <div class="loading-text">Cargando...</div>
+        </div>
+    </div>
+
+    <!-- Aplicación Principal -->
+    <div class="app-container" id="mainApp">
+        <!-- Pantalla de Login -->
+        <div id="loginScreen" class="login-container d-none">
+            <div class="text-center mb-5">
+                <h1 class="bcp-brand mb-2">BCP</h1>
+                <p class="text-muted">Sistema de Gestión de Saldos</p>
+            </div>
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Usuario</label>
+                    <input type="text" class="form-control app-form-control" id="username" required>
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <input type="password" class="form-control app-form-control" id="password" required>
+                </div>
+                <button type="submit" class="btn app-btn app-btn-primary w-100 text-white pulse-animation">
+                    <i class="bi bi-box-arrow-in-right me-2"></i> Ingresar
+                </button>
+            </form>
+            <div id="loginMessage" class="alert alert-danger mt-3 d-none"></div>
+        </div>
+
+        <!-- Pantalla Principal -->
+        <div id="mainScreen" class="d-none">
+            <!-- Header de la app -->
+            <div class="app-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-0">BCP Usuario</h4>
+                        <small>Bienvenido, <span id="currentUser" class="fw-bold"></span></small>
+                    </div>
+                    <div class="user-avatar">
+                        <span id="userInitial">U</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenido principal -->
+            <div class="app-content">
+                <!-- Saldos del usuario -->
+                <div class="app-card">
+                    <div class="app-card-header d-flex align-items-center">
+                        <i class="bi bi-wallet2 me-2" style="color: var(--bcp-orange);"></i>
+                        <span>Mis Saldos</span>
+                    </div>
+                    <div class="app-card-body">
+                        <div class="balance-container">
+                            <div class="balance-item balance-item-bank">
+                                <div class="balance-item-label">Dinero en Banco</div>
+                                <div class="balance-item-value" id="bankBalance">Bs 0.00</div>
+                                <small class="text-muted">Disponible</small>
+                            </div>
+                            <div class="balance-item balance-item-cash">
+                                <div class="balance-item-label">Dinero en Efectivo</div>
+                                <div class="balance-item-value" id="cashBalance">Bs 0.00</div>
+                                <small class="text-muted">Disponible</small>
+                            </div>
+                        </div>
+                        
+                        <div class="action-buttons">
+                            <a href="#" class="action-btn action-deposit" data-bs-toggle="modal" data-bs-target="#depositModal">
+                                <div class="action-icon">
+                                    <i class="bi bi-arrow-down-circle"></i>
+                                </div>
+                                <div class="action-label">Depositar</div>
+                            </a>
+                            <a href="#" class="action-btn action-withdraw" data-bs-toggle="modal" data-bs-target="#withdrawModal">
+                                <div class="action-icon">
+                                    <i class="bi bi-arrow-up-circle"></i>
+                                </div>
+                                <div class="action-label">Retirar</div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Historial de Transacciones -->
+                <div class="app-card">
+                    <div class="app-card-header d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-clock-history me-2" style="color: var(--bcp-orange);"></i>
+                            <span>Historial de Transacciones</span>
+                        </div>
+                        <span class="badge bg-primary" id="transactionCount">0</span>
+                    </div>
+                    <div class="app-card-body p-0">
+                        <div id="loadingHistory" class="text-center py-4 d-none">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                            <p class="mt-2 text-muted">Cargando historial...</p>
+                        </div>
+                        
+                        <!-- Lista del historial -->
+                        <div class="history-container" id="historyContainer" style="max-height: 400px; overflow-y: auto;">
+                            <div id="historyList">
+                                <!-- El historial se cargará aquí -->
+                            </div>
+                            <div id="emptyHistory" class="empty-state">
+                                <i class="bi bi-inbox"></i>
+                                <p class="mt-2">No hay transacciones registradas</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón flotante para cerrar sesión -->
+            <button id="logoutBtn" class="floating-action-btn" title="Cerrar sesión">
+                <i class="bi bi-box-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal para Depositar -->
+    <div class="modal fade" id="depositModal" tabindex="-1" aria-labelledby="depositModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="depositModalLabel">Depositar Dinero</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="depositForm">
+                        <div class="mb-3">
+                            <label for="depositAmount" class="form-label">Monto a Depositar</label>
+                            <input type="number" class="form-control app-form-control" id="depositAmount" 
+                                   placeholder="0.00" step="0.01" min="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="depositDescription" class="form-label">Descripción (Opcional)</label>
+                            <input type="text" class="form-control app-form-control" id="depositDescription" 
+                                   placeholder="Ej: Depósito en efectivo">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn app-btn app-btn-primary" id="confirmDeposit">Depositar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Retirar -->
+    <div class="modal fade" id="withdrawModal" tabindex="-1" aria-labelledby="withdrawModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="withdrawModalLabel">Retirar Dinero</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="withdrawForm">
+                        <div class="mb-3">
+                            <label for="withdrawAmount" class="form-label">Monto a Retirar</label>
+                            <input type="number" class="form-control app-form-control" id="withdrawAmount" 
+                                   placeholder="0.00" step="0.01" min="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="withdrawDescription" class="form-label">Descripción (Opcional)</label>
+                            <input type="text" class="form-control app-form-control" id="withdrawDescription" 
+                                   placeholder="Ej: Retiro para gastos">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn app-btn app-btn-orange" id="confirmWithdraw">Retirar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Configuración de Supabase
+        const SUPABASE_URL = 'https://zrbhhiayfaedatwlzqch.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpyYmhoaWF5ZmFlZGF0d2x6cWNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjExMTcwMjgsImV4cCI6MjA3NjY5MzAyOH0.b97mGNErXGRuIorOPTf6m1awGlIyrXaAI4VS65aR-5o';
+
+        // Estado de la aplicación
+        let currentUser = null;
+        let userBalances = { bank: 0, cash: 0 };
+        let userTransactions = [];
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mostrar pantalla de inicio por 2 segundos
+            setTimeout(function() {
+                document.getElementById('splashScreen').style.opacity = '0';
+                document.getElementById('mainApp').style.opacity = '1';
+                
+                setTimeout(function() {
+                    document.getElementById('splashScreen').style.display = 'none';
+                    initializeApp();
+                }, 500);
+            }, 2000);
+        });
+
+        function initializeApp() {
+            // Verificar si ya hay una sesión activa
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showMainScreen();
+            } else {
+                showLoginScreen();
+            }
+
+            // Configurar event listeners
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+            document.getElementById('confirmDeposit').addEventListener('click', handleDeposit);
+            document.getElementById('confirmWithdraw').addEventListener('click', handleWithdraw);
+        }
+
+        // Función para cargar usuarios desde la base de datos
+        async function loadUsersFromDatabase() {
+            try {
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/users`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error('Error al cargar usuarios desde la base de datos');
+                }
+
+                const usuarios = await response.json();
+                return usuarios;
+                
+            } catch (error) {
+                console.error('Error al cargar usuarios:', error);
+                throw new Error('No se pudo conectar con la base de datos. Intente nuevamente.');
+            }
+        }
+
+        // Función para cargar saldos del usuario
+        async function loadUserBalances() {
+            try {
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/user_balances?user_id=eq.${currentUser.id}`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error('Error al cargar saldos del usuario');
+                }
+
+                const balances = await response.json();
+                
+                if (balances.length > 0) {
+                    userBalances = {
+                        bank: balances[0].bank_balance || 0,
+                        cash: balances[0].cash_balance || 0
+                    };
+                } else {
+                    // Si no existe registro, crear uno
+                    await createUserBalanceRecord();
+                    userBalances = { bank: 0, cash: 0 };
+                }
+                
+                updateBalanceDisplay();
+                
+            } catch (error) {
+                console.error('Error al cargar saldos:', error);
+                throw error;
+            }
+        }
+
+        // Función para crear registro de saldo si no existe
+        async function createUserBalanceRecord() {
+            try {
+                const balanceData = {
+                    user_id: currentUser.id,
+                    bank_balance: 0,
+                    cash_balance: 0,
+                    updated_at: new Date().toISOString()
+                };
+
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/user_balances`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(balanceData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al crear registro de saldo');
+                }
+                
+            } catch (error) {
+                console.error('Error al crear registro de saldo:', error);
+                throw error;
+            }
+        }
+
+        // Función para cargar transacciones del usuario
+        async function loadUserTransactions() {
+            try {
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/transactions?user_id=eq.${currentUser.id}&order=created_at.desc&limit=20`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error('Error al cargar transacciones');
+                }
+
+                userTransactions = await response.json();
+                displayTransactions();
+                
+            } catch (error) {
+                console.error('Error al cargar transacciones:', error);
+                throw error;
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('loginMessage');
+
+            // Mostrar mensaje de carga
+            messageDiv.textContent = 'Verificando credenciales...';
+            messageDiv.className = 'alert alert-info mt-3';
+            messageDiv.classList.remove('d-none');
+
+            try {
+                // Cargar usuarios desde la base de datos
+                const usuarios = await loadUsersFromDatabase();
+
+                // Verificar credenciales
+                const user = usuarios.find(u => u.username === username && u.password === password);
+                
+                if (user) {
+                    currentUser = user;
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    showMainScreen();
+                    messageDiv.classList.add('d-none');
+                } else {
+                    messageDiv.textContent = 'Usuario o contraseña incorrectos';
+                    messageDiv.className = 'alert alert-danger mt-3';
+                }
+            } catch (error) {
+                console.error('Error en el login:', error);
+                messageDiv.textContent = error.message;
+                messageDiv.className = 'alert alert-danger mt-3';
+            }
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            showLoginScreen();
+        }
+
+        function showLoginScreen() {
+            document.getElementById('loginScreen').classList.remove('d-none');
+            document.getElementById('mainScreen').classList.add('d-none');
+            document.getElementById('loginForm').reset();
+        }
+
+        async function showMainScreen() {
+            document.getElementById('loginScreen').classList.add('d-none');
+            document.getElementById('mainScreen').classList.remove('d-none');
+            document.getElementById('currentUser').textContent = currentUser.nombre;
+            document.getElementById('userInitial').textContent = currentUser.nombre.charAt(0);
+            
+            // Cargar datos del usuario
+            await loadUserBalances();
+            await loadUserTransactions();
+        }
+
+        function updateBalanceDisplay() {
+            document.getElementById('bankBalance').textContent = `Bs ${userBalances.bank.toFixed(2)}`;
+            document.getElementById('cashBalance').textContent = `Bs ${userBalances.cash.toFixed(2)}`;
+        }
+
+        async function handleDeposit() {
+            const amount = parseFloat(document.getElementById('depositAmount').value);
+            const description = document.getElementById('depositDescription').value || 'Depósito en efectivo';
+            
+            if (!amount || amount <= 0) {
+                alert('Por favor, ingrese un monto válido');
+                return;
+            }
+            
+            if (amount > userBalances.cash) {
+                alert('No tiene suficiente efectivo para realizar este depósito');
+                return;
+            }
+            
+            try {
+                // Actualizar saldos
+                const newBankBalance = userBalances.bank + amount;
+                const newCashBalance = userBalances.cash - amount;
+                
+                // Actualizar en la base de datos
+                await updateUserBalances(newBankBalance, newCashBalance);
+                
+                // Registrar la transacción
+                await recordTransaction('deposit', amount, description);
+                
+                // Actualizar la interfaz
+                userBalances.bank = newBankBalance;
+                userBalances.cash = newCashBalance;
+                updateBalanceDisplay();
+                await loadUserTransactions();
+                
+                // Cerrar modal y limpiar formulario
+                bootstrap.Modal.getInstance(document.getElementById('depositModal')).hide();
+                document.getElementById('depositForm').reset();
+                
+                alert('Depósito realizado exitosamente');
+                
+            } catch (error) {
+                console.error('Error al realizar depósito:', error);
+                alert('Error al realizar el depósito. Intente nuevamente.');
+            }
+        }
+
+        async function handleWithdraw() {
+            const amount = parseFloat(document.getElementById('withdrawAmount').value);
+            const description = document.getElementById('withdrawDescription').value || 'Retiro de efectivo';
+            
+            if (!amount || amount <= 0) {
+                alert('Por favor, ingrese un monto válido');
+                return;
+            }
+            
+            if (amount > userBalances.bank) {
+                alert('No tiene suficiente saldo en el banco para realizar este retiro');
+                return;
+            }
+            
+            try {
+                // Actualizar saldos
+                const newBankBalance = userBalances.bank - amount;
+                const newCashBalance = userBalances.cash + amount;
+                
+                // Actualizar en la base de datos
+                await updateUserBalances(newBankBalance, newCashBalance);
+                
+                // Registrar la transacción
+                await recordTransaction('withdraw', amount, description);
+                
+                // Actualizar la interfaz
+                userBalances.bank = newBankBalance;
+                userBalances.cash = newCashBalance;
+                updateBalanceDisplay();
+                await loadUserTransactions();
+                
+                // Cerrar modal y limpiar formulario
+                bootstrap.Modal.getInstance(document.getElementById('withdrawModal')).hide();
+                document.getElementById('withdrawForm').reset();
+                
+                alert('Retiro realizado exitosamente');
+                
+            } catch (error) {
+                console.error('Error al realizar retiro:', error);
+                alert('Error al realizar el retiro. Intente nuevamente.');
+            }
+        }
+
+        async function updateUserBalances(newBankBalance, newCashBalance) {
+            try {
+                const balanceData = {
+                    bank_balance: newBankBalance,
+                    cash_balance: newCashBalance,
+                    updated_at: new Date().toISOString()
+                };
+
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/user_balances?user_id=eq.${currentUser.id}`,
+                    {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`,
+                            'Prefer': 'return=minimal'
+                        },
+                        body: JSON.stringify(balanceData)
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error('Error al actualizar saldos');
+                }
+                
+            } catch (error) {
+                console.error('Error al actualizar saldos:', error);
+                throw error;
+            }
+        }
+
+        async function recordTransaction(type, amount, description) {
+            try {
+                const transactionData = {
+                    user_id: currentUser.id,
+                    type: type,
+                    amount: amount,
+                    description: description,
+                    created_at: new Date().toISOString()
+                };
+
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/transactions`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Prefer': 'return=minimal'
+                    },
+                    body: JSON.stringify(transactionData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Error al registrar transacción');
+                }
+                
+            } catch (error) {
+                console.error('Error al registrar transacción:', error);
+                throw error;
+            }
+        }
+
+        function displayTransactions() {
+            const historyList = document.getElementById('historyList');
+            const emptyHistory = document.getElementById('emptyHistory');
+            const transactionCount = document.getElementById('transactionCount');
+            
+            if (userTransactions.length === 0) {
+                historyList.innerHTML = '';
+                emptyHistory.classList.remove('d-none');
+                transactionCount.textContent = '0';
+                return;
+            }
+
+            emptyHistory.classList.add('d-none');
+            transactionCount.textContent = userTransactions.length;
+            
+            historyList.innerHTML = userTransactions.map(transaction => {
+                const isDeposit = transaction.type === 'deposit';
+                const transactionClass = isDeposit ? 'transaction-deposit' : 'transaction-withdraw';
+                const iconClass = isDeposit ? 'bi-arrow-down-circle' : 'bi-arrow-up-circle';
+                const typeText = isDeposit ? 'Depósito' : 'Retiro';
+                
+                const date = new Date(transaction.created_at);
+                const formattedDate = date.toLocaleDateString('es-ES');
+                const formattedTime = date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+                
+                return `
+                <div class="transaction-item ${transactionClass}">
+                    <div class="transaction-icon">
+                        <i class="bi ${iconClass}"></i>
+                    </div>
+                    <div class="transaction-details">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <strong>${typeText}</strong>
+                                <div class="transaction-date">${formattedDate} ${formattedTime}</div>
+                            </div>
+                            <div class="transaction-amount">
+                                ${isDeposit ? '+' : '-'}Bs ${transaction.amount.toFixed(2)}
+                            </div>
+                        </div>
+                        <div class="mt-1 small text-muted">${transaction.description}</div>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+    </script>
+</body>
+</html>
