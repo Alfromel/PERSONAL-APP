@@ -892,13 +892,13 @@
 
                 let rechargeHistory = await response.json();
                 
-                // Obtener fecha actual del dispositivo
-                const today = new Date();
-                const todayString = today.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+                // Obtener fecha actual en zona horaria de Bolivia (UTC-4)
+                const today = getBoliviaDate();
+                const todayString = formatBoliviaDate(today);
                 
-                // Aplicar filtro automático por fecha del dispositivo
+                // Aplicar filtro automático por fecha de Bolivia
                 currentDateFilter = todayString;
-                rechargeHistory = filterHistoryByDate(rechargeHistory, todayString);
+                rechargeHistory = filterHistoryByBoliviaDate(rechargeHistory, today);
                 
                 // Mostrar información del filtro
                 const dateDisplay = today.toLocaleDateString('es-ES', { 
@@ -936,15 +936,36 @@
             }
         }
 
-        // Función para filtrar el historial por fecha (MEJORADA)
-        function filterHistoryByDate(history, dateString) {
+        // Función para obtener la fecha actual en zona horaria de Bolivia (UTC-4)
+        function getBoliviaDate() {
+            const now = new Date();
+            // Bolivia está en UTC-4, así que ajustamos la fecha según la hora
+            const boliviaOffset = -4 * 60; // UTC-4 en minutos
+            const localOffset = now.getTimezoneOffset(); // Offset local en minutos
+            const boliviaTime = new Date(now.getTime() + (boliviaOffset + localOffset) * 60000);
+            return boliviaTime;
+        }
+
+        // Función para formatear la fecha de Bolivia como YYYY-MM-DD
+        function formatBoliviaDate(date) {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        // Función para filtrar el historial por fecha de Bolivia (CORREGIDA)
+        function filterHistoryByBoliviaDate(history, boliviaDate) {
+            const boliviaDateString = formatBoliviaDate(boliviaDate);
+            
             return history.filter(item => {
-                // Obtener la fecha del registro (sin tener en cuenta la hora)
+                // Convertir la fecha del registro a fecha de Bolivia
                 const itemDate = new Date(item.created_at);
-                const itemDateString = itemDate.toISOString().split('T')[0];
+                const itemBoliviaDate = new Date(itemDate.getTime() + (-4 * 60 - itemDate.getTimezoneOffset()) * 60000);
+                const itemDateString = formatBoliviaDate(itemBoliviaDate);
                 
                 // Comparar solo las fechas (sin horas)
-                return itemDateString === dateString;
+                return itemDateString === boliviaDateString;
             });
         }
 
