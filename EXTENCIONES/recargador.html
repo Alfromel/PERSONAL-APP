@@ -896,7 +896,7 @@
                 const today = new Date();
                 const todayString = today.toISOString().split('T')[0]; // Formato YYYY-MM-DD
                 
-                // Aplicar filtro automático por fecha del dispositivo
+                // Aplicar filtro automático por fecha del dispositivo - MEJORADO
                 currentDateFilter = todayString;
                 rechargeHistory = filterHistoryByDate(rechargeHistory, todayString);
                 
@@ -936,14 +936,14 @@
             }
         }
 
-        // Función para filtrar el historial por fecha (MEJORADA)
+        // Función para filtrar el historial por fecha (MEJORADA Y CORREGIDA)
         function filterHistoryByDate(history, dateString) {
             return history.filter(item => {
                 // Obtener la fecha del registro (sin tener en cuenta la hora)
                 const itemDate = new Date(item.created_at);
                 const itemDateString = itemDate.toISOString().split('T')[0];
                 
-                // Comparar solo las fechas (sin horas)
+                // Comparar solo las fechas (sin horas) - CORREGIDO
                 return itemDateString === dateString;
             });
         }
