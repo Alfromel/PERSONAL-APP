@@ -827,25 +827,11 @@
         }
 
         async function saveRechargeToDatabase(phoneNumber, status, command) {
-            // Obtener fecha y hora actual del dispositivo del usuario - Horario Bolivia
+            // Obtener fecha y hora actual del dispositivo del usuario
             const now = new Date();
-            // Ajustar a horario de Bolivia (UTC-4)
-            const boliviaOffset = -4 * 60; // UTC-4 en minutos
-            const localOffset = now.getTimezoneOffset();
-            const boliviaTime = new Date(now.getTime() + (localOffset - boliviaOffset) * 60000);
-            
-            const timestamp = boliviaTime.toLocaleString('es-ES', {
-                timeZone: 'America/La_Paz',
-                day: '2-digit',
-                month: '2-digit',
-                year: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-                second: '2-digit'
-            });
-            
+            const timestamp = now.toLocaleString('es-ES');
             // Usar formato ISO para ordenamiento correcto
-            const created_at = boliviaTime.toISOString();
+            const created_at = now.toISOString();
 
             const rechargeData = {
                 user_id: currentUser.id,
@@ -906,20 +892,16 @@
 
                 let rechargeHistory = await response.json();
                 
-                // Obtener fecha actual del dispositivo - Horario Bolivia
-                const now = new Date();
-                const boliviaOffset = -4 * 60;
-                const localOffset = now.getTimezoneOffset();
-                const boliviaTime = new Date(now.getTime() + (localOffset - boliviaOffset) * 60000);
-                const todayString = boliviaTime.toISOString().split('T')[0];
+                // Obtener fecha actual del dispositivo
+                const today = new Date();
+                const todayString = today.toISOString().split('T')[0]; // Formato YYYY-MM-DD
                 
-                // Aplicar filtro automático por fecha del dispositivo - LÓGICA DEFINITIVA
+                // Aplicar filtro automático por fecha del dispositivo - MEJORADO
                 currentDateFilter = todayString;
                 rechargeHistory = filterHistoryByDate(rechargeHistory, todayString);
                 
                 // Mostrar información del filtro
-                const dateDisplay = boliviaTime.toLocaleDateString('es-ES', { 
-                    timeZone: 'America/La_Paz',
+                const dateDisplay = today.toLocaleDateString('es-ES', { 
                     weekday: 'long', 
                     year: 'numeric', 
                     month: 'long', 
@@ -954,36 +936,15 @@
             }
         }
 
-        // FUNCIÓN DEFINITIVA PARA FILTRAR POR FECHA - LÓGICA ROBUSTA CON TEXTO
+        // Función para filtrar el historial por fecha (MEJORADA Y CORREGIDA)
         function filterHistoryByDate(history, dateString) {
             return history.filter(item => {
-                try {
-                    // LÓGICA PRINCIPAL: Extraer fecha del campo timestamp (formato: "19/11/2024, 15:30:25")
-                    const timestampText = item.timestamp;
-                    
-                    // Dividir por coma para separar fecha de hora
-                    const parts = timestampText.split(',');
-                    if (parts.length >= 1) {
-                        const fechaPart = parts[0].trim(); // "19/11/2024"
-                        const fechaParts = fechaPart.split('/');
-                        
-                        if (fechaParts.length === 3) {
-                            const day = fechaParts[0].padStart(2, '0');
-                            const month = fechaParts[1].padStart(2, '0');
-                            const year = fechaParts[2];
-                            const itemDateString = `${year}-${month}-${day}`;
-                            
-                            // Comparación EXACTA de texto
-                            return itemDateString === dateString;
-                        }
-                    }
-                    
-                    return false;
-                    
-                } catch (error) {
-                    console.error('Error al procesar fecha del item:', item, error);
-                    return false;
-                }
+                // Obtener la fecha del registro (sin tener en cuenta la hora)
+                const itemDate = new Date(item.created_at);
+                const itemDateString = itemDate.toISOString().split('T')[0];
+                
+                // Comparar solo las fechas (sin horas) - CORREGIDO
+                return itemDateString === dateString;
             });
         }
 
