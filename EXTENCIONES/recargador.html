@@ -896,7 +896,7 @@
                 const today = new Date();
                 const todayString = today.toISOString().split('T')[0]; // Formato YYYY-MM-DD
                 
-                // Aplicar filtro automático por fecha del dispositivo - MEJORADO
+                // Aplicar filtro automático por fecha del dispositivo - NUEVA LÓGICA MEJORADA
                 currentDateFilter = todayString;
                 rechargeHistory = filterHistoryByDate(rechargeHistory, todayString);
                 
@@ -936,15 +936,30 @@
             }
         }
 
-        // Función para filtrar el historial por fecha (MEJORADA Y CORREGIDA)
+        // NUEVA FUNCIÓN MEJORADA PARA FILTRAR POR FECHA - LÓGICA MÁS ROBUSTA
         function filterHistoryByDate(history, dateString) {
             return history.filter(item => {
-                // Obtener la fecha del registro (sin tener en cuenta la hora)
-                const itemDate = new Date(item.created_at);
-                const itemDateString = itemDate.toISOString().split('T')[0];
-                
-                // Comparar solo las fechas (sin horas) - CORREGIDO
-                return itemDateString === dateString;
+                try {
+                    // Extraer solo la parte de la fecha del campo timestamp (formato: "19/11/2024, 15:30:25")
+                    const timestampParts = item.timestamp.split(',')[0].split('/');
+                    if (timestampParts.length === 3) {
+                        const day = timestampParts[0].padStart(2, '0');
+                        const month = timestampParts[1].padStart(2, '0');
+                        const year = timestampParts[2];
+                        const itemDateString = `${year}-${month}-${day}`;
+                        
+                        return itemDateString === dateString;
+                    }
+                    
+                    // Si no funciona con timestamp, intentar con created_at
+                    const itemDate = new Date(item.created_at);
+                    const itemDateString = itemDate.toISOString().split('T')[0];
+                    return itemDateString === dateString;
+                    
+                } catch (error) {
+                    console.error('Error al procesar fecha del item:', item, error);
+                    return false;
+                }
             });
         }
 
