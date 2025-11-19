@@ -827,9 +827,18 @@
         }
 
         async function saveRechargeToDatabase(phoneNumber, status, command) {
-            // Obtener fecha y hora actual del dispositivo del usuario
+            // Obtener fecha y hora actual del dispositivo del usuario - FECHA LOCAL DEL DISPOSITIVO
             const now = new Date();
-            const timestamp = now.toLocaleString('es-ES');
+            
+            const timestamp = now.toLocaleString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
             // Usar formato ISO para ordenamiento correcto
             const created_at = now.toISOString();
 
@@ -892,16 +901,20 @@
 
                 let rechargeHistory = await response.json();
                 
-                // Obtener fecha actual del dispositivo
-                const today = new Date();
-                const todayString = today.toISOString().split('T')[0]; // Formato YYYY-MM-DD
+                // Obtener fecha actual del dispositivo - FECHA LOCAL DEL DISPOSITIVO
+                const now = new Date();
+                const todayString = now.toLocaleDateString('es-ES', {
+                    day: '2-digit',
+                    month: '2-digit', 
+                    year: 'numeric'
+                });
                 
-                // Aplicar filtro automático por fecha del dispositivo - MEJORADO
+                // Aplicar filtro automático por fecha del dispositivo - LÓGICA DEFINITIVA
                 currentDateFilter = todayString;
                 rechargeHistory = filterHistoryByDate(rechargeHistory, todayString);
                 
                 // Mostrar información del filtro
-                const dateDisplay = today.toLocaleDateString('es-ES', { 
+                const dateDisplay = now.toLocaleDateString('es-ES', { 
                     weekday: 'long', 
                     year: 'numeric', 
                     month: 'long', 
@@ -936,15 +949,26 @@
             }
         }
 
-        // Función para filtrar el historial por fecha (MEJORADA Y CORREGIDA)
+        // FUNCIÓN DEFINITIVA PARA FILTRAR POR FECHA - COMPARACIÓN DIRECTA DE TEXTO
         function filterHistoryByDate(history, dateString) {
             return history.filter(item => {
-                // Obtener la fecha del registro (sin tener en cuenta la hora)
-                const itemDate = new Date(item.created_at);
-                const itemDateString = itemDate.toISOString().split('T')[0];
-                
-                // Comparar solo las fechas (sin horas) - CORREGIDO
-                return itemDateString === dateString;
+                try {
+                    // LÓGICA PRINCIPAL: Comparación directa de texto de fecha
+                    // dateString viene en formato: "19/11/2024"
+                    // item.timestamp viene en formato: "19/11/2024, 15:30:25"
+                    
+                    const timestampText = item.timestamp;
+                    
+                    // Extraer solo la parte de la fecha (antes de la coma)
+                    const fechaPart = timestampText.split(',')[0].trim();
+                    
+                    // Comparación EXACTA de texto de fecha
+                    return fechaPart === dateString;
+                    
+                } catch (error) {
+                    console.error('Error al procesar fecha del item:', item, error);
+                    return false;
+                }
             });
         }
 
