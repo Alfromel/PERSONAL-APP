@@ -1,0 +1,1236 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recargas TIGO</title>
+    <!-- Bootstrap 5 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- jsPDF para generar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+    <style>
+        :root {
+            --tigo-color: #005EB8;
+            --tigo-secondary: #0077CC;
+            --tigo-dark: #004C93;
+            --tigo-light: #E6F2FF;
+            --primary-color: #4a6fa5;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --gray-color: #6c757d;
+            --light-gray: #8b96a0;
+        }
+        
+        body {
+            background-color: #f5f5f5;
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .app-container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .login-container {
+            background: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .tigo-brand {
+            color: var(--tigo-color);
+            font-weight: bold;
+            font-size: 2.5rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .history-item {
+            border-left: 4px solid var(--tigo-color);
+            transition: all 0.3s;
+            background-color: white;
+            position: relative;
+            padding: 15px;
+            margin-bottom: 8px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .history-item-corte {
+            border-left: 4px solid var(--danger-color);
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.03) 0%, rgba(220, 53, 69, 0.08) 100%);
+            transition: all 0.3s;
+            position: relative;
+            padding: 15px;
+            margin-bottom: 8px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .history-item:hover, .history-item-corte:hover {
+            transform: translateX(3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .user-badge {
+            background: var(--tigo-color);
+            color: white;
+        }
+        
+        .phone-display {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 1.3em;
+            letter-spacing: 1px;
+            color: var(--tigo-dark);
+        }
+        
+        /* Estilos para app nativa */
+        .app-header {
+            background: linear-gradient(135deg, var(--tigo-color) 0%, var(--tigo-dark) 100%);
+            color: white;
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+        }
+        
+        .app-content {
+            padding: 20px;
+            padding-bottom: 80px;
+        }
+        
+        .app-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+            border: none;
+            overflow: hidden;
+            transition: transform 0.3s;
+        }
+        
+        .app-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+        }
+        
+        .app-card-header {
+            background: linear-gradient(135deg, var(--tigo-light) 0%, #f0f9ff 100%);
+            border-bottom: 1px solid #e9ecef;
+            padding: 15px 20px;
+            font-weight: 600;
+            color: var(--tigo-dark);
+        }
+        
+        .app-card-body {
+            padding: 20px;
+        }
+        
+        .app-btn {
+            border-radius: 50px;
+            padding: 12px 25px;
+            font-weight: 600;
+            border: none;
+            transition: all 0.3s;
+        }
+        
+        .app-btn-primary {
+            background: linear-gradient(135deg, var(--tigo-color) 0%, var(--tigo-secondary) 100%);
+            color: white;
+        }
+        
+        .app-btn-primary:hover {
+            background: linear-gradient(135deg, var(--tigo-dark) 0%, var(--tigo-color) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,94,184,0.4);
+        }
+        
+        .app-form-control {
+            border-radius: 10px;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+        
+        .app-form-control:focus {
+            border-color: var(--tigo-color);
+            box-shadow: 0 0 0 3px rgba(0,94,184,0.2);
+        }
+        
+        .floating-action-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--tigo-color) 0%, var(--tigo-secondary) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 6px 20px rgba(0,94,184,0.5);
+            z-index: 100;
+            border: none;
+            transition: all 0.3s;
+        }
+        
+        .floating-action-btn:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 8px 25px rgba(0,94,184,0.7);
+        }
+        
+        .history-badge {
+            background: linear-gradient(135deg, var(--tigo-color) 0%, var(--tigo-secondary) 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .corte-badge {
+            background: linear-gradient(135deg, var(--danger-color) 0%, #e74c3c 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+        
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+            color: var(--tigo-color);
+        }
+        
+        .clear-history-btn {
+            background: linear-gradient(135deg, var(--danger-color) 0%, #e74c3c 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 8px 15px;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .clear-history-btn:hover {
+            background: linear-gradient(135deg, #c82333 0%, var(--danger-color) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(220,53,69,0.3);
+        }
+        
+        .modal-content {
+            border-radius: 12px;
+            border: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .modal-header {
+            background: linear-gradient(135deg, var(--tigo-color) 0%, var(--tigo-dark) 100%);
+            color: white;
+            border-bottom: none;
+            border-radius: 12px 12px 0 0;
+        }
+        
+        .modal-footer {
+            border-top: none;
+        }
+        
+        /* Estilos para el selector de estado */
+        .status-select {
+            border-radius: 20px;
+            padding: 6px 15px;
+            font-size: 0.8rem;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            min-width: 90px;
+        }
+        
+        .status-nuevo {
+            background: linear-gradient(135deg, var(--success-color) 0%, #34ce57 100%);
+            color: white;
+        }
+        
+        .status-corte {
+            background: linear-gradient(135deg, var(--danger-color) 0%, #e74c3c 100%);
+            color: white;
+        }
+        
+        .status-select:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
+        }
+        
+        .corte-indicator {
+            color: var(--danger-color);
+            font-weight: bold;
+            font-size: 0.75rem;
+            background: rgba(220, 53, 69, 0.1);
+            padding: 3px 8px;
+            border-radius: 12px;
+            margin-left: 8px;
+        }
+        
+        .numero-badge {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--gray-color) 0%, var(--light-gray) 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+        
+        /* Nuevos estilos para el historial mejorado */
+        .history-container {
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 5px;
+        }
+        
+        .history-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .history-container::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        
+        .history-container::-webkit-scrollbar-thumb {
+            background: var(--tigo-color);
+            border-radius: 10px;
+        }
+        
+        .history-item-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        
+        .history-item-main {
+            display: flex;
+            align-items: center;
+            flex-grow: 1;
+        }
+        
+        .history-item-content {
+            flex-grow: 1;
+        }
+        
+        .history-item-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-direction: column;
+        }
+        
+        .history-action-btn {
+            background: rgba(0, 94, 184, 0.1);
+            border: 1px solid rgba(0, 94, 184, 0.2);
+            color: var(--tigo-color);
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 6px 15px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: 500;
+        }
+        
+        .history-action-btn:hover {
+            background: var(--tigo-color);
+            color: white;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 94, 184, 0.3);
+        }
+        
+        .history-timestamp {
+            font-size: 0.75rem;
+            color: var(--gray-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 6px;
+        }
+        
+        .history-filter {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 20px;
+            padding: 6px 15px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex: 1;
+            text-align: center;
+        }
+        
+        .filter-btn.active {
+            background: var(--tigo-color);
+            color: white;
+            border-color: var(--tigo-color);
+        }
+        
+        .filter-btn:hover:not(.active) {
+            background: var(--tigo-light);
+            border-color: var(--tigo-color);
+        }
+        
+        .history-summary {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            padding: 12px 15px;
+            background: var(--tigo-light);
+            border-radius: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .summary-item {
+            text-align: center;
+            flex: 1;
+        }
+        
+        .summary-value {
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: var(--tigo-color);
+        }
+        
+        .summary-label {
+            font-size: 0.75rem;
+            color: var(--gray-color);
+        }
+        
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(0, 94, 184, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(0, 94, 184, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(0, 94, 184, 0);
+            }
+        }
+        
+        .new-item-indicator {
+            position: absolute;
+            top: 12px;
+            left: -8px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--tigo-color);
+            animation: pulse 1.5s infinite;
+        }
+        
+        .history-status-badge {
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            margin-left: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .status-badge-nuevo {
+            background: var(--success-color);
+            color: white;
+        }
+        
+        .status-badge-corte {
+            background: var(--danger-color);
+            color: white;
+        }
+        
+        .phone-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .user-info {
+            font-size: 0.8rem;
+            color: var(--gray-color);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .date-filter-info {
+            background-color: var(--tigo-light);
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            text-align: center;
+            color: var(--tigo-dark);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Pantalla de Login -->
+        <div id="loginScreen" class="login-container">
+            <div class="text-center mb-5">
+                <h1 class="tigo-brand mb-2">TIGO</h1>
+                <p class="text-muted">Sistema de Recargas</p>
+            </div>
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label for="username" class="form-label">Usuario</label>
+                    <input type="text" class="form-control app-form-control" id="username" required>
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="form-label">Contraseña</label>
+                    <input type="password" class="form-control app-form-control" id="password" required>
+                </div>
+                <button type="submit" class="btn app-btn app-btn-primary w-100 text-white">
+                    <i class="bi bi-box-arrow-in-right me-2"></i> Ingresar
+                </button>
+            </form>
+            <div id="loginMessage" class="alert alert-danger mt-3 d-none"></div>
+        </div>
+
+        <!-- Pantalla Principal -->
+        <div id="mainScreen" class="d-none">
+            <!-- Header de la app -->
+            <div class="app-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-0">TIGO Recargas</h4>
+                        <small>Bienvenido, <span id="currentUser" class="fw-bold"></span></small>
+                    </div>
+                    <div class="user-avatar">
+                        <span id="userInitial">U</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Contenido principal -->
+            <div class="app-content">
+                <!-- Formulario de Recarga -->
+                <div class="app-card">
+                    <div class="app-card-header d-flex align-items-center">
+                        <i class="bi bi-telephone-plus me-2"></i>
+                        <span>Realizar Recarga</span>
+                    </div>
+                    <div class="app-card-body">
+                        <form id="rechargeForm">
+                            <div class="mb-3">
+                                <label for="phoneNumber" class="form-label">Número de teléfono</label>
+                                <input type="tel" class="form-control app-form-control" id="phoneNumber" 
+                                       placeholder="Ej: 70012345" required
+                                       pattern="[0-9]{8}" maxlength="8"
+                                       title="Ingrese 8 dígitos sin espacios">
+                            </div>
+                            <div class="mb-3">
+                                <label for="status" class="form-label">Estado</label>
+                                <select class="form-select app-form-control" id="status" required>
+                                    <option value="NUEVO">Nuevo</option>
+                                    <option value="CORTE">Corte</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn app-btn app-btn-primary w-100 text-white pulse-animation">
+                                <i class="bi bi-telephone-fill me-2"></i> Llamar para Recargar
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Historial de Recargas -->
+                <div class="app-card">
+                    <div class="app-card-header d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center">
+                            <i class="bi bi-clock-history me-2"></i>
+                            <span>Mis Recargas</span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <span class="history-badge" id="historyCount">0</span>
+                            <span class="corte-badge" id="corteCount">0</span>
+                            <button id="clearHistoryBtn" class="clear-history-btn ms-2" title="Descargar PDF y eliminar historial">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="app-card-body p-0">
+                        <div id="loadingHistory" class="text-center py-4 d-none">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
+                            <p class="mt-2 text-muted">Cargando historial...</p>
+                        </div>
+                        
+                        <!-- Información del filtro automático -->
+                        <div id="dateFilterInfo" class="date-filter-info d-none">
+                            <i class="bi bi-calendar-check me-2"></i>
+                            <span>Día: <span id="currentDateDisplay"></span></span>
+                        </div>
+                        
+                        <!-- Lista del historial -->
+                        <div class="history-container" id="historyContainer">
+                            <div id="historyList">
+                                <!-- El historial se cargará aquí -->
+                            </div>
+                            <div id="emptyHistory" class="empty-state">
+                                <i class="bi bi-inbox"></i>
+                                <p class="mt-2">No hay recargas registradas</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Botón flotante para cerrar sesión -->
+            <button id="logoutBtn" class="floating-action-btn" title="Cerrar sesión">
+                <i class="bi bi-box-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Modal para confirmar descarga y eliminar historial -->
+    <div class="modal fade" id="clearHistoryModal" tabindex="-1" aria-labelledby="clearHistoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="clearHistoryModalLabel">Descargar PDF y Eliminar Historial</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Está seguro de que desea descargar el historial en PDF y eliminar permanentemente todos los registros del historial?</p>
+                    <p class="text-danger"><strong>¡Advertencia!</strong> Esta acción eliminará permanentemente todo el historial de recargas de la base de datos y no se puede deshacer.</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-danger" id="confirmClearHistory">Descargar y Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Configuración de Supabase
+        const SUPABASE_URL = 'https://zrbhhiayfaedatwlzqch.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpyYmhoaWF5ZmFlZGF0d2x6cWNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjExMTcwMjgsImV4cCI6MjA3NjY5MzAyOH0.b97mGNErXGRuIorOPTf6m1awGlIyrXaAI4VS65aR-5o';
+
+        // Estado de la aplicación
+        let currentUser = null;
+        let currentUserHistory = [];
+        let currentDateFilter = null;
+
+        // Inicializar la aplicación
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeApp();
+        });
+
+        function initializeApp() {
+            // Verificar si ya hay una sesión activa
+            const savedUser = localStorage.getItem('currentUser');
+            if (savedUser) {
+                currentUser = JSON.parse(savedUser);
+                showMainScreen();
+            }
+
+            // Configurar event listeners
+            document.getElementById('loginForm').addEventListener('submit', handleLogin);
+            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+            document.getElementById('rechargeForm').addEventListener('submit', handleRecharge);
+            document.getElementById('clearHistoryBtn').addEventListener('click', showClearHistoryModal);
+            document.getElementById('confirmClearHistory').addEventListener('click', confirmClearHistory);
+        }
+
+        // Función para cargar usuarios desde la base de datos
+        async function loadUsersFromDatabase() {
+            try {
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/users`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error('Error al cargar usuarios desde la base de datos');
+                }
+
+                const usuarios = await response.json();
+                return usuarios;
+                
+            } catch (error) {
+                console.error('Error al cargar usuarios:', error);
+                throw new Error('No se pudo conectar con la base de datos. Intente nuevamente.');
+            }
+        }
+
+        async function handleLogin(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('loginMessage');
+
+            // Mostrar mensaje de carga
+            messageDiv.textContent = 'Cargando usuarios...';
+            messageDiv.className = 'alert alert-info mt-3';
+            messageDiv.classList.remove('d-none');
+
+            try {
+                // Cargar usuarios desde la base de datos
+                const usuarios = await loadUsersFromDatabase();
+
+                // Verificar credenciales
+                const user = usuarios.find(u => u.username === username && u.password === password);
+                
+                if (user) {
+                    currentUser = user;
+                    localStorage.setItem('currentUser', JSON.stringify(user));
+                    showMainScreen();
+                    messageDiv.classList.add('d-none');
+                } else {
+                    messageDiv.textContent = 'Usuario o contraseña incorrectos';
+                    messageDiv.className = 'alert alert-danger mt-3';
+                }
+            } catch (error) {
+                console.error('Error en el login:', error);
+                messageDiv.textContent = error.message;
+                messageDiv.className = 'alert alert-danger mt-3';
+            }
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            localStorage.removeItem('currentUser');
+            showLoginScreen();
+        }
+
+        function showLoginScreen() {
+            document.getElementById('loginScreen').classList.remove('d-none');
+            document.getElementById('mainScreen').classList.add('d-none');
+            document.getElementById('loginForm').reset();
+        }
+
+        function showMainScreen() {
+            document.getElementById('loginScreen').classList.add('d-none');
+            document.getElementById('mainScreen').classList.remove('d-none');
+            document.getElementById('currentUser').textContent = currentUser.nombre;
+            document.getElementById('userInitial').textContent = currentUser.nombre.charAt(0);
+            loadRechargeHistory();
+        }
+
+        async function handleRecharge(e) {
+            e.preventDefault();
+            
+            const phoneNumber = document.getElementById('phoneNumber').value;
+            const status = document.getElementById('status').value;
+            
+            if (!phoneNumber || phoneNumber.length !== 8) {
+                alert('Por favor, ingrese un número de teléfono válido de 8 dígitos');
+                return;
+            }
+
+            try {
+                // Guardar en la base de datos TIGO
+                await saveRechargeToDatabase(phoneNumber, status);
+                
+                // Limpiar el formulario
+                document.getElementById('phoneNumber').value = '';
+                
+                // Realizar la llamada directa al número
+                window.location.href = `tel:${phoneNumber}`;
+                
+            } catch (error) {
+                console.error('Error al guardar la recarga:', error);
+                alert('Error al procesar la recarga. Intente nuevamente.');
+            }
+        }
+
+        async function saveRechargeToDatabase(phoneNumber, status) {
+            // Obtener fecha y hora actual del dispositivo del usuario - FECHA LOCAL DEL DISPOSITIVO
+            const now = new Date();
+            
+            const timestamp = now.toLocaleString('es-ES', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+                second: '2-digit'
+            });
+            
+            // Usar formato ISO para ordenamiento correcto
+            const created_at = now.toISOString();
+
+            const rechargeData = {
+                user_id: currentUser.id,
+                user_name: currentUser.nombre,
+                phone_number: phoneNumber,
+                estado: status,
+                timestamp: timestamp,
+                created_at: created_at
+            };
+
+            // Llamada real a Supabase - tabla TIGO
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/tigo_recharge_history`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': SUPABASE_KEY,
+                    'Authorization': `Bearer ${SUPABASE_KEY}`,
+                    'Prefer': 'return=minimal'
+                },
+                body: JSON.stringify(rechargeData)
+            });
+
+            if (!response.ok) {
+                throw new Error('Error al guardar en la base de datos');
+            }
+
+            // Recargar el historial después de guardar
+            loadRechargeHistory();
+            
+            return { success: true };
+        }
+
+        async function loadRechargeHistory() {
+            const loadingDiv = document.getElementById('loadingHistory');
+            const historyList = document.getElementById('historyList');
+            const emptyHistory = document.getElementById('emptyHistory');
+            const dateFilterInfo = document.getElementById('dateFilterInfo');
+            
+            loadingDiv.classList.remove('d-none');
+            historyList.innerHTML = '';
+
+            try {
+                // Llamada real a Supabase - tabla TIGO - filtrar por usuario actual
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/tigo_recharge_history?user_id=eq.${currentUser.id}&order=created_at.desc`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error('Error al cargar el historial');
+                }
+
+                let rechargeHistory = await response.json();
+                
+                // Obtener fecha actual del dispositivo - FECHA LOCAL DEL DISPOSITIVO
+                const now = new Date();
+                const todayString = now.toLocaleDateString('es-ES', {
+                    day: '2-digit',
+                    month: '2-digit', 
+                    year: 'numeric'
+                });
+                
+                // Aplicar filtro automático por fecha del dispositivo - LÓGICA DEFINITIVA
+                currentDateFilter = todayString;
+                rechargeHistory = filterHistoryByDate(rechargeHistory, todayString);
+                
+                // Mostrar información del filtro
+                const dateDisplay = now.toLocaleDateString('es-ES', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+                document.getElementById('currentDateDisplay').textContent = dateDisplay;
+                dateFilterInfo.classList.remove('d-none');
+                
+                // Ordenar por fecha/hora del dispositivo del usuario (más reciente primero)
+                rechargeHistory.sort((a, b) => {
+                    const dateA = new Date(a.created_at);
+                    const dateB = new Date(b.created_at);
+                    return dateB.getTime() - dateA.getTime(); // Más reciente primero
+                });
+                
+                currentUserHistory = rechargeHistory; // Guardar historial filtrado y ordenado
+                
+                // Mostrar u ocultar elementos según si hay historial
+                if (rechargeHistory.length > 0) {
+                    emptyHistory.classList.add('d-none');
+                } else {
+                    emptyHistory.classList.remove('d-none');
+                }
+                
+                displayHistory(rechargeHistory);
+                
+            } catch (error) {
+                console.error('Error al cargar el historial:', error);
+                displayHistory([]);
+            } finally {
+                loadingDiv.classList.add('d-none');
+            }
+        }
+
+        // FUNCIÓN DEFINITIVA PARA FILTRAR POR FECHA - COMPARACIÓN DIRECTA DE TEXTO
+        function filterHistoryByDate(history, dateString) {
+            return history.filter(item => {
+                try {
+                    // LÓGICA PRINCIPAL: Comparación directa de texto de fecha
+                    // dateString viene en formato: "19/11/2024"
+                    // item.timestamp viene en formato: "19/11/2024, 15:30:25"
+                    
+                    const timestampText = item.timestamp;
+                    
+                    // Extraer solo la parte de la fecha (antes de la coma)
+                    const fechaPart = timestampText.split(',')[0].trim();
+                    
+                    // Comparación EXACTA de texto de fecha
+                    return fechaPart === dateString;
+                    
+                } catch (error) {
+                    console.error('Error al procesar fecha del item:', item, error);
+                    return false;
+                }
+            });
+        }
+
+        function displayHistory(history) {
+            const historyList = document.getElementById('historyList');
+            const historyCount = document.getElementById('historyCount');
+            const corteCount = document.getElementById('corteCount');
+            
+            if (history.length === 0) {
+                historyList.innerHTML = '';
+                historyCount.textContent = '0';
+                corteCount.textContent = '0';
+                return;
+            }
+
+            // Contar recargas por estado
+            const nonCorteHistory = history.filter(item => item.estado !== 'CORTE');
+            const corteHistoryCount = history.filter(item => item.estado === 'CORTE').length;
+            
+            // Actualizar contadores
+            historyCount.textContent = nonCorteHistory.length;
+            corteCount.textContent = corteHistoryCount;
+            
+            // Crear un array con todas las recargas numeradas correctamente
+            let numeroActual = history.length;
+            
+            historyList.innerHTML = history.map((item, index) => {
+                const isCorte = item.estado === 'CORTE';
+                const itemClass = isCorte ? 'history-item-corte' : 'history-item';
+                const numero = numeroActual - index; // El más reciente tiene el número más alto
+                
+                // Verificar si es una recarga reciente (menos de 1 hora)
+                const now = new Date();
+                const itemDate = new Date(item.created_at);
+                const diffMs = now - itemDate;
+                const diffMins = Math.floor(diffMs / 60000);
+                const isRecent = diffMins < 60;
+                
+                return `
+                <div class="${itemClass} p-3 border-bottom" data-status="${item.estado.toLowerCase()}" data-date="${item.created_at}">
+                    ${isRecent ? '<div class="new-item-indicator"></div>' : ''}
+                    <div class="history-item-header">
+                        <div class="history-item-main">
+                            <div class="numero-badge">${numero}</div>
+                            <div class="history-item-content">
+                                <div class="phone-info">
+                                    <div class="phone-display ${isCorte ? 'text-danger' : 'text-primary'}">${item.phone_number}</div>
+                                </div>
+                                <div class="history-timestamp">
+                                    <span class="user-info">
+                                        <i class="bi bi-person-circle"></i> ${item.user_name}
+                                    </span>
+                                    <span class="user-info">
+                                        <i class="bi bi-calendar"></i> ${item.timestamp}
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="history-status-badge ${isCorte ? 'status-badge-corte' : 'status-badge-nuevo'}">
+                            <i class="bi ${isCorte ? 'bi-exclamation-triangle' : 'bi-check-circle'}"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <select class="status-select ${item.estado === 'NUEVO' ? 'status-nuevo' : 'status-corte'}" 
+                                    data-id="${item.id}" onchange="updateStatus(this)">
+                                <option value="NUEVO" ${item.estado === 'NUEVO' ? 'selected' : ''}>Nuevo</option>
+                                <option value="CORTE" ${item.estado === 'CORTE' ? 'selected' : ''}>Corte</option>
+                            </select>
+                            ${isCorte ? '<span class="corte-indicator"><i class="bi bi-exclamation-circle me-1"></i>EN CORTE</span>' : ''}
+                        </div>
+                    </div>
+                    
+                    <div class="history-item-actions">
+                        <button class="history-action-btn" onclick="copyNumber('${item.phone_number}')">
+                            <i class="bi bi-phone"></i> Copiar Número
+                        </button>
+                        <button class="history-action-btn" onclick="callNumber('${item.phone_number}')">
+                            <i class="bi bi-telephone"></i> Llamar
+                        </button>
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        async function updateStatus(selectElement) {
+            const id = selectElement.getAttribute('data-id');
+            const newStatus = selectElement.value;
+            
+            try {
+                // Actualizar el estado en la base de datos TIGO
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/tigo_recharge_history?id=eq.${id}`,
+                    {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`,
+                            'Prefer': 'return=minimal'
+                        },
+                        body: JSON.stringify({ 
+                            estado: newStatus
+                        })
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error('Error al actualizar el estado');
+                }
+
+                // Recargar el historial para actualizar los contadores y estilos
+                loadRechargeHistory();
+                
+            } catch (error) {
+                console.error('Error al actualizar el estado:', error);
+                alert('Error al actualizar el estado. Intente nuevamente.');
+            }
+        }
+
+        // Función para copiar solo el número
+        function copyNumber(number) {
+            navigator.clipboard.writeText(number).then(() => {
+                // Mostrar mensaje de éxito
+                const originalText = event.target.textContent;
+                event.target.innerHTML = '<i class="bi bi-check"></i> ¡Número Copiado!';
+                event.target.style.background = 'var(--success-color)';
+                event.target.style.color = 'white';
+                event.target.style.borderColor = 'var(--success-color)';
+                
+                setTimeout(() => {
+                    event.target.innerHTML = originalText;
+                    event.target.style.background = '';
+                    event.target.style.color = '';
+                    event.target.style.borderColor = '';
+                }, 2000);
+            }).catch(err => {
+                console.error('Error al copiar: ', err);
+            });
+        }
+
+        // Función para llamar al número
+        function callNumber(number) {
+            window.location.href = `tel:${number}`;
+        }
+
+        function showClearHistoryModal() {
+            // Verificar si hay historial para limpiar
+            if (currentUserHistory.length === 0) {
+                alert('No hay historial para descargar y eliminar');
+                return;
+            }
+            
+            // Mostrar el modal
+            const modal = new bootstrap.Modal(document.getElementById('clearHistoryModal'));
+            modal.show();
+        }
+
+        async function confirmClearHistory() {
+            try {
+                // Generar PDF antes de eliminar
+                await generateHistoryPDF();
+                
+                // Eliminar el historial de la base de datos TIGO
+                await deleteUserHistory();
+                
+                // Cerrar el modal
+                const modal = bootstrap.Modal.getInstance(document.getElementById('clearHistoryModal'));
+                modal.hide();
+                
+                alert('Historial descargado y eliminado exitosamente');
+                
+            } catch (error) {
+                console.error('Error al descargar y eliminar el historial:', error);
+                alert('Error al procesar la solicitud. Intente nuevamente.');
+            }
+        }
+
+        async function deleteUserHistory() {
+            try {
+                // Eliminar todos los registros del usuario actual de la base de datos TIGO
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/tigo_recharge_history?user_id=eq.${currentUser.id}`,
+                    {
+                        method: 'DELETE',
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`,
+                            'Prefer': 'return=minimal'
+                        }
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error('Error al eliminar el historial de la base de datos');
+                }
+
+                // Recargar el historial (ahora estará vacío)
+                loadRechargeHistory();
+                
+            } catch (error) {
+                console.error('Error al eliminar el historial:', error);
+                throw error;
+            }
+        }
+
+        function generateHistoryPDF() {
+            return new Promise((resolve, reject) => {
+                try {
+                    // Usar jsPDF desde la variable global
+                    const { jsPDF } = window.jspdf;
+                    
+                    // Crear nuevo documento PDF
+                    const doc = new jsPDF();
+                    
+                    // Título
+                    doc.setFontSize(20);
+                    doc.setTextColor(0, 94, 184); // Color TIGO
+                    doc.text('Historial de Recargas - TIGO', 20, 20);
+                    
+                    // Información del usuario
+                    doc.setFontSize(12);
+                    doc.setTextColor(0, 0, 0);
+                    doc.text(`Usuario: ${currentUser.nombre}`, 20, 35);
+                    doc.text(`Fecha de generación: ${new Date().toLocaleString('es-ES')}`, 20, 42);
+                    
+                    // Tabla de recargas
+                    const tableColumn = ["#", "Teléfono", "Estado", "Fecha"];
+                    const tableRows = [];
+                    
+                    currentUserHistory.forEach((item, index) => {
+                        const rowData = [
+                            index + 1,
+                            item.phone_number,
+                            item.estado,
+                            item.timestamp
+                        ];
+                        tableRows.push(rowData);
+                    });
+                    
+                    // Agregar tabla al PDF
+                    doc.autoTable({
+                        head: [tableColumn],
+                        body: tableRows,
+                        startY: 50,
+                        theme: 'grid',
+                        styles: {
+                            fontSize: 10,
+                            cellPadding: 3
+                        },
+                        headStyles: {
+                            fillColor: [0, 94, 184], // Color TIGO
+                            textColor: 255
+                        },
+                        alternateRowStyles: {
+                            fillColor: [240, 240, 240]
+                        }
+                    });
+                    
+                    // Guardar el PDF
+                    const fileName = `Historial_Recargas_TIGO_${currentUser.nombre}_${new Date().toISOString().slice(0,10)}.pdf`;
+                    doc.save(fileName);
+                    
+                    resolve();
+                } catch (error) {
+                    console.error('Error al generar PDF:', error);
+                    reject(error);
+                }
+            });
+        }
+    </script>
+</body>
+</html>
