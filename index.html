@@ -293,6 +293,28 @@
             z-index: 1;
         }
         
+        /* Colores específicos para operadoras */
+        .entel .app-button .button-icon {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.1), rgba(220, 38, 38, 0.15));
+        }
+        .entel .app-button:active .button-icon {
+            background: linear-gradient(135deg, #ef4444, #dc2626);
+        }
+        
+        .tigo .app-button .button-icon {
+            background: linear-gradient(135deg, rgba(6, 214, 160, 0.1), rgba(5, 150, 105, 0.15));
+        }
+        .tigo .app-button:active .button-icon {
+            background: linear-gradient(135deg, #06d6a0, #059669);
+        }
+        
+        .viva .app-button .button-icon {
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.1), rgba(217, 119, 6, 0.15));
+        }
+        .viva .app-button:active .button-icon {
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+        }
+        
         /* Animación de entrada */
         @keyframes fadeInUp {
             from {
@@ -308,6 +330,7 @@
         .section:nth-child(1) { animation-delay: 0.2s; }
         .section:nth-child(2) { animation-delay: 0.3s; }
         .section:nth-child(3) { animation-delay: 0.4s; }
+        .section:nth-child(4) { animation-delay: 0.5s; }
         
         /* Botón de instalación PWA */
         #installButton {
@@ -389,7 +412,7 @@
     <!-- Pantalla de carga instantánea -->
     <div id="loading-screen">
         <div class="loading-container">
-            <div class="logo">IVAN</div>
+            <div class="logo">TOKTOK</div>
             <div class="subtitle">Panel de Control</div>
             <div class="loading-circle"></div>
             <div class="progress-text">CARGANDO...</div>
@@ -399,75 +422,68 @@
     <!-- Encabezado -->
     <div class="header">
         <h1 class="company-name">TOKTOK</h1>
-        <p class="user-role">Personal toktok</p>
+        <p class="user-role">Personal</p>
     </div>
     
     <!-- Contenido principal -->
     <div class="main-content">
-        <!-- Sección Entel -->
+        <!-- Sección Operadoras -->
         <div class="section">
             <div class="section-header">
                 <div class="section-icon">
-                    <i class="fas fa-mobile-alt"></i>
+                    <i class="fas fa-sim-card"></i>
                 </div>
-                <h2 class="section-title">Entel</h2>
+                <h2 class="section-title">Operadoras</h2>
             </div>
             <div class="button-row">
-                <a href="EXTENCIONES/recargador.html" class="app-button">
+                <a href="EXTENCIONES/entel.html" class="app-button entel">
                     <div class="button-icon">
-                        <i class="fas fa-credit-card"></i>
+                        <!-- Cambia esta URL por el logo de Entel -->
+                        <img src="https://scz.megacenter.com.bo/wp-content/uploads/2021/01/entel-300x300.jpg" alt="Entel" style="width: 24px; height: 24px;">
                     </div>
-                    <h3 class="button-title">Recargar</h3>
-              
+                    <h3 class="button-title">Entel</h3>
+                    <p class="button-subtitle">Recargas</p>
                 </a>
                 
-                <a href="EXTENCIONES/dd.html" class="app-button">
+                <a href="EXTENCIONES/tigo.html" class="app-button tigo">
                     <div class="button-icon">
-                        <i class="fas fa-calendar-day"></i>
+                        <!-- Cambia esta URL por el logo de Tigo -->
+                        <img src="https://play-lh.googleusercontent.com/i7eXCqvEszOsN_LwPHkxXMx8j2vb0QphVwkqTr3U8GodBeNA9AuQVxgs7nyCnEru" alt="Tigo" style="width: 24px; height: 24px;">
                     </div>
-                    <h3 class="button-title">Día Doble</h3>
-        
+                    <h3 class="button-title">Tigo</h3>
+                    <p class="button-subtitle">Recargas</p>
                 </a>
                 
-                <a href="EXTENCIONES/ac.html" class="app-button">
+                <a href="EXTENCIONES/viva.html" class="app-button viva">
                     <div class="button-icon">
-                        <i class="fas fa-bolt"></i>
+                        <!-- Cambia esta URL por el logo de Viva -->
+                        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTDjM0IP2cxcg231iXsqKa-q2eJH5uTbaQ0xA&s" alt="Viva" style="width: 24px; height: 24px;">
                     </div>
-                    <h3 class="button-title">Activador</h3>
-
+                    <h3 class="button-title">Viva</h3>
+                    <p class="button-subtitle">Recargas</p>
                 </a>
+                
             </div>
         </div>
         
-        <!-- Sección Tienda -->
+        
+   
         <div class="section">
             <div class="section-header">
                 <div class="section-icon">
                     <i class="fas fa-store"></i>
                 </div>
-                <h2 class="section-title">Tienda</h2>
+                <h2 class="section-title">Otros</h2>
             </div>
             <div class="button-row">
-                <a href="EXTENCIONES/E.html" class="app-button">
+                <a href="EXTENCIONES/tienda.html" class="app-button">
                     <div class="button-icon">
                         <i class="fas fa-qrcode"></i>
                     </div>
                     <h3 class="button-title">Escáner Tienda</h3>
                     <p class="button-subtitle">Escanear códigos QR</p>
                 </a>
-            </div>
-        </div>
-        
-        <!-- Sección Banco BCP -->
-        <div class="section">
-            <div class="section-header">
-                <div class="section-icon">
-                    <i class="fas fa-university"></i>
-                </div>
-                <h2 class="section-title">Banco BCP</h2>
-            </div>
-            <div class="button-row">
-                <a href="EXTENCIONES/bcp-user.html" class="app-button">
+                <a href="EXTENCIONES/bcp.html" class="app-button">
                     <div class="button-icon">
                         <i class="fas fa-money-bill-wave"></i>
                     </div>
@@ -476,6 +492,36 @@
                 </a>
             </div>
         </div>
+
+                <!-- Sección Servicios -->
+        <div class="section">
+            <div class="section-header">
+                <div class="section-icon">
+                    <i class="fas fa-bolt"></i>
+                </div>
+                <h2 class="section-title">Servicios</h2>
+            </div>
+            <div class="button-row">
+                <a href="EXTENCIONES/dia-doble-entel.html" class="app-button entel">
+                    <div class="button-icon">
+                        <i class="fas fa-calendar-day"></i>
+                    </div>
+                    <h3 class="button-title">Día Doble</h3>
+                    <p class="button-subtitle">Entel</p>
+                </a>
+                
+                <a href="EXTENCIONES/activacion-entel.html" class="app-button entel">
+                    <div class="button-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <h3 class="button-title">Activador</h3>
+                    <p class="button-subtitle">Entel</p>
+                </a>
+                
+            </div>
+        </div>
+        
+
     </div>
     
     <!-- Botón de instalación PWA -->
@@ -554,7 +600,3 @@
     </script>
 </body>
 </html>
-
-
-
-
