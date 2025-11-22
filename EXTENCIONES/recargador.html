@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recargas VIVA</title>
+    <title>Gestor de Líneas Telefónicas</title>
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -13,10 +13,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root {
-            --viva-color: #78BE20;
-            --viva-secondary: #8CC63F;
-            --viva-dark: #5A9E00;
-            --viva-light: #F0F8E6;
+            --entel-color: #0088CC;
+            --entel-secondary: #00B2FF;
+            --entel-dark: #006699;
+            --entel-light: #E6F7FF;
             --primary-color: #4a6fa5;
             --success-color: #28a745;
             --danger-color: #dc3545;
@@ -51,15 +51,15 @@
             padding: 20px;
         }
         
-        .viva-brand {
-            color: var(--viva-color);
+        .entel-brand {
+            color: var(--entel-color);
             font-weight: bold;
             font-size: 2.5rem;
             text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
         .history-item {
-            border-left: 4px solid var(--viva-color);
+            border-left: 4px solid var(--entel-color);
             transition: all 0.3s;
             background-color: white;
             position: relative;
@@ -84,7 +84,7 @@
         }
         
         .user-badge {
-            background: var(--viva-color);
+            background: var(--entel-color);
             color: white;
         }
         
@@ -93,12 +93,12 @@
             font-weight: bold;
             font-size: 1.3em;
             letter-spacing: 1px;
-            color: var(--viva-dark);
+            color: var(--entel-dark);
         }
         
         /* Estilos para app nativa */
         .app-header {
-            background: linear-gradient(135deg, var(--viva-color) 0%, var(--viva-dark) 100%);
+            background: linear-gradient(135deg, var(--entel-color) 0%, var(--entel-dark) 100%);
             color: white;
             padding: 15px 20px;
             position: sticky;
@@ -128,11 +128,11 @@
         }
         
         .app-card-header {
-            background: linear-gradient(135deg, var(--viva-light) 0%, #f7fcf0 100%);
+            background: linear-gradient(135deg, var(--entel-light) 0%, #f0f9ff 100%);
             border-bottom: 1px solid #e9ecef;
             padding: 15px 20px;
             font-weight: 600;
-            color: var(--viva-dark);
+            color: var(--entel-dark);
         }
         
         .app-card-body {
@@ -148,14 +148,14 @@
         }
         
         .app-btn-primary {
-            background: linear-gradient(135deg, var(--viva-color) 0%, var(--viva-secondary) 100%);
+            background: linear-gradient(135deg, var(--entel-color) 0%, var(--entel-secondary) 100%);
             color: white;
         }
         
         .app-btn-primary:hover {
-            background: linear-gradient(135deg, var(--viva-dark) 0%, var(--viva-color) 100%);
+            background: linear-gradient(135deg, var(--entel-dark) 0%, var(--entel-color) 100%);
             transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(120,190,32,0.4);
+            box-shadow: 0 6px 15px rgba(0,136,204,0.4);
         }
         
         .app-form-control {
@@ -166,8 +166,8 @@
         }
         
         .app-form-control:focus {
-            border-color: var(--viva-color);
-            box-shadow: 0 0 0 3px rgba(120,190,32,0.2);
+            border-color: var(--entel-color);
+            box-shadow: 0 0 0 3px rgba(0,136,204,0.2);
         }
         
         .floating-action-btn {
@@ -177,13 +177,13 @@
             width: 60px;
             height: 60px;
             border-radius: 50%;
-            background: linear-gradient(135deg, var(--viva-color) 0%, var(--viva-secondary) 100%);
+            background: linear-gradient(135deg, var(--entel-color) 0%, var(--entel-secondary) 100%);
             color: white;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 24px;
-            box-shadow: 0 6px 20px rgba(120,190,32,0.5);
+            box-shadow: 0 6px 20px rgba(0,136,204,0.5);
             z-index: 100;
             border: none;
             transition: all 0.3s;
@@ -191,11 +191,11 @@
         
         .floating-action-btn:hover {
             transform: scale(1.1) rotate(5deg);
-            box-shadow: 0 8px 25px rgba(120,190,32,0.7);
+            box-shadow: 0 8px 25px rgba(0,136,204,0.7);
         }
         
         .history-badge {
-            background: linear-gradient(135deg, var(--viva-color) 0%, var(--viva-secondary) 100%);
+            background: linear-gradient(135deg, var(--entel-color) 0%, var(--entel-secondary) 100%);
             color: white;
             border-radius: 20px;
             padding: 5px 12px;
@@ -237,7 +237,7 @@
             font-size: 3rem;
             margin-bottom: 15px;
             opacity: 0.5;
-            color: var(--viva-color);
+            color: var(--entel-color);
         }
         
         .clear-history-btn {
@@ -264,7 +264,7 @@
         }
         
         .modal-header {
-            background: linear-gradient(135deg, var(--viva-color) 0%, var(--viva-dark) 100%);
+            background: linear-gradient(135deg, var(--entel-color) 0%, var(--entel-dark) 100%);
             color: white;
             border-bottom: none;
             border-radius: 12px 12px 0 0;
@@ -345,7 +345,7 @@
         }
         
         .history-container::-webkit-scrollbar-thumb {
-            background: var(--viva-color);
+            background: var(--entel-color);
             border-radius: 10px;
         }
         
@@ -374,9 +374,9 @@
         }
         
         .history-action-btn {
-            background: rgba(120, 190, 32, 0.1);
-            border: 1px solid rgba(120, 190, 32, 0.2);
-            color: var(--viva-color);
+            background: rgba(0, 136, 204, 0.1);
+            border: 1px solid rgba(0, 136, 204, 0.2);
+            color: var(--entel-color);
             font-size: 0.75rem;
             cursor: pointer;
             transition: all 0.2s;
@@ -389,10 +389,10 @@
         }
         
         .history-action-btn:hover {
-            background: var(--viva-color);
+            background: var(--entel-color);
             color: white;
             transform: translateY(-1px);
-            box-shadow: 0 2px 8px rgba(120, 190, 32, 0.3);
+            box-shadow: 0 2px 8px rgba(0, 136, 204, 0.3);
         }
         
         .history-timestamp {
@@ -424,14 +424,14 @@
         }
         
         .filter-btn.active {
-            background: var(--viva-color);
+            background: var(--entel-color);
             color: white;
-            border-color: var(--viva-color);
+            border-color: var(--entel-color);
         }
         
         .filter-btn:hover:not(.active) {
-            background: var(--viva-light);
-            border-color: var(--viva-color);
+            background: var(--entel-light);
+            border-color: var(--entel-color);
         }
         
         .history-summary {
@@ -439,7 +439,7 @@
             justify-content: space-between;
             margin-bottom: 15px;
             padding: 12px 15px;
-            background: var(--viva-light);
+            background: var(--entel-light);
             border-radius: 10px;
             font-size: 0.9rem;
         }
@@ -452,7 +452,7 @@
         .summary-value {
             font-weight: bold;
             font-size: 1.1rem;
-            color: var(--viva-color);
+            color: var(--entel-color);
         }
         
         .summary-label {
@@ -466,13 +466,13 @@
         
         @keyframes pulse {
             0% {
-                box-shadow: 0 0 0 0 rgba(120, 190, 32, 0.7);
+                box-shadow: 0 0 0 0 rgba(0, 136, 204, 0.7);
             }
             70% {
-                box-shadow: 0 0 0 10px rgba(120, 190, 32, 0);
+                box-shadow: 0 0 0 10px rgba(0, 136, 204, 0);
             }
             100% {
-                box-shadow: 0 0 0 0 rgba(120, 190, 32, 0);
+                box-shadow: 0 0 0 0 rgba(0, 136, 204, 0);
             }
         }
         
@@ -483,7 +483,7 @@
             width: 8px;
             height: 8px;
             border-radius: 50%;
-            background-color: var(--viva-color);
+            background-color: var(--entel-color);
             animation: pulse 1.5s infinite;
         }
         
@@ -524,134 +524,14 @@
         }
         
         .date-filter-info {
-            background-color: var(--viva-light);
+            background-color: var(--entel-light);
             border-radius: 8px;
             padding: 10px 15px;
             margin-bottom: 15px;
             font-size: 0.9rem;
             text-align: center;
-            color: var(--viva-dark);
+            color: var(--entel-dark);
             font-weight: 500;
-        }
-        
-        /* Estilos para el sistema de dos pasos */
-        .step-indicator {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 20px;
-            position: relative;
-        }
-        
-        .step-indicator::before {
-            content: '';
-            position: absolute;
-            top: 15px;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background-color: #e0e0e0;
-            z-index: 1;
-        }
-        
-        .step {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            z-index: 2;
-            flex: 1;
-        }
-        
-        .step-circle {
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            background-color: #e0e0e0;
-            color: #666;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            margin-bottom: 5px;
-            transition: all 0.3s;
-        }
-        
-        .step.active .step-circle {
-            background-color: var(--viva-color);
-            color: white;
-        }
-        
-        .step.completed .step-circle {
-            background-color: var(--viva-secondary);
-            color: white;
-        }
-        
-        .step-label {
-            font-size: 0.75rem;
-            color: #666;
-            text-align: center;
-        }
-        
-        .step.active .step-label {
-            color: var(--viva-color);
-            font-weight: 600;
-        }
-        
-        .step-content {
-            display: none;
-        }
-        
-        .step-content.active {
-            display: block;
-        }
-        
-        .step-navigation {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-        
-        .step-btn {
-            border-radius: 25px;
-            padding: 10px 20px;
-            font-weight: 600;
-            border: none;
-            transition: all 0.3s;
-        }
-        
-        .step-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .step-btn-next {
-            background: linear-gradient(135deg, var(--viva-color) 0%, var(--viva-secondary) 100%);
-            color: white;
-        }
-        
-        .step-btn-prev {
-            background: #6c757d;
-            color: white;
-        }
-        
-        .command-box {
-            background-color: #f8f9fa;
-            border: 1px solid #e9ecef;
-            border-radius: 8px;
-            padding: 10px;
-            font-family: monospace;
-            font-size: 0.9rem;
-            word-break: break-all;
-            margin-bottom: 15px;
-        }
-        
-        .info-alert {
-            background-color: var(--viva-light);
-            border: 1px solid var(--viva-color);
-            border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 15px;
-            font-size: 0.85rem;
         }
     </style>
 </head>
@@ -660,7 +540,7 @@
         <!-- Pantalla de Login -->
         <div id="loginScreen" class="login-container">
             <div class="text-center mb-5">
-                <h1 class="viva-brand mb-2">VIVA</h1>
+                <h1 class="entel-brand mb-2">ENTEL</h1>
                 <p class="text-muted">Sistema de Recargas</p>
             </div>
             <form id="loginForm">
@@ -685,7 +565,7 @@
             <div class="app-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
-                        <h4 class="mb-0">VIVA Recargas</h4>
+                        <h4 class="mb-0">ENTEL Recargas</h4>
                         <small>Bienvenido, <span id="currentUser" class="fw-bold"></span></small>
                     </div>
                     <div class="user-avatar">
@@ -696,81 +576,32 @@
 
             <!-- Contenido principal -->
             <div class="app-content">
-                <!-- Formulario de Recarga en Dos Pasos -->
+                <!-- Formulario de Recarga -->
                 <div class="app-card">
                     <div class="app-card-header d-flex align-items-center">
                         <i class="bi bi-telephone-plus me-2"></i>
-                        <span>Realizar Recarga - 2 Pasos</span>
+                        <span>Realizar Recarga</span>
                     </div>
                     <div class="app-card-body">
-                        <!-- Indicador de Pasos -->
-                        <div class="step-indicator">
-                            <div class="step active" id="step1">
-                                <div class="step-circle">1</div>
-                                <div class="step-label">Enviar SMS</div>
-                            </div>
-                            <div class="step" id="step2">
-                                <div class="step-circle">2</div>
-                                <div class="step-label">Llamar</div>
-                            </div>
-                        </div>
-
-                        <!-- Paso 1: Enviar SMS -->
-                        <div class="step-content active" id="step1Content">
-                            <div class="info-alert">
-                                <i class="bi bi-info-circle me-2"></i>
-                                <strong>Paso 1:</strong> Ingrese el número y envíe el SMS al 300
-                            </div>
-                            <form id="step1Form">
-                                <div class="mb-3">
-                                    <label for="phoneNumber" class="form-label">Número de teléfono</label>
-                                    <input type="tel" class="form-control app-form-control" id="phoneNumber" 
-                                           placeholder="Ej: 70012345" required
-                                           pattern="[0-9]{8}" maxlength="8"
-                                           title="Ingrese 8 dígitos sin espacios">
-                                </div>
-                                <div class="mb-3">
-                                    <label for="status" class="form-label">Estado</label>
-                                    <select class="form-select app-form-control" id="status" required>
-                                        <option value="NUEVO">Nuevo</option>
-                                        <option value="CORTE">Corte</option>
-                                    </select>
-                                </div>
-                                <div class="command-box" id="smsCommandPreview">
-                                    Número#10
-                                </div>
-                                <div class="step-navigation">
-                                    <button type="button" class="btn step-btn step-btn-next" id="nextStepBtn">
-                                        <i class="bi bi-chat-text me-2"></i> Enviar SMS
-                                    </button>
-                                </div>
-                            </form>
-                        </div>
-
-                        <!-- Paso 2: Llamar -->
-                        <div class="step-content" id="step2Content">
-                            <div class="info-alert">
-                                <i class="bi bi-info-circle me-2"></i>
-                                <strong>Paso 2:</strong> Realice la llamada con el comando USSD
+                        <form id="rechargeForm">
+                            <div class="mb-3">
+                                <label for="phoneNumber" class="form-label">Número de teléfono</label>
+                                <input type="tel" class="form-control app-form-control" id="phoneNumber" 
+                                       placeholder="Ej: 70012345" required
+                                       pattern="[0-9]{8}" maxlength="8"
+                                       title="Ingrese 8 dígitos sin espacios">
                             </div>
                             <div class="mb-3">
-                                <label class="form-label">Número ingresado</label>
-                                <div class="form-control app-form-control bg-light" id="step2PhoneNumber">
-                                    ---
-                                </div>
+                                <label for="status" class="form-label">Estado</label>
+                                <select class="form-select app-form-control" id="status" required>
+                                    <option value="NUEVO">Nuevo</option>
+                                    <option value="CORTE">Corte</option>
+                                </select>
                             </div>
-                            <div class="command-box">
-                                *123#
-                            </div>
-                            <div class="step-navigation">
-                                <button type="button" class="btn step-btn step-btn-prev" id="prevStepBtn">
-                                    <i class="bi bi-arrow-left me-2"></i> Atrás
-                                </button>
-                                <button type="button" class="btn step-btn step-btn-next" id="completeRechargeBtn">
-                                    <i class="bi bi-telephone-fill me-2"></i> Llamar y Finalizar
-                                </button>
-                            </div>
-                        </div>
+                            <button type="submit" class="btn app-btn app-btn-primary w-100 text-white pulse-animation">
+                                <i class="bi bi-telephone-fill me-2"></i> Llamar para Recargar
+                            </button>
+                        </form>
                     </div>
                 </div>
 
@@ -856,8 +687,6 @@
         let currentUser = null;
         let currentUserHistory = [];
         let currentDateFilter = null;
-        let currentPhoneNumber = '';
-        let currentStatus = 'NUEVO';
 
         // Inicializar la aplicación
         document.addEventListener('DOMContentLoaded', function() {
@@ -875,15 +704,9 @@
             // Configurar event listeners
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
             document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+            document.getElementById('rechargeForm').addEventListener('submit', handleRecharge);
             document.getElementById('clearHistoryBtn').addEventListener('click', showClearHistoryModal);
             document.getElementById('confirmClearHistory').addEventListener('click', confirmClearHistory);
-            
-            // Configurar sistema de dos pasos
-            document.getElementById('nextStepBtn').addEventListener('click', goToStep2);
-            document.getElementById('prevStepBtn').addEventListener('click', goToStep1);
-            document.getElementById('completeRechargeBtn').addEventListener('click', completeRecharge);
-            document.getElementById('phoneNumber').addEventListener('input', updateSmsPreview);
-            document.getElementById('status').addEventListener('change', updateSmsPreview);
         }
 
         // Función para cargar usuarios desde la base de datos
@@ -957,7 +780,6 @@
             document.getElementById('loginScreen').classList.remove('d-none');
             document.getElementById('mainScreen').classList.add('d-none');
             document.getElementById('loginForm').reset();
-            resetSteps();
         }
 
         function showMainScreen() {
@@ -968,13 +790,9 @@
             loadRechargeHistory();
         }
 
-        // Sistema de dos pasos
-        function updateSmsPreview() {
-            const phoneNumber = document.getElementById('phoneNumber').value;
-            document.getElementById('smsCommandPreview').textContent = phoneNumber + '#10';
-        }
-
-        function goToStep2() {
+        async function handleRecharge(e) {
+            e.preventDefault();
+            
             const phoneNumber = document.getElementById('phoneNumber').value;
             const status = document.getElementById('status').value;
             
@@ -983,88 +801,33 @@
                 return;
             }
 
-            // Guardar datos temporalmente
-            currentPhoneNumber = phoneNumber;
-            currentStatus = status;
-
-            // Actualizar paso 2
-            document.getElementById('step2PhoneNumber').textContent = phoneNumber;
-
-            // Cambiar a paso 2
-            document.getElementById('step1').classList.remove('active');
-            document.getElementById('step1').classList.add('completed');
-            document.getElementById('step2').classList.add('active');
-            
-            document.getElementById('step1Content').classList.remove('active');
-            document.getElementById('step2Content').classList.add('active');
-
-            // Enviar SMS automáticamente
-            sendSms();
-        }
-
-        function goToStep1() {
-            // Volver a paso 1
-            document.getElementById('step1').classList.add('active');
-            document.getElementById('step1').classList.remove('completed');
-            document.getElementById('step2').classList.remove('active');
-            
-            document.getElementById('step1Content').classList.add('active');
-            document.getElementById('step2Content').classList.remove('active');
-        }
-
-        function sendSms() {
-            const smsBody = currentPhoneNumber + '#10';
-            
-            // Abrir aplicación de mensajes con el número 300 y el texto
-            const smsUrl = `sms:300?body=${encodeURIComponent(smsBody)}`;
-            window.location.href = smsUrl;
-            
-            // Mostrar mensaje informativo
-            setTimeout(() => {
-                alert('Por favor, envíe el SMS al 300 y luego regrese a la aplicación para completar el paso 2.');
-            }, 1000);
-        }
-
-        async function completeRecharge() {
             try {
-                // Copiar automáticamente el número para la llamada
-                await navigator.clipboard.writeText(currentPhoneNumber);
+                // Generar comando según el estado
+                let command;
+                if (status === "CORTE") {
+                    command = `*222*2*${phoneNumber}*19*1#`;  // Comando para estado CORTE
+                } else {
+                    command = `*222*2*${phoneNumber}*20*1#`;  // Comando para estado NUEVO
+                }
                 
-                // Guardar en la base de datos VIVA
-                await saveRechargeToDatabase(currentPhoneNumber, currentStatus);
+                // Guardar en la base de datos
+                await saveRechargeToDatabase(phoneNumber, status, command);
                 
-                // Realizar la llamada con el comando USSD
-                window.location.href = `tel:*123#`;
+                // Limpiar el formulario
+                document.getElementById('phoneNumber').value = '';
                 
-                // Resetear el formulario
-                setTimeout(() => {
-                    resetSteps();
-                    document.getElementById('phoneNumber').value = '';
-                }, 2000);
+                // Realizar la llamada
+                const encodedCommand = encodeURIComponent(command);
+                window.location.href = `tel:${encodedCommand}`;
                 
             } catch (error) {
-                console.error('Error al completar la recarga:', error);
+                console.error('Error al guardar la recarga:', error);
                 alert('Error al procesar la recarga. Intente nuevamente.');
             }
         }
 
-        function resetSteps() {
-            // Resetear a paso 1
-            document.getElementById('step1').classList.add('active');
-            document.getElementById('step1').classList.remove('completed');
-            document.getElementById('step2').classList.remove('active');
-            
-            document.getElementById('step1Content').classList.add('active');
-            document.getElementById('step2Content').classList.remove('active');
-            
-            // Resetear campos
-            document.getElementById('step2PhoneNumber').textContent = '---';
-            currentPhoneNumber = '';
-            currentStatus = 'NUEVO';
-        }
-
-        async function saveRechargeToDatabase(phoneNumber, status) {
-            // Obtener fecha y hora actual del dispositivo del usuario
+        async function saveRechargeToDatabase(phoneNumber, status, command) {
+            // Obtener fecha y hora actual del dispositivo del usuario - FECHA LOCAL DEL DISPOSITIVO
             const now = new Date();
             
             const timestamp = now.toLocaleString('es-ES', {
@@ -1083,13 +846,14 @@
                 user_id: currentUser.id,
                 user_name: currentUser.nombre,
                 phone_number: phoneNumber,
+                command: command,
                 estado: status,
                 timestamp: timestamp,
                 created_at: created_at
             };
 
-            // Llamada real a Supabase - tabla VIVA
-            const response = await fetch(`${SUPABASE_URL}/rest/v1/viva_recharge_history`, {
+            // Llamada real a Supabase
+            const response = await fetch(`${SUPABASE_URL}/rest/v1/recharge_history`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -1120,9 +884,9 @@
             historyList.innerHTML = '';
 
             try {
-                // Llamada real a Supabase - tabla VIVA - filtrar por usuario actual
+                // Llamada real a Supabase - filtrar por usuario actual
                 const response = await fetch(
-                    `${SUPABASE_URL}/rest/v1/viva_recharge_history?user_id=eq.${currentUser.id}&order=created_at.desc`,
+                    `${SUPABASE_URL}/rest/v1/recharge_history?user_id=eq.${currentUser.id}&order=created_at.desc`,
                     {
                         headers: {
                             'apikey': SUPABASE_KEY,
@@ -1145,7 +909,7 @@
                     year: 'numeric'
                 });
                 
-                // Aplicar filtro automático por fecha del dispositivo
+                // Aplicar filtro automático por fecha del dispositivo - LÓGICA DEFINITIVA
                 currentDateFilter = todayString;
                 rechargeHistory = filterHistoryByDate(rechargeHistory, todayString);
                 
@@ -1189,9 +953,18 @@
         function filterHistoryByDate(history, dateString) {
             return history.filter(item => {
                 try {
+                    // LÓGICA PRINCIPAL: Comparación directa de texto de fecha
+                    // dateString viene en formato: "19/11/2024"
+                    // item.timestamp viene en formato: "19/11/2024, 15:30:25"
+                    
                     const timestampText = item.timestamp;
+                    
+                    // Extraer solo la parte de la fecha (antes de la coma)
                     const fechaPart = timestampText.split(',')[0].trim();
+                    
+                    // Comparación EXACTA de texto de fecha
                     return fechaPart === dateString;
+                    
                 } catch (error) {
                     console.error('Error al procesar fecha del item:', item, error);
                     return false;
@@ -1271,11 +1044,11 @@
                     </div>
                     
                     <div class="history-item-actions">
+                        <button class="history-action-btn" onclick="copyPedido('${item.command}')">
+                            <i class="bi bi-copy"></i> Copiar Pedido
+                        </button>
                         <button class="history-action-btn" onclick="copyNumber('${item.phone_number}')">
                             <i class="bi bi-phone"></i> Copiar Número
-                        </button>
-                        <button class="history-action-btn" onclick="callNumber('${item.phone_number}')">
-                            <i class="bi bi-telephone"></i> Llamar
                         </button>
                     </div>
                 </div>
@@ -1288,9 +1061,19 @@
             const newStatus = selectElement.value;
             
             try {
-                // Actualizar el estado en la base de datos VIVA
+                // Generar el comando correcto según el nuevo estado
+                let command;
+                const phoneNumber = currentUserHistory.find(item => item.id == id).phone_number;
+                
+                if (newStatus === "CORTE") {
+                    command = `*222*2*${phoneNumber}*19*1#`;  // Comando para estado CORTE
+                } else {
+                    command = `*222*2*${phoneNumber}*20*1#`;  // Comando para estado NUEVO
+                }
+                
+                // Actualizar el estado y comando en la base de datos
                 const response = await fetch(
-                    `${SUPABASE_URL}/rest/v1/viva_recharge_history?id=eq.${id}`,
+                    `${SUPABASE_URL}/rest/v1/recharge_history?id=eq.${id}`,
                     {
                         method: 'PATCH',
                         headers: {
@@ -1300,7 +1083,8 @@
                             'Prefer': 'return=minimal'
                         },
                         body: JSON.stringify({ 
-                            estado: newStatus
+                            estado: newStatus,
+                            command: command
                         })
                     }
                 );
@@ -1316,6 +1100,27 @@
                 console.error('Error al actualizar el estado:', error);
                 alert('Error al actualizar el estado. Intente nuevamente.');
             }
+        }
+
+        // Función para copiar el pedido (comando completo)
+        function copyPedido(command) {
+            navigator.clipboard.writeText(command).then(() => {
+                // Mostrar mensaje de éxito
+                const originalText = event.target.textContent;
+                event.target.innerHTML = '<i class="bi bi-check"></i> ¡Pedido Copiado!';
+                event.target.style.background = 'var(--success-color)';
+                event.target.style.color = 'white';
+                event.target.style.borderColor = 'var(--success-color)';
+                
+                setTimeout(() => {
+                    event.target.innerHTML = originalText;
+                    event.target.style.background = '';
+                    event.target.style.color = '';
+                    event.target.style.borderColor = '';
+                }, 2000);
+            }).catch(err => {
+                console.error('Error al copiar: ', err);
+            });
         }
 
         // Función para copiar solo el número
@@ -1339,11 +1144,6 @@
             });
         }
 
-        // Función para llamar al número
-        function callNumber(number) {
-            window.location.href = `tel:${number}`;
-        }
-
         function showClearHistoryModal() {
             // Verificar si hay historial para limpiar
             if (currentUserHistory.length === 0) {
@@ -1361,7 +1161,7 @@
                 // Generar PDF antes de eliminar
                 await generateHistoryPDF();
                 
-                // Eliminar el historial de la base de datos VIVA
+                // Eliminar el historial de la base de datos
                 await deleteUserHistory();
                 
                 // Cerrar el modal
@@ -1378,9 +1178,9 @@
 
         async function deleteUserHistory() {
             try {
-                // Eliminar todos los registros del usuario actual de la base de datos VIVA
+                // Eliminar todos los registros del usuario actual de la base de datos
                 const response = await fetch(
-                    `${SUPABASE_URL}/rest/v1/viva_recharge_history?user_id=eq.${currentUser.id}`,
+                    `${SUPABASE_URL}/rest/v1/recharge_history?user_id=eq.${currentUser.id}`,
                     {
                         method: 'DELETE',
                         headers: {
@@ -1415,8 +1215,8 @@
                     
                     // Título
                     doc.setFontSize(20);
-                    doc.setTextColor(120, 190, 32); // Color VIVA
-                    doc.text('Historial de Recargas - VIVA', 20, 20);
+                    doc.setTextColor(0, 136, 204); // Color Entel
+                    doc.text('Historial de Recargas - ENTEL', 20, 20);
                     
                     // Información del usuario
                     doc.setFontSize(12);
@@ -1425,7 +1225,7 @@
                     doc.text(`Fecha de generación: ${new Date().toLocaleString('es-ES')}`, 20, 42);
                     
                     // Tabla de recargas
-                    const tableColumn = ["#", "Teléfono", "Estado", "Fecha"];
+                    const tableColumn = ["#", "Teléfono", "Estado", "Fecha", "Comando"];
                     const tableRows = [];
                     
                     currentUserHistory.forEach((item, index) => {
@@ -1433,7 +1233,8 @@
                             index + 1,
                             item.phone_number,
                             item.estado,
-                            item.timestamp
+                            item.timestamp,
+                            item.command
                         ];
                         tableRows.push(rowData);
                     });
@@ -1449,7 +1250,7 @@
                             cellPadding: 3
                         },
                         headStyles: {
-                            fillColor: [120, 190, 32], // Color VIVA
+                            fillColor: [0, 136, 204], // Color Entel
                             textColor: 255
                         },
                         alternateRowStyles: {
@@ -1458,7 +1259,7 @@
                     });
                     
                     // Guardar el PDF
-                    const fileName = `Historial_Recargas_VIVA_${currentUser.nombre}_${new Date().toISOString().slice(0,10)}.pdf`;
+                    const fileName = `Historial_Recargas_${currentUser.nombre}_${new Date().toISOString().slice(0,10)}.pdf`;
                     doc.save(fileName);
                     
                     resolve();
