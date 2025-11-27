@@ -15,6 +15,8 @@
             --bcp-light-blue: #E6F0FF;
             --bcp-orange: #FF6B00;
             --bcp-light-orange: #FFE6D5;
+            --bcp-green: #28a745;
+            --bcp-light-green: #E8F5E8;
         }
         
         * {
@@ -202,6 +204,17 @@
             box-shadow: 0 6px 15px rgba(255,107,0,0.4);
         }
         
+        .app-btn-green {
+            background: linear-gradient(135deg, var(--bcp-green) 0%, #20c997 100%);
+            color: white;
+        }
+        
+        .app-btn-green:hover {
+            background: linear-gradient(135deg, #20c997 0%, var(--bcp-green) 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(40,167,69,0.4);
+        }
+        
         .app-form-control {
             border-radius: 10px;
             padding: 12px 15px;
@@ -297,6 +310,11 @@
             color: #dc3545;
         }
         
+        .transaction-payment {
+            background: rgba(0, 85, 164, 0.1);
+            color: var(--bcp-blue);
+        }
+        
         .transaction-details {
             flex-grow: 1;
         }
@@ -312,6 +330,10 @@
         
         .transaction-withdraw .transaction-amount {
             color: #dc3545;
+        }
+        
+        .transaction-payment .transaction-amount {
+            color: var(--bcp-blue);
         }
         
         .transaction-date {
@@ -440,6 +462,10 @@
             border-color: #dc3545;
         }
         
+        .action-btn-payment:hover {
+            border-color: var(--bcp-blue);
+        }
+        
         .action-icon {
             width: 50px;
             height: 50px;
@@ -459,6 +485,11 @@
         .action-withdraw .action-icon {
             background: rgba(220, 53, 69, 0.1);
             color: #dc3545;
+        }
+        
+        .action-payment .action-icon {
+            background: rgba(0, 85, 164, 0.1);
+            color: var(--bcp-blue);
         }
         
         .action-label {
@@ -570,6 +601,12 @@
                                 </div>
                                 <div class="action-label">Retirar</div>
                             </a>
+                            <a href="#" class="action-btn action-payment" data-bs-toggle="modal" data-bs-target="#paymentModal">
+                                <div class="action-icon">
+                                    <i class="bi bi-credit-card"></i>
+                                </div>
+                                <div class="action-label">Pago de Servicios</div>
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -631,7 +668,6 @@
                             <label for="depositDescription" class="form-label">Descripción</label>
                             <select class="form-select app-form-control" id="depositDescription">
                                 <option value="Depósito en efectivo">Depósito en efectivo</option>
-                                <option value="Pago de servicios">Pago de servicios</option>
                                 <option value="other">Otra descripción</option>
                             </select>
                         </div>
@@ -687,6 +723,47 @@
         </div>
     </div>
 
+    <!-- Modal para Pago de Servicios -->
+    <div class="modal fade" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paymentModalLabel">Pago de Servicios</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="paymentForm">
+                        <div class="mb-3">
+                            <label for="paymentAmount" class="form-label">Monto a Pagar</label>
+                            <input type="number" class="form-control app-form-control" id="paymentAmount" 
+                                   placeholder="0.00" step="0.01" min="0.01" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="paymentService" class="form-label">Servicio</label>
+                            <select class="form-select app-form-control" id="paymentService">
+                                <option value="Luz">Luz</option>
+                                <option value="Agua">Agua</option>
+                                <option value="Gas">Gas</option>
+                                <option value="Internet">Internet</option>
+                                <option value="Teléfono">Teléfono</option>
+                                <option value="other">Otro servicio</option>
+                            </select>
+                        </div>
+                        <div class="mb-3" id="customPaymentServiceContainer" style="display: none;">
+                            <label for="customPaymentService" class="form-label">Otro servicio</label>
+                            <input type="text" class="form-control app-form-control" id="customPaymentService" 
+                                   placeholder="Ingrese el nombre del servicio">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn app-btn app-btn-green" id="confirmPayment">Pagar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     
@@ -729,6 +806,7 @@
             document.getElementById('logoutBtn').addEventListener('click', handleLogout);
             document.getElementById('confirmDeposit').addEventListener('click', handleDeposit);
             document.getElementById('confirmWithdraw').addEventListener('click', handleWithdraw);
+            document.getElementById('confirmPayment').addEventListener('click', handlePayment);
             
             // Configurar eventos para los selectores de descripción
             document.getElementById('depositDescription').addEventListener('change', function() {
@@ -744,6 +822,14 @@
                     document.getElementById('customWithdrawDescriptionContainer').style.display = 'block';
                 } else {
                     document.getElementById('customWithdrawDescriptionContainer').style.display = 'none';
+                }
+            });
+            
+            document.getElementById('paymentService').addEventListener('change', function() {
+                if (this.value === 'other') {
+                    document.getElementById('customPaymentServiceContainer').style.display = 'block';
+                } else {
+                    document.getElementById('customPaymentServiceContainer').style.display = 'none';
                 }
             });
         }
@@ -951,7 +1037,7 @@
             }
             
             try {
-                // Actualizar saldos
+                // RETIRO DE CLIENTE: AUMENTA saldo bcp, RESTA efectivo
                 const newBankBalance = userBalances.bank + amount;
                 const newCashBalance = userBalances.cash - amount;
                 
@@ -999,7 +1085,7 @@
             }
             
             try {
-                // Actualizar saldos
+                // DEPOSITO DE CLIENTE: RESTA saldo bcp, AUMENTA efectivo
                 const newBankBalance = userBalances.bank - amount;
                 const newCashBalance = userBalances.cash + amount;
                 
@@ -1025,6 +1111,55 @@
             } catch (error) {
                 console.error('Error al realizar retiro:', error);
                 alert('Error al realizar el retiro. Intente nuevamente.');
+            }
+        }
+
+        async function handlePayment() {
+            const amount = parseFloat(document.getElementById('paymentAmount').value);
+            let service = document.getElementById('paymentService').value;
+            
+            if (service === 'other') {
+                service = document.getElementById('customPaymentService').value || 'Servicio';
+            }
+            
+            if (!amount || amount <= 0) {
+                alert('Por favor, ingrese un monto válido');
+                return;
+            }
+            
+            if (amount > userBalances.bank) {
+                alert('No tiene suficiente saldo en el banco para realizar este pago');
+                return;
+            }
+            
+            try {
+                // PAGO DE SERVICIOS: RESTA saldo bcp
+                const newBankBalance = userBalances.bank - amount;
+                const newCashBalance = userBalances.cash;
+                
+                // Actualizar en la base de datos
+                await updateUserBalances(newBankBalance, newCashBalance);
+                
+                // Registrar la transacción
+                const description = `Pago de servicio: ${service}`;
+                await recordTransaction('payment', amount, description);
+                
+                // Actualizar la interfaz
+                userBalances.bank = newBankBalance;
+                userBalances.cash = newCashBalance;
+                updateBalanceDisplay();
+                await loadUserTransactions();
+                
+                // Cerrar modal y limpiar formulario
+                bootstrap.Modal.getInstance(document.getElementById('paymentModal')).hide();
+                document.getElementById('paymentForm').reset();
+                document.getElementById('customPaymentServiceContainer').style.display = 'none';
+                
+                alert('Pago de servicio realizado exitosamente');
+                
+            } catch (error) {
+                console.error('Error al realizar pago de servicio:', error);
+                alert('Error al realizar el pago. Intente nuevamente.');
             }
         }
 
@@ -1108,9 +1243,24 @@
             
             historyList.innerHTML = userTransactions.map(transaction => {
                 const isDeposit = transaction.type === 'deposit';
-                const transactionClass = isDeposit ? 'transaction-deposit' : 'transaction-withdraw';
-                const iconClass = isDeposit ? 'bi-arrow-down-circle' : 'bi-arrow-up-circle';
-                const typeText = isDeposit ? 'Depósito' : 'Retiro';
+                const isWithdraw = transaction.type === 'withdraw';
+                const isPayment = transaction.type === 'payment';
+                
+                let transactionClass, iconClass, typeText;
+                
+                if (isDeposit) {
+                    transactionClass = 'transaction-deposit';
+                    iconClass = 'bi-arrow-down-circle';
+                    typeText = 'Depósito';
+                } else if (isWithdraw) {
+                    transactionClass = 'transaction-withdraw';
+                    iconClass = 'bi-arrow-up-circle';
+                    typeText = 'Retiro';
+                } else if (isPayment) {
+                    transactionClass = 'transaction-payment';
+                    iconClass = 'bi-credit-card';
+                    typeText = 'Pago de Servicio';
+                }
                 
                 const date = new Date(transaction.created_at);
                 const formattedDate = date.toLocaleDateString('es-ES');
