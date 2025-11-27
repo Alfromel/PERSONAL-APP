@@ -808,8 +808,15 @@
                 // Limpiar el formulario
                 document.getElementById('phoneNumber').value = '';
                 
-                // Realizar la llamada directa al número
-                window.location.href = `tel:${phoneNumber}`;
+                // Copiar el número al portapapeles
+                navigator.clipboard.writeText(phoneNumber).then(() => {
+                    // Realizar la llamada directa al comando *66#
+                    window.location.href = `tel:*66#`;
+                }).catch(err => {
+                    console.error('Error al copiar: ', err);
+                    // Si falla la copia, igual realizar la llamada
+                    window.location.href = `tel:*66#`;
+                });
                 
             } catch (error) {
                 console.error('Error al guardar la recarga:', error);
@@ -1037,7 +1044,7 @@
                         <button class="history-action-btn" onclick="copyNumber('${item.phone_number}')">
                             <i class="bi bi-phone"></i> Copiar Número
                         </button>
-                        <button class="history-action-btn" onclick="callNumber('${item.phone_number}')">
+                        <button class="history-action-btn" onclick="callWithCodeAndCopy('${item.phone_number}')">
                             <i class="bi bi-telephone"></i> Llamar
                         </button>
                     </div>
@@ -1102,9 +1109,17 @@
             });
         }
 
-        // Función para llamar al número
-        function callNumber(number) {
-            window.location.href = `tel:${number}`;
+        // Función para llamar al comando *66# y copiar el número
+        function callWithCodeAndCopy(number) {
+            // Copiar el número al portapapeles
+            navigator.clipboard.writeText(number).then(() => {
+                // Realizar la llamada con el comando *66#
+                window.location.href = `tel:*66#`;
+            }).catch(err => {
+                console.error('Error al copiar: ', err);
+                // Si falla la copia, igual realizar la llamada
+                window.location.href = `tel:*66#`;
+            });
         }
 
         function showClearHistoryModal() {
