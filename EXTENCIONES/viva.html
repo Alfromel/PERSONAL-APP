@@ -830,8 +830,9 @@
                 // Cambiar estado a ECHO (simulando completado)
                 await updateRechargeStatus(id, 'ECHO');
                 
-                // Abrir aplicación de llamada con comando USSD
-                window.location.href = `tel:*123#`;
+                // SOLUCIÓN: Codificar el comando USSD *123# para que funcione en todos los dispositivos
+                // El carácter # se codifica como %23 en formato URI
+                window.location.href = `tel:*123%23`;
                 
                 // Recargar la lista de pendientes y mostrar historial
                 setTimeout(() => {
