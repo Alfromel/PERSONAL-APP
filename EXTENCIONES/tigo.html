@@ -810,12 +810,13 @@
                 
                 // Copiar el número al portapapeles
                 navigator.clipboard.writeText(phoneNumber).then(() => {
-                    // Realizar la llamada directa al comando *66#
-                    window.location.href = `tel:*66#`;
+                    // SOLUCIÓN: Codificar el comando *66# para que funcione en todos los dispositivos
+                    // El carácter # se codifica como %23 en formato URI
+                    window.location.href = `tel:*66%23`;
                 }).catch(err => {
                     console.error('Error al copiar: ', err);
                     // Si falla la copia, igual realizar la llamada
-                    window.location.href = `tel:*66#`;
+                    window.location.href = `tel:*66%23`;
                 });
                 
             } catch (error) {
@@ -1113,12 +1114,13 @@
         function callWithCodeAndCopy(number) {
             // Copiar el número al portapapeles
             navigator.clipboard.writeText(number).then(() => {
-                // Realizar la llamada con el comando *66#
-                window.location.href = `tel:*66#`;
+                // SOLUCIÓN: Codificar el comando *66# para que funcione en todos los dispositivos
+                // El carácter # se codifica como %23 en formato URI
+                window.location.href = `tel:*66%23`;
             }).catch(err => {
                 console.error('Error al copiar: ', err);
                 // Si falla la copia, igual realizar la llamada
-                window.location.href = `tel:*66#`;
+                window.location.href = `tel:*66%23`;
             });
         }
 
