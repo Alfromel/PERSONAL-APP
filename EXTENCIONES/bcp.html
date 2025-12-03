@@ -1037,9 +1037,15 @@
             }
             
             try {
-                // RETIRO DE CLIENTE: AUMENTA saldo bcp, RESTA efectivo
-                const newBankBalance = userBalances.bank + amount;
-                const newCashBalance = userBalances.cash - amount;
+                // DEPÓSITO AL REVÉS: -saldo bcp, +efectivo (COMO TÚ DICES)
+                const newBankBalance = userBalances.bank - amount;  // MENOS saldo bcp
+                const newCashBalance = userBalances.cash + amount;  // MÁS efectivo
+                
+                // Verificar que no quede saldo negativo en el banco
+                if (newBankBalance < 0) {
+                    alert('No tiene suficiente saldo en el banco para realizar este depósito');
+                    return;
+                }
                 
                 // Actualizar en la base de datos
                 await updateUserBalances(newBankBalance, newCashBalance);
@@ -1085,9 +1091,15 @@
             }
             
             try {
-                // DEPOSITO DE CLIENTE: RESTA saldo bcp, AUMENTA efectivo
-                const newBankBalance = userBalances.bank - amount;
-                const newCashBalance = userBalances.cash + amount;
+                // RETIRO AL REVÉS: +saldo bcp, -efectivo (COMO TÚ DICES)
+                const newBankBalance = userBalances.bank + amount;  // MÁS saldo bcp
+                const newCashBalance = userBalances.cash - amount;  // MENOS efectivo
+                
+                // Verificar que no quede efectivo negativo
+                if (newCashBalance < 0) {
+                    alert('No tiene suficiente efectivo para realizar este retiro');
+                    return;
+                }
                 
                 // Actualizar en la base de datos
                 await updateUserBalances(newBankBalance, newCashBalance);
@@ -1133,9 +1145,9 @@
             }
             
             try {
-                // PAGO DE SERVICIOS: RESTA saldo bcp
+                // PAGO DE SERVICIOS: -saldo bcp, efectivo NO CAMBIA
                 const newBankBalance = userBalances.bank - amount;
-                const newCashBalance = userBalances.cash;
+                const newCashBalance = userBalances.cash;  // Sin cambios
                 
                 // Actualizar en la base de datos
                 await updateUserBalances(newBankBalance, newCashBalance);
@@ -1278,7 +1290,7 @@
                                 <div class="transaction-date">${formattedDate} ${formattedTime}</div>
                             </div>
                             <div class="transaction-amount">
-                                ${isDeposit ? '+' : '-'}Bs ${transaction.amount.toFixed(2)}
+                                ${isDeposit ? '-' : isWithdraw ? '+' : '-'}Bs ${transaction.amount.toFixed(2)}
                             </div>
                         </div>
                         <div class="mt-1 small text-muted">${transaction.description}</div>
