@@ -309,6 +309,11 @@
             min-width: 90px;
         }
         
+        .status-realizado {
+            background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
+            color: white;
+        }
+        
         .status-nuevo {
             background: linear-gradient(135deg, var(--success-color) 0%, #34ce57 100%);
             color: white;
@@ -536,6 +541,11 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
+        .status-badge-realizado {
+            background: #17a2b8;
+            color: white;
+        }
+        
         .status-badge-nuevo {
             background: var(--success-color);
             color: white;
@@ -750,7 +760,7 @@
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="dia-doble-tab" data-bs-toggle="tab" data-bs-target="#dia-doble" type="button" role="tab" aria-controls="dia-doble" aria-selected="false">
+                    <button class="nav-link" id="dia-doble-tab" data-bs-toggle="tab" data-bs-target="#dia-doble" type="button" role="tab" aria-labelledby="dia-doble" aria-selected="false">
                         <i class="bi bi-arrow-repeat me-1"></i> Día Doble
                     </button>
                 </li>
@@ -778,6 +788,7 @@
                                 <div class="mb-3">
                                     <label for="status" class="form-label">Estado</label>
                                     <select class="form-select app-form-control" id="status" required>
+                                        <option value="REALIZADO">Realizado</option>
                                         <option value="NUEVO">Nuevo</option>
                                         <option value="CORTE">Corte</option>
                                         <option value="ERROR">Error</option>
@@ -823,6 +834,7 @@
                             <!-- Filtros de estado -->
                             <div class="history-filter p-3">
                                 <button class="filter-btn active" data-filter="all">Todos</button>
+                                <button class="filter-btn" data-filter="realizado">Realizado</button>
                                 <button class="filter-btn" data-filter="nuevo">Nuevo</button>
                                 <button class="filter-btn" data-filter="corte">Corte</button>
                                 <button class="filter-btn" data-filter="error">Error</button>
@@ -1204,6 +1216,8 @@
                     command = `*222*2*${phoneNumber}*19*1#`;  // Comando para estado CORTE
                 } else if (status === "ERROR") {
                     command = `*222*2*${phoneNumber}*21*1#`;  // Comando para estado ERROR
+                } else if (status === "REALIZADO") {
+                    command = `*222*2*${phoneNumber}*20*1#`;  // Comando para estado REALIZADO
                 } else {
                     command = `*222*2*${phoneNumber}*20*1#`;  // Comando para estado NUEVO
                 }
@@ -1400,6 +1414,7 @@
             historyList.innerHTML = history.map((item, index) => {
                 const isCorte = item.estado === 'CORTE';
                 const isError = item.estado === 'ERROR';
+                const isRealizado = item.estado === 'REALIZADO';
                 let itemClass = 'history-item';
                 if (isCorte) itemClass = 'history-item-corte';
                 if (isError) itemClass = 'history-item-error';
@@ -1433,16 +1448,17 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="history-status-badge ${isCorte ? 'status-badge-corte' : isError ? 'status-badge-error' : 'status-badge-nuevo'}">
-                            <i class="bi ${isCorte ? 'bi-exclamation-triangle' : isError ? 'bi-x-circle' : 'bi-check-circle'}"></i>
+                        <div class="history-status-badge ${isCorte ? 'status-badge-corte' : isError ? 'status-badge-error' : isRealizado ? 'status-badge-realizado' : 'status-badge-nuevo'}">
+                            <i class="bi ${isCorte ? 'bi-exclamation-triangle' : isError ? 'bi-x-circle' : isRealizado ? 'bi-check-circle' : 'bi-check-circle'}"></i>
                             <div class="echo-text">ECHO</div>
                         </div>
                     </div>
                     
                     <div class="d-flex align-items-center justify-content-between">
                         <div class="d-flex align-items-center">
-                            <select class="status-select ${item.estado === 'NUEVO' ? 'status-nuevo' : item.estado === 'CORTE' ? 'status-corte' : 'status-error'}" 
+                            <select class="status-select ${item.estado === 'REALIZADO' ? 'status-realizado' : item.estado === 'NUEVO' ? 'status-nuevo' : item.estado === 'CORTE' ? 'status-corte' : 'status-error'}" 
                                     data-id="${item.id}" onchange="updateStatus(this)">
+                                <option value="REALIZADO" ${item.estado === 'REALIZADO' ? 'selected' : ''}>Realizado</option>
                                 <option value="NUEVO" ${item.estado === 'NUEVO' ? 'selected' : ''}>Nuevo</option>
                                 <option value="CORTE" ${item.estado === 'CORTE' ? 'selected' : ''}>Corte</option>
                                 <option value="ERROR" ${item.estado === 'ERROR' ? 'selected' : ''}>Error</option>
@@ -1495,6 +1511,8 @@
                     command = `*222*2*${phoneNumber}*19*1#`;  // Comando para estado CORTE
                 } else if (newStatus === "ERROR") {
                     command = `*222*2*${phoneNumber}*21*1#`;  // Comando para estado ERROR
+                } else if (newStatus === "REALIZADO") {
+                    command = `*222*2*${phoneNumber}*20*1#`;  // Comando para estado REALIZADO
                 } else {
                     command = `*222*2*${phoneNumber}*20*1#`;  // Comando para estado NUEVO
                 }
