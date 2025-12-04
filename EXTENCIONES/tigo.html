@@ -23,6 +23,7 @@
             --warning-color: #ffc107;
             --gray-color: #6c757d;
             --light-gray: #8b96a0;
+            --error-color: #dc3545;
         }
         
         body {
@@ -78,7 +79,17 @@
             border-radius: 0 8px 8px 0;
         }
         
-        .history-item:hover, .history-item-corte:hover {
+        .history-item-error {
+            border-left: 4px solid var(--error-color);
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.05) 0%, rgba(220, 53, 69, 0.12) 100%);
+            transition: all 0.3s;
+            position: relative;
+            padding: 15px;
+            margin-bottom: 8px;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .history-item:hover, .history-item-corte:hover, .history-item-error:hover {
             transform: translateX(3px);
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
@@ -148,8 +159,8 @@
         }
         
         .app-btn-primary {
-            background: linear-gradient(135deg, var(--tigo-color) 0%, var(--tigo-secondary) 100%);
-            color: white;
+            background: linear-gradient(135deg, var(--tigo-color) 0%, var(--tigo-secondary 100%));
+            color: rgb(32, 31, 31) ;
         }
         
         .app-btn-primary:hover {
@@ -206,6 +217,17 @@
         
         .corte-badge {
             background: linear-gradient(135deg, var(--danger-color) 0%, #e74c3c 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 5px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .error-badge {
+            background: linear-gradient(135deg, var(--error-color) 0%, #ff6b6b 100%);
             color: white;
             border-radius: 20px;
             padding: 5px 12px;
@@ -297,6 +319,11 @@
             color: white;
         }
         
+        .status-error {
+            background: linear-gradient(135deg, var(--error-color) 0%, #ff6b6b 100%);
+            color: white;
+        }
+        
         .status-select:focus {
             outline: none;
             box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
@@ -304,6 +331,16 @@
         
         .corte-indicator {
             color: var(--danger-color);
+            font-weight: bold;
+            font-size: 0.75rem;
+            background: rgba(220, 53, 69, 0.1);
+            padding: 3px 8px;
+            border-radius: 12px;
+            margin-left: 8px;
+        }
+        
+        .error-indicator {
+            color: var(--error-color);
             font-weight: bold;
             font-size: 0.75rem;
             background: rgba(220, 53, 69, 0.1);
@@ -509,6 +546,11 @@
             color: white;
         }
         
+        .status-badge-error {
+            background: var(--error-color);
+            color: white;
+        }
+        
         .phone-info {
             display: flex;
             align-items: center;
@@ -596,9 +638,10 @@
                                 <select class="form-select app-form-control" id="status" required>
                                     <option value="NUEVO">Nuevo</option>
                                     <option value="CORTE">Corte</option>
+                                    <option value="ERROR">Error</option>
                                 </select>
                             </div>
-                            <button type="submit" class="btn app-btn app-btn-primary w-100 text-white pulse-animation">
+                            <button type="submit" class="btn app-btn app-btn-primary w-100  pulse-animation">
                                 <i class="bi bi-telephone-fill me-2"></i> Llamar para Recargar
                             </button>
                         </form>
@@ -615,6 +658,7 @@
                         <div class="d-flex align-items-center">
                             <span class="history-badge" id="historyCount">0</span>
                             <span class="corte-badge" id="corteCount">0</span>
+                            <span class="error-badge" id="errorCount">0</span>
                             <button id="clearHistoryBtn" class="clear-history-btn ms-2" title="Descargar PDF y eliminar historial">
                                 <i class="bi bi-trash"></i>
                             </button>
@@ -974,28 +1018,36 @@
             const historyList = document.getElementById('historyList');
             const historyCount = document.getElementById('historyCount');
             const corteCount = document.getElementById('corteCount');
+            const errorCount = document.getElementById('errorCount');
             
             if (history.length === 0) {
                 historyList.innerHTML = '';
                 historyCount.textContent = '0';
                 corteCount.textContent = '0';
+                errorCount.textContent = '0';
                 return;
             }
 
             // Contar recargas por estado
-            const nonCorteHistory = history.filter(item => item.estado !== 'CORTE');
+            const nonCorteHistory = history.filter(item => item.estado === 'NUEVO');
             const corteHistoryCount = history.filter(item => item.estado === 'CORTE').length;
+            const errorHistoryCount = history.filter(item => item.estado === 'ERROR').length;
             
             // Actualizar contadores
             historyCount.textContent = nonCorteHistory.length;
             corteCount.textContent = corteHistoryCount;
+            errorCount.textContent = errorHistoryCount;
             
             // Crear un array con todas las recargas numeradas correctamente
             let numeroActual = history.length;
             
             historyList.innerHTML = history.map((item, index) => {
                 const isCorte = item.estado === 'CORTE';
-                const itemClass = isCorte ? 'history-item-corte' : 'history-item';
+                const isError = item.estado === 'ERROR';
+                let itemClass = 'history-item';
+                if (isCorte) itemClass = 'history-item-corte';
+                if (isError) itemClass = 'history-item-error';
+                
                 const numero = numeroActual - index; // El más reciente tiene el número más alto
                 
                 // Verificar si es una recarga reciente (menos de 1 hora)
@@ -1005,6 +1057,18 @@
                 const diffMins = Math.floor(diffMs / 60000);
                 const isRecent = diffMins < 60;
                 
+                // Determinar clase de estado para badge y selector
+                let statusBadgeClass = 'status-badge-nuevo';
+                let statusSelectClass = 'status-nuevo';
+                if (isCorte) {
+                    statusBadgeClass = 'status-badge-corte';
+                    statusSelectClass = 'status-corte';
+                }
+                if (isError) {
+                    statusBadgeClass = 'status-badge-error';
+                    statusSelectClass = 'status-error';
+                }
+                
                 return `
                 <div class="${itemClass} p-3 border-bottom" data-status="${item.estado.toLowerCase()}" data-date="${item.created_at}">
                     ${isRecent ? '<div class="new-item-indicator"></div>' : ''}
@@ -1013,7 +1077,7 @@
                             <div class="numero-badge">${numero}</div>
                             <div class="history-item-content">
                                 <div class="phone-info">
-                                    <div class="phone-display ${isCorte ? 'text-danger' : 'text-primary'}">${item.phone_number}</div>
+                                    <div class="phone-display ${isCorte ? 'text-danger' : (isError ? 'text-danger' : 'text-primary')}">${item.phone_number}</div>
                                 </div>
                                 <div class="history-timestamp">
                                     <span class="user-info">
@@ -1025,19 +1089,21 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="history-status-badge ${isCorte ? 'status-badge-corte' : 'status-badge-nuevo'}">
-                            <i class="bi ${isCorte ? 'bi-exclamation-triangle' : 'bi-check-circle'}"></i>
+                        <div class="history-status-badge ${statusBadgeClass}">
+                            <i class="bi ${isCorte ? 'bi-exclamation-triangle' : (isError ? 'bi-exclamation-octagon' : 'bi-check-circle')}"></i>
                         </div>
                     </div>
                     
                     <div class="d-flex align-items-center justify-content-between">
                         <div class="d-flex align-items-center">
-                            <select class="status-select ${item.estado === 'NUEVO' ? 'status-nuevo' : 'status-corte'}" 
+                            <select class="status-select ${statusSelectClass}" 
                                     data-id="${item.id}" onchange="updateStatus(this)">
                                 <option value="NUEVO" ${item.estado === 'NUEVO' ? 'selected' : ''}>Nuevo</option>
                                 <option value="CORTE" ${item.estado === 'CORTE' ? 'selected' : ''}>Corte</option>
+                                <option value="ERROR" ${item.estado === 'ERROR' ? 'selected' : ''}>Error</option>
                             </select>
                             ${isCorte ? '<span class="corte-indicator"><i class="bi bi-exclamation-circle me-1"></i>EN CORTE</span>' : ''}
+                            ${isError ? '<span class="error-indicator"><i class="bi bi-exclamation-octagon me-1"></i>ERROR</span>' : ''}
                         </div>
                     </div>
                     
