@@ -1041,21 +1041,14 @@
                 return;
             }
             
-            if (amount > userBalances.cash) {
-                alert('No tiene suficiente efectivo para realizar este depósito');
-                isProcessing = false;
-                document.getElementById('confirmDeposit').disabled = false;
-                return;
-            }
-            
             try {
-                // DEPÓSITO AL REVÉS: -saldo bcp, +efectivo
+                // DEPÓSITO: -saldo bcp, +efectivo
                 const newBankBalance = userBalances.bank - amount;
                 const newCashBalance = userBalances.cash + amount;
                 
-                // Verificar que no quede saldo negativo en el banco
+                // Verificar que no quede saldo negativo en el banco al pasar al otro
                 if (newBankBalance < 0) {
-                    alert('No tiene suficiente saldo en el banco para realizar este depósito');
+                    alert('No puede realizar este depósito porque su saldo en el banco quedaría negativo. No hay suficiente saldo bancario para depositar esa cantidad.');
                     isProcessing = false;
                     document.getElementById('confirmDeposit').disabled = false;
                     return;
@@ -1109,21 +1102,14 @@
                 return;
             }
             
-            if (amount > userBalances.bank) {
-                alert('No tiene suficiente saldo en el banco para realizar este retiro');
-                isProcessing = false;
-                document.getElementById('confirmWithdraw').disabled = false;
-                return;
-            }
-            
             try {
-                // RETIRO AL REVÉS: +saldo bcp, -efectivo
+                // RETIRO: +saldo bcp, -efectivo
                 const newBankBalance = userBalances.bank + amount;
                 const newCashBalance = userBalances.cash - amount;
                 
-                // Verificar que no quede efectivo negativo
+                // Verificar que no quede efectivo negativo al pasar al otro
                 if (newCashBalance < 0) {
-                    alert('No tiene suficiente efectivo para realizar este retiro');
+                    alert('No puede realizar este retiro porque su efectivo quedaría negativo. No hay suficiente efectivo para retirar esa cantidad.');
                     isProcessing = false;
                     document.getElementById('confirmWithdraw').disabled = false;
                     return;
@@ -1177,17 +1163,18 @@
                 return;
             }
             
-            if (amount > userBalances.bank) {
-                alert('No tiene suficiente saldo en el banco para realizar este pago');
-                isProcessing = false;
-                document.getElementById('confirmPayment').disabled = false;
-                return;
-            }
-            
             try {
-                // PAGO DE SERVICIOS: -saldo bcp, +efectivo (MODIFICADO COMO SOLICITASTE)
+                // PAGO DE SERVICIOS: -saldo bcp, +efectivo
                 const newBankBalance = userBalances.bank - amount;
                 const newCashBalance = userBalances.cash + amount;
+                
+                // Verificar que no quede saldo negativo en el banco al pasar al otro
+                if (newBankBalance < 0) {
+                    alert('No puede realizar este pago porque su saldo en el banco quedaría negativo. No hay suficiente saldo bancario para pagar esa cantidad.');
+                    isProcessing = false;
+                    document.getElementById('confirmPayment').disabled = false;
+                    return;
+                }
                 
                 // Actualizar en la base de datos
                 await updateUserBalances(newBankBalance, newCashBalance);
