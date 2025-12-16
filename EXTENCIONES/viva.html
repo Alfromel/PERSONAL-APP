@@ -23,6 +23,7 @@
             --gray-color: #6c757d;
             --falta-color: #FFA500; /* Naranja para estado FALTA */
             --echo-color: #28a745;  /* Verde para estado ECHO */
+            --error-color: #dc3545; /* Rojo para estado ERROR */
         }
         
         body {
@@ -154,6 +155,11 @@
             background: linear-gradient(135deg, rgba(40, 167, 69, 0.05) 0%, rgba(40, 167, 69, 0.1) 100%);
         }
         
+        .history-item-error {
+            border-left: 4px solid var(--error-color);
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.05) 0%, rgba(220, 53, 69, 0.1) 100%);
+        }
+        
         .phone-display {
             font-family: 'Courier New', monospace;
             font-weight: bold;
@@ -180,6 +186,11 @@
         
         .badge-echo {
             background: var(--echo-color);
+            color: white;
+        }
+        
+        .badge-error {
+            background: var(--error-color);
             color: white;
         }
         
@@ -309,6 +320,22 @@
             justify-content: center;
             font-weight: bold;
             margin-right: 12px;
+        }
+        
+        .error-btn {
+            background: var(--error-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 15px;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+            margin-left: 8px;
+        }
+        
+        .error-btn:hover {
+            background: #c82333;
+            transform: translateY(-1px);
         }
     </style>
 </head>
@@ -802,9 +829,14 @@
                         <small class="text-warning">
                             <i class="bi bi-clock me-1"></i>Falta completar llamada
                         </small>
-                        <button class="completar-btn" onclick="completarRecarga(${item.id}, '${item.phone_number}')">
-                            <i class="bi bi-telephone-fill me-1"></i> Completar
-                        </button>
+                        <div>
+                            <button class="completar-btn" onclick="completarRecarga(${item.id}, '${item.phone_number}')">
+                                <i class="bi bi-telephone-fill me-1"></i> Completar
+                            </button>
+                            <button class="error-btn" onclick="marcarComoError(${item.id}, '${item.phone_number}')">
+                                <i class="bi bi-x-circle me-1"></i> Error
+                            </button>
+                        </div>
                     </div>
                     <div class="mt-2">
                         <button class="btn btn-sm btn-outline-primary me-1" onclick="copyNumber('${item.phone_number}')">
@@ -847,6 +879,33 @@
                 alert('Error al completar la recarga: ' + error.message);
                 const btn = event.target;
                 btn.innerHTML = '<i class="bi bi-telephone-fill me-1"></i> Completar';
+                btn.disabled = false;
+            }
+        }
+
+        async function marcarComoError(id, phoneNumber) {
+            if (!confirm(`¿Está seguro de marcar el número ${phoneNumber} como ERROR? Esta acción no se puede deshacer.`)) {
+                return;
+            }
+            
+            try {
+                const btn = event.target;
+                btn.innerHTML = '<i class="bi bi-arrow-repeat spinner-border spinner-border-sm me-1"></i>';
+                btn.disabled = true;
+
+                // Cambiar estado a ERROR directamente desde pendientes
+                await updateRechargeStatus(id, 'ERROR');
+                
+                // Mostrar mensaje y redirigir al historial
+                alert('Recarga marcada como ERROR. Se ha movido al historial.');
+                showTab('historial');
+                loadRechargeHistory();
+                
+            } catch (error) {
+                console.error('Error en marcarComoError:', error);
+                alert('Error al marcar como ERROR: ' + error.message);
+                const btn = event.target;
+                btn.innerHTML = '<i class="bi bi-x-circle me-1"></i> Error';
                 btn.disabled = false;
             }
         }
@@ -903,6 +962,27 @@
                 const itemClass = `history-item-${item.estado.toLowerCase()}`;
                 const badgeClass = `badge-${item.estado.toLowerCase()}`;
                 
+                let estadoOptions = '';
+                if (item.estado === 'FALTA') {
+                    estadoOptions = `
+                        <option value="FALTA" selected>Falta</option>
+                        <option value="ECHO">Echo</option>
+                        <option value="ERROR">Error</option>
+                    `;
+                } else if (item.estado === 'ERROR') {
+                    estadoOptions = `
+                        <option value="FALTA">Falta</option>
+                        <option value="ECHO">Echo</option>
+                        <option value="ERROR" selected>Error</option>
+                    `;
+                } else {
+                    estadoOptions = `
+                        <option value="FALTA">Falta</option>
+                        <option value="ECHO" selected>Echo</option>
+                        <option value="ERROR">Error</option>
+                    `;
+                }
+                
                 return `
                 <div class="history-item ${itemClass}">
                     <div class="d-flex justify-content-between align-items-start mb-2">
@@ -911,7 +991,8 @@
                             <div>
                                 <div class="phone-display ${
                                     item.estado === 'FALTA' ? 'text-warning' : 
-                                    item.estado === 'ECHO' ? 'text-success' : 'text-primary'
+                                    item.estado === 'ECHO' ? 'text-success' : 
+                                    item.estado === 'ERROR' ? 'text-danger' : 'text-primary'
                                 }">${item.phone_number}</div>
                                 <div class="user-info">
                                     <i class="bi bi-person-circle me-1"></i>
@@ -926,8 +1007,7 @@
                     <div class="d-flex justify-content-between align-items-center">
                         <select class="form-select form-select-sm" style="width: auto;" 
                                 onchange="updateRechargeStatus(${item.id}, this.value)">
-                            <option value="FALTA" ${item.estado === 'FALTA' ? 'selected' : ''}>Falta</option>
-                            <option value="ECHO" ${item.estado === 'ECHO' ? 'selected' : ''}>Echo</option>
+                            ${estadoOptions}
                         </select>
                         <div>
                             <button class="btn btn-sm btn-outline-primary me-1" onclick="copyNumber('${item.phone_number}')">
@@ -945,6 +1025,18 @@
 
         async function updateRechargeStatus(id, newStatus) {
             try {
+                // Si se cambia a ERROR desde FALTA, verificar que el usuario realmente quiera hacerlo
+                if (newStatus === 'ERROR') {
+                    const recarga = currentUserHistory.find(item => item.id === id);
+                    if (recarga && recarga.estado === 'FALTA') {
+                        if (!confirm(`¿Está seguro de marcar el número ${recarga.phone_number} como ERROR? Esta acción no se puede deshacer.`)) {
+                            // Recargar el historial para restaurar el estado anterior
+                            loadRechargeHistory();
+                            return;
+                        }
+                    }
+                }
+                
                 const response = await fetch(
                     `${SUPABASE_URL}/rest/v1/viva_recharge_history?id=eq.${id}`,
                     {
@@ -964,9 +1056,14 @@
                     throw new Error('Error al actualizar el estado');
                 }
                 
+                // Si se cambió de FALTA a otro estado, actualizar el badge de pendientes
+                const recarga = currentUserHistory.find(item => item.id === id);
+                if (recarga && recarga.estado === 'FALTA' && newStatus !== 'FALTA') {
+                    updatePendienteBadge();
+                }
+                
                 // Recargar el historial
                 loadRechargeHistory();
-                updatePendienteBadge();
                 
             } catch (error) {
                 console.error('Error en updateRechargeStatus:', error);
