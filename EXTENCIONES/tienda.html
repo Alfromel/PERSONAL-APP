@@ -8,6 +8,9 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <!-- jsPDF para generar PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
     <style>
         :root {
             --primary-purple: #8A2BE2;
@@ -48,7 +51,7 @@
             overflow-x: hidden;
         }
         
-        /* Login Screen - MODIFICADO para incluir selector de sucursal */
+        /* Login Screen */
         .login-screen {
             background: linear-gradient(135deg, var(--primary-purple) 0%, var(--dark-purple) 100%);
             min-height: 100vh;
@@ -276,7 +279,7 @@
             transform: scale(1.05);
         }
         
-        /* Current Branch Info - REEMPLAZA al selector */
+        /* Current Branch Info */
         .current-branch-info {
             display: flex;
             align-items: center;
@@ -374,7 +377,7 @@
             font-size: 1.1rem;
         }
         
-        /* Product List - MUCHO MÁS COMPACTO */
+        /* Product List */
         .product-list {
             margin-bottom: 20px;
             display: grid;
@@ -903,7 +906,7 @@
             border-top: 1px solid #f0f0f0;
         }
         
-        /* Confirmation Modal */
+        /* Confirmation Modal - MODIFICADO */
         .mobile-modal {
             position: fixed;
             top: 0;
@@ -958,6 +961,7 @@
             padding: 20px;
             max-height: 60vh;
             overflow-y: auto;
+            text-align: center;
         }
         
         .modal-footer {
@@ -988,6 +992,80 @@
             color: var(--white);
         }
         
+        /* Success Message */
+        .success-message {
+            text-align: center;
+            padding: 30px 20px;
+        }
+        
+        .success-icon {
+            font-size: 4rem;
+            color: var(--success-color);
+            margin-bottom: 20px;
+            animation: successScale 0.5s ease-out;
+        }
+        
+        .success-title {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: var(--gray-dark);
+            margin-bottom: 10px;
+        }
+        
+        .success-text {
+            font-size: 1rem;
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+        
+        .success-details {
+            background: var(--light-purple);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+        
+        .success-details-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.95rem;
+        }
+        
+        .success-details-label {
+            color: #666;
+        }
+        
+        .success-details-value {
+            font-weight: 600;
+            color: var(--primary-purple);
+        }
+        
+        .download-receipt-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary-purple) 0%, var(--secondary-purple) 100%);
+            color: var(--white);
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .download-receipt-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px var(--shadow-color);
+        }
+        
         /* Animaciones */
         @keyframes pulse {
             0% { box-shadow: 0 0 0 0 rgba(138, 43, 226, 0.7); }
@@ -998,6 +1076,12 @@
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes successScale {
+            0% { transform: scale(0); opacity: 0; }
+            70% { transform: scale(1.1); opacity: 0.7; }
+            100% { transform: scale(1); opacity: 1; }
         }
         
         .fade-in {
@@ -1138,6 +1222,14 @@
                 padding: 12px 15px;
                 font-size: 0.9rem;
             }
+            
+            .success-icon {
+                font-size: 3rem;
+            }
+            
+            .success-title {
+                font-size: 1.2rem;
+            }
         }
         
         @media (max-width: 380px) {
@@ -1148,11 +1240,19 @@
             .login-container {
                 padding: 15px;
             }
+            
+            .modal-footer {
+                flex-direction: column;
+            }
+            
+            .modal-btn {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Login Screen - MODIFICADO -->
+    <!-- Login Screen -->
     <div id="loginScreen" class="login-screen">
         <div class="login-container">
             <div class="login-header">
@@ -1218,7 +1318,7 @@
                 </div>
             </div>
             
-            <!-- Current Branch Display - REEMPLAZA al selector -->
+            <!-- Current Branch Display -->
             <div class="current-branch-info">
                 <div class="branch-display">
                     <i class="bi bi-shop branch-display-icon"></i>
@@ -1252,7 +1352,6 @@
                 <div class="loader" id="productsLoader">
                     <div class="spinner"></div>
                 </div>
-                <!-- Los productos se cargarán aquí -->
             </div>
         </div>
 
@@ -1276,7 +1375,6 @@
         </div>
         
         <div class="cart-body" id="cartBody">
-            <!-- Los items del carrito se mostrarán aquí -->
             <div class="empty-state">
                 <div class="empty-state-icon">
                     <i class="bi bi-cart-x"></i>
@@ -1311,9 +1409,7 @@
             </div>
             
             <div class="change-branch-body">
-                <div class="branch-list" id="branchList">
-                    <!-- Las sucursales se cargarán aquí -->
-                </div>
+                <div class="branch-list" id="branchList"></div>
             </div>
             
             <div class="change-branch-footer">
@@ -1327,22 +1423,19 @@
         </div>
     </div>
 
-    <!-- Confirmation Modal -->
+    <!-- Confirmation Modal - MODIFICADO -->
     <div class="mobile-modal" id="confirmModal">
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Confirmar Venta</h2>
             </div>
             
-            <div class="modal-body">
-                <div id="receipt">
-                    <!-- El recibo se generará aquí -->
-                </div>
+            <div class="modal-body" id="confirmModalBody">
+                <!-- Contenido dinámico -->
             </div>
             
-            <div class="modal-footer">
-                <button class="modal-btn modal-btn-cancel" onclick="closeModal()">Cancelar</button>
-                <button class="modal-btn modal-btn-confirm" onclick="finalizeSale()">Finalizar Venta</button>
+            <div class="modal-footer" id="confirmModalFooter">
+                <!-- Footer dinámico -->
             </div>
         </div>
     </div>
@@ -1366,6 +1459,7 @@
         let filteredProducts = [];
         let cart = [];
         let selectedBranchForChange = null;
+        let lastSaleData = null;
 
         document.addEventListener('DOMContentLoaded', function() {
             initializeMobileApp();
@@ -1779,7 +1873,7 @@
             }
             
             updateCart();
-            displayProducts(); // Actualizar vista
+            displayProducts();
             showToast(`${product.name} agregado`, 'success');
         }
 
@@ -1863,7 +1957,7 @@
             item.quantity = newQuantity;
             item.subtotal = newQuantity * item.sale_price;
             updateCart();
-            displayProducts(); // Actualizar vista de productos
+            displayProducts();
         }
 
         function removeFromCart(productId) {
@@ -1873,7 +1967,7 @@
                 const itemName = cart[itemIndex].name;
                 cart.splice(itemIndex, 1);
                 updateCart();
-                displayProducts(); // Actualizar vista
+                displayProducts();
                 showToast(`${itemName} removido`, 'info');
             }
         }
@@ -1927,12 +2021,10 @@
         }
 
         function selectBranchForChange(branchId) {
-            // Quitar selección anterior
             document.querySelectorAll('.branch-option').forEach(option => {
                 option.classList.remove('selected');
             });
             
-            // Agregar selección nueva
             const selectedOption = document.querySelector(`.branch-option[data-branch-id="${branchId}"]`);
             if (selectedOption) {
                 selectedOption.classList.add('selected');
@@ -1952,30 +2044,22 @@
                 return;
             }
             
-            // Verificar si hay items en el carrito
             if (cart.length > 0) {
                 if (!confirm(`Al cambiar de sucursal se vaciará el carrito actual.\n¿Deseas continuar?`)) {
                     return;
                 }
             }
             
-            // Cerrar modal
             closeChangeBranchModal();
             
-            // Actualizar sucursal actual
             currentBranch = selectedBranchForChange;
-            
-            // Guardar en localStorage
             localStorage.setItem('currentBranch', JSON.stringify(currentBranch));
             
-            // Actualizar display
             document.getElementById('currentBranchName').textContent = currentBranch.name;
             
-            // Vaciar carrito
             cart = [];
             updateCart();
             
-            // Cargar productos de la nueva sucursal
             loadProducts();
             
             showToast(`Sucursal cambiada a: ${currentBranch.name}`, 'success');
@@ -1992,78 +2076,60 @@
                 return;
             }
             
-            // Generar recibo
-            generateReceipt();
-            
-            // Mostrar modal de confirmación
-            const modal = document.getElementById('confirmModal');
-            modal.classList.add('open');
+            // Mostrar modal de confirmación inicial
+            showConfirmModal();
         }
 
-        function generateReceipt() {
-            const receipt = document.getElementById('receipt');
+        function showConfirmModal() {
             const total = cart.reduce((sum, item) => sum + item.subtotal, 0);
+            const ticketNumber = Date.now().toString().slice(-6);
             
-            // Crear contenido del recibo
-            let receiptHTML = `
-                <div style="font-family: 'Courier New', monospace; font-size: 0.9rem;">
-                    <div style="text-align: center; margin-bottom: 20px;">
-                        <h3 style="color: var(--primary-purple); margin: 0; font-size: 1.2rem;">${currentBranch.name}</h3>
-                        <p style="margin: 5px 0; font-size: 0.8rem;">Punto de Venta Móvil</p>
-                        <hr style="border: none; border-top: 1px solid #ccc; margin: 10px 0;">
-                    </div>
-                    
-                    <div style="margin-bottom: 15px; font-size: 0.85rem;">
-                        <p><strong>Vendedor:</strong> ${currentUser.nombre}</p>
-                        <p><strong>Sucursal:</strong> ${currentBranch.name}</p>
-                        <p><strong>Fecha:</strong> ${new Date().toLocaleString('es-ES')}</p>
-                        <p><strong>Ticket #:</strong> ${Date.now().toString().slice(-6)}</p>
-                        <hr style="border: none; border-top: 1px dashed #ccc; margin: 10px 0;">
-                    </div>
-                    
-                    <div style="margin-bottom: 15px;">
-                    <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;">
-                        <span>Producto</span>
-                        <span style="text-align: right;">Total</span>
-                    </div>
-            `;
-            
-            // Agregar items
-            cart.forEach((item, index) => {
-                receiptHTML += `
-                    <div style="margin-bottom: 8px; ${index % 2 === 0 ? 'background: #f9f9f9; padding: 5px;' : ''}">
-                        <div style="font-weight: 600;">${item.quantity}x ${item.name}</div>
-                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
-                            <span>Bs. ${item.sale_price.toFixed(2)} c/u</span>
-                            <span>Bs. ${item.subtotal.toFixed(2)}</span>
+            document.getElementById('confirmModalBody').innerHTML = `
+                <div style="margin-bottom: 20px;">
+                    <p style="font-weight: 600; margin-bottom: 10px;">¿Confirmar esta venta?</p>
+                    <div style="background: var(--light-purple); padding: 15px; border-radius: 10px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span>Productos:</span>
+                            <span style="font-weight: 600;">${cart.reduce((sum, item) => sum + item.quantity, 0)}</span>
                         </div>
-                    </div>
-                `;
-            });
-            
-            receiptHTML += `
-                    </div>
-                    
-                    <hr style="border: none; border-top: 1px dashed #ccc; margin: 15px 0;">
-                    
-                    <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.1rem; background: var(--light-purple); padding: 10px; border-radius: 5px;">
-                        <span>TOTAL:</span>
-                        <span>Bs. ${total.toFixed(2)}</span>
-                    </div>
-                    
-                    <div style="text-align: center; margin-top: 25px; color: #666; font-size: 0.8rem; padding-top: 15px; border-top: 1px dashed #ccc;">
-                        <p>¡Gracias por su compra!</p>
-                        <p><i class="bi bi-shop"></i> ${currentBranch.name}</p>
-                        <p style="margin-top: 10px; font-size: 0.75rem;">Ticket generado electrónicamente</p>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                            <span>Ticket #:</span>
+                            <span style="font-weight: 600;">${ticketNumber}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; font-size: 1.1rem; font-weight: 700;">
+                            <span>Total:</span>
+                            <span style="color: var(--primary-purple);">Bs. ${total.toFixed(2)}</span>
+                        </div>
                     </div>
                 </div>
             `;
             
-            receipt.innerHTML = receiptHTML;
+            document.getElementById('confirmModalFooter').innerHTML = `
+                <button class="modal-btn modal-btn-cancel" onclick="closeModal()">
+                    Cancelar
+                </button>
+                <button class="modal-btn modal-btn-confirm" onclick="finalizeSale()">
+                    <i class="bi bi-check-circle"></i> Confirmar Venta
+                </button>
+            `;
+            
+            document.getElementById('confirmModal').classList.add('open');
         }
 
         async function finalizeSale() {
             try {
+                // Obtener fecha y hora local del dispositivo
+                const ahora = new Date();
+                const fechaHoraLocal = ahora.toLocaleString('es-ES', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    second: '2-digit',
+                    hour12: false
+                });
+                
                 // Verificar que haya sucursal seleccionada
                 if (!currentBranch) {
                     showToast('No hay sucursal seleccionada', 'error');
@@ -2079,7 +2145,7 @@
                     }
                 }
                 
-                // Preparar datos de la venta
+                // Preparar datos de la venta con fecha/hora local
                 const saleData = {
                     user_id: currentUser.id,
                     branch_id: currentBranch.id,
@@ -2092,7 +2158,16 @@
                         subtotal: item.subtotal
                     }))),
                     total_amount: cart.reduce((sum, item) => sum + item.subtotal, 0),
-                    created_at: new Date().toISOString()
+                    fecha_hora: fechaHoraLocal  // Usamos fecha/hora local
+                };
+                
+                // Guardar en variable global para el PDF
+                lastSaleData = {
+                    ...saleData,
+                    ticket_number: Date.now().toString().slice(-6),
+                    branch_name: currentBranch.name,
+                    user_name: currentUser.nombre,
+                    sale_date: fechaHoraLocal
                 };
                 
                 // Mostrar loading en el botón
@@ -2120,6 +2195,7 @@
                     const product = branchProducts.find(p => p.id === item.id);
                     const newStock = (product.branch_stock || 0) - item.quantity;
                     
+                    // Actualizar también el campo updated_at como texto
                     await fetch(
                         `${SUPABASE_URL}/rest/v1/branch_inventory?id=eq.${product.inventory_id}`,
                         {
@@ -2132,31 +2208,14 @@
                             },
                             body: JSON.stringify({ 
                                 stock: newStock,
-                                updated_at: new Date().toISOString()
+                                updated_at: fechaHoraLocal
                             })
                         }
                     );
                 }
                 
-                // Restaurar botón
-                confirmBtn.innerHTML = originalBtnText;
-                confirmBtn.disabled = false;
-                
-                // Cerrar modal y limpiar carrito
-                closeModal();
-                closeCartScreen();
-                cart = [];
-                updateCart();
-                
-                // Recargar productos para actualizar stock
-                loadProducts();
-                
-                showToast('✅ Venta registrada exitosamente', 'success');
-                
-                // Mostrar resumen de venta
-                setTimeout(() => {
-                    alert(`🎉 Venta completada\n💰 Total: Bs. ${saleData.total_amount.toFixed(2)}\n📦 Productos: ${cart.length}\n🏪 Sucursal: ${currentBranch.name}`);
-                }, 500);
+                // Mostrar mensaje de éxito con opción de descargar factura
+                showSuccessMessage();
                 
             } catch (error) {
                 console.error('Error al finalizar venta:', error);
@@ -2167,6 +2226,191 @@
                 confirmBtn.innerHTML = 'Finalizar Venta';
                 confirmBtn.disabled = false;
             }
+        }
+
+        function showSuccessMessage() {
+            const total = cart.reduce((sum, item) => sum + item.subtotal, 0);
+            const productCount = cart.reduce((sum, item) => sum + item.quantity, 0);
+            
+            document.getElementById('confirmModalBody').innerHTML = `
+                <div class="success-message">
+                    <div class="success-icon">
+                        <i class="bi bi-check-circle-fill"></i>
+                    </div>
+                    <div class="success-title">¡Venta Exitosa!</div>
+                    <div class="success-text">
+                        La venta se ha registrado correctamente en el sistema.
+                    </div>
+                    
+                    <div class="success-details">
+                        <div class="success-details-item">
+                            <span class="success-details-label">Ticket #:</span>
+                            <span class="success-details-value">${lastSaleData.ticket_number}</span>
+                        </div>
+                        <div class="success-details-item">
+                            <span class="success-details-label">Productos:</span>
+                            <span class="success-details-value">${productCount}</span>
+                        </div>
+                        <div class="success-details-item">
+                            <span class="success-details-label">Total:</span>
+                            <span class="success-details-value">Bs. ${total.toFixed(2)}</span>
+                        </div>
+                        <div class="success-details-item">
+                            <span class="success-details-label">Sucursal:</span>
+                            <span class="success-details-value">${currentBranch.name}</span>
+                        </div>
+                        <div class="success-details-item">
+                            <span class="success-details-label">Fecha:</span>
+                            <span class="success-details-value">${new Date().toLocaleString('es-ES')}</span>
+                        </div>
+                    </div>
+                    
+                    <button class="download-receipt-btn" onclick="downloadReceipt()">
+                        <i class="bi bi-download"></i> Descargar Factura
+                    </button>
+                </div>
+            `;
+            
+            document.getElementById('confirmModalFooter').innerHTML = `
+                <button class="modal-btn modal-btn-confirm" onclick="closeModalAndReset()" style="flex: 1;">
+                    <i class="bi bi-check"></i> Continuar
+                </button>
+            `;
+        }
+
+        function downloadReceipt() {
+            if (!window.jspdf || !lastSaleData) {
+                showToast('Error al generar PDF', 'error');
+                return;
+            }
+            
+            try {
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Configuración inicial
+                const pageWidth = doc.internal.pageSize.getWidth();
+                let yPos = 15;
+                
+                // Encabezado
+                doc.setFontSize(18);
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(138, 43, 226); // Color púrpura
+                doc.text("TIENDA MÓVIL", pageWidth / 2, yPos, { align: "center" });
+                
+                doc.setFontSize(10);
+                doc.setTextColor(100, 100, 100);
+                doc.text("Sistema de Ventas Multi-sucursal", pageWidth / 2, yPos + 7, { align: "center" });
+                
+                yPos += 20;
+                
+                // Línea separadora
+                doc.setDrawColor(200, 200, 200);
+                doc.line(15, yPos, pageWidth - 15, yPos);
+                yPos += 10;
+                
+                // Información de la venta
+                doc.setFontSize(12);
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(0, 0, 0);
+                doc.text("FACTURA DE VENTA", pageWidth / 2, yPos, { align: "center" });
+                
+                yPos += 10;
+                
+                doc.setFontSize(10);
+                doc.setFont("helvetica", "normal");
+                
+                // Detalles de la venta
+                doc.text(`Ticket #: ${lastSaleData.ticket_number}`, 15, yPos);
+                doc.text(`Fecha: ${lastSaleData.sale_date}`, pageWidth - 15, yPos, { align: "right" });
+                yPos += 7;
+                
+                doc.text(`Sucursal: ${lastSaleData.branch_name}`, 15, yPos);
+                yPos += 7;
+                
+                doc.text(`Vendedor: ${lastSaleData.user_name}`, 15, yPos);
+                yPos += 15;
+                
+                // Tabla de productos
+                const products = JSON.parse(lastSaleData.products);
+                
+                // Encabezado de la tabla
+                doc.setFont("helvetica", "bold");
+                doc.setFillColor(240, 240, 255);
+                doc.rect(15, yPos, pageWidth - 30, 10, 'F');
+                doc.text("Producto", 20, yPos + 7);
+                doc.text("Cant.", 130, yPos + 7);
+                doc.text("Precio", 150, yPos + 7);
+                doc.text("Total", 180, yPos + 7);
+                
+                yPos += 15;
+                
+                // Productos
+                doc.setFont("helvetica", "normal");
+                products.forEach((product, index) => {
+                    if (yPos > 250) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    
+                    doc.text(product.name.substring(0, 30), 20, yPos);
+                    doc.text(product.quantity.toString(), 130, yPos);
+                    doc.text(`Bs. ${parseFloat(product.price).toFixed(2)}`, 150, yPos);
+                    doc.text(`Bs. ${parseFloat(product.subtotal).toFixed(2)}`, 180, yPos);
+                    yPos += 7;
+                });
+                
+                yPos += 10;
+                
+                // Línea separadora
+                doc.setDrawColor(200, 200, 200);
+                doc.line(15, yPos, pageWidth - 15, yPos);
+                yPos += 10;
+                
+                // Total
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(12);
+                doc.text("TOTAL:", 120, yPos);
+                doc.text(`Bs. ${parseFloat(lastSaleData.total_amount).toFixed(2)}`, 180, yPos);
+                yPos += 20;
+                
+                // Pie de página
+                doc.setFontSize(8);
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(100, 100, 100);
+                doc.text("¡Gracias por su compra!", pageWidth / 2, yPos, { align: "center" });
+                yPos += 5;
+                doc.text("Factura generada electrónicamente", pageWidth / 2, yPos, { align: "center" });
+                yPos += 5;
+                doc.text(`Tienda Móvil - ${lastSaleData.branch_name}`, pageWidth / 2, yPos, { align: "center" });
+                
+                // Guardar PDF
+                doc.save(`Factura-${lastSaleData.ticket_number}.pdf`);
+                
+                showToast('✅ Factura descargada', 'success');
+                
+            } catch (error) {
+                console.error('Error al generar PDF:', error);
+                showToast('Error al generar la factura', 'error');
+            }
+        }
+
+        function closeModalAndReset() {
+            // Cerrar modal
+            closeModal();
+            
+            // Cerrar carrito
+            closeCartScreen();
+            
+            // Limpiar carrito
+            cart = [];
+            updateCart();
+            
+            // Recargar productos para actualizar stock
+            loadProducts();
+            
+            // Mostrar toast de éxito
+            showToast('✅ Venta completada exitosamente', 'success');
         }
 
         function closeModal() {
@@ -2193,12 +2437,14 @@
         window.confirmSale = confirmSale;
         window.finalizeSale = finalizeSale;
         window.closeModal = closeModal;
+        window.closeModalAndReset = closeModalAndReset;
         window.openCartScreen = openCartScreen;
         window.closeCartScreen = closeCartScreen;
         window.openChangeBranchModal = openChangeBranchModal;
         window.closeChangeBranchModal = closeChangeBranchModal;
         window.selectBranchForChange = selectBranchForChange;
         window.changeBranch = changeBranch;
+        window.downloadReceipt = downloadReceipt;
     </script>
 </body>
 </html>
