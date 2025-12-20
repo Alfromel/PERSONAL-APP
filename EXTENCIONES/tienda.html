@@ -48,7 +48,120 @@
             overflow-x: hidden;
         }
         
-        /* App Header estilo iOS/Android */
+        /* Login Screen - MODIFICADO para incluir selector de sucursal */
+        .login-screen {
+            background: linear-gradient(135deg, var(--primary-purple) 0%, var(--dark-purple) 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 30px;
+        }
+        
+        .login-container {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .login-logo {
+            font-size: 2.2rem;
+            color: var(--primary-purple);
+            margin-bottom: 15px;
+        }
+        
+        .login-title {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--gray-dark);
+            margin-bottom: 5px;
+        }
+        
+        .login-subtitle {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .login-form .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .login-form label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--gray-dark);
+            font-size: 0.95rem;
+        }
+        
+        .login-form input,
+        .login-form select {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            transition: all 0.3s;
+            background: var(--white);
+        }
+        
+        .login-form input:focus,
+        .login-form select:focus {
+            outline: none;
+            border-color: var(--primary-purple);
+            box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.2);
+        }
+        
+        .login-form select {
+            cursor: pointer;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary-purple) 0%, var(--secondary-purple) 100%);
+            color: var(--white);
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px var(--shadow-color);
+        }
+        
+        .login-message {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: none;
+        }
+        
+        .login-error {
+            background: rgba(220, 53, 69, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(220, 53, 69, 0.2);
+        }
+        
+        /* App Header */
         .app-header {
             background: linear-gradient(135deg, var(--primary-purple) 0%, var(--secondary-purple) 100%);
             color: var(--white);
@@ -163,76 +276,62 @@
             transform: scale(1.05);
         }
         
-        /* Selector de sucursal mejorado */
-        .branch-selector-header {
+        /* Current Branch Info - REEMPLAZA al selector */
+        .current-branch-info {
             display: flex;
             align-items: center;
             justify-content: space-between;
             background: rgba(255,255,255,0.15);
-            padding: 10px 12px;
+            padding: 10px 15px;
             border-radius: 10px;
             margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
             border: 1px solid rgba(255,255,255,0.1);
         }
         
-        .branch-selector-header:hover {
-            background: rgba(255,255,255,0.2);
-        }
-        
-        .branch-info {
+        .branch-display {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             flex: 1;
         }
         
-        .branch-icon {
-            font-size: 1.1rem;
+        .branch-display-icon {
+            font-size: 1.2rem;
             color: rgba(255,255,255,0.9);
         }
         
-        .branch-text {
+        .branch-display-text {
             display: flex;
             flex-direction: column;
         }
         
-        .branch-label {
+        .branch-display-label {
             font-size: 0.7rem;
             opacity: 0.8;
             margin-bottom: 2px;
         }
         
-        .branch-name {
+        .branch-display-name {
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.95rem;
         }
         
-        .branch-select {
-            background: transparent;
+        .change-branch-btn {
+            background: rgba(255,255,255,0.2);
+            color: var(--white);
             border: none;
-            color: var(--white);
-            font-size: 0.9rem;
-            font-weight: 600;
+            border-radius: 6px;
+            padding: 6px 10px;
+            font-size: 0.75rem;
             cursor: pointer;
-            outline: none;
-            width: 100%;
-            padding: 5px 0;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            appearance: none;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
         }
         
-        .branch-select option {
-            background: var(--primary-purple);
-            color: var(--white);
-            padding: 10px;
-        }
-        
-        .branch-arrow {
-            font-size: 0.8rem;
-            opacity: 0.7;
+        .change-branch-btn:hover {
+            background: rgba(255,255,255,0.3);
         }
         
         /* App Content */
@@ -429,7 +528,7 @@
             box-shadow: none;
         }
         
-        /* Cart Screen - PANTALLA SEPARADA */
+        /* Cart Screen */
         .cart-screen {
             position: fixed;
             top: 0;
@@ -703,112 +802,108 @@
             font-weight: 700;
         }
         
-        /* Login Screen */
-        .login-screen {
-            background: linear-gradient(135deg, var(--primary-purple) 0%, var(--dark-purple) 100%);
-            min-height: 100vh;
+        /* Modal para cambiar sucursal */
+        .change-branch-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
             display: flex;
-            flex-direction: column;
+            align-items: center;
             justify-content: center;
-            padding: 30px;
+            z-index: 2000;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s;
         }
         
-        .login-container {
+        .change-branch-modal.open {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .change-branch-content {
             background: var(--white);
             border-radius: 20px;
-            padding: 25px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+            padding: 0;
+            width: 100%;
+            max-width: 400px;
+            transform: translateY(20px);
+            transition: transform 0.3s;
         }
         
-        .login-header {
+        .change-branch-modal.open .change-branch-content {
+            transform: translateY(0);
+        }
+        
+        .change-branch-header {
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary-purple) 0%, var(--secondary-purple) 100%);
+            color: var(--white);
+            border-radius: 20px 20px 0 0;
             text-align: center;
-            margin-bottom: 30px;
         }
         
-        .login-logo {
-            font-size: 2.2rem;
-            color: var(--primary-purple);
-            margin-bottom: 15px;
+        .change-branch-header h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin: 0;
         }
         
-        .login-title {
-            font-size: 1.6rem;
-            font-weight: 700;
+        .change-branch-body {
+            padding: 20px;
+        }
+        
+        .branch-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .branch-option {
+            padding: 15px;
+            border: 1px solid #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: var(--white);
+        }
+        
+        .branch-option:hover {
+            background: var(--light-purple);
+            border-color: var(--primary-purple);
+            transform: translateY(-2px);
+        }
+        
+        .branch-option.selected {
+            background: var(--light-purple);
+            border-color: var(--primary-purple);
+            border-left: 4px solid var(--primary-purple);
+        }
+        
+        .branch-option-name {
+            font-weight: 600;
+            font-size: 1rem;
             color: var(--gray-dark);
             margin-bottom: 5px;
         }
         
-        .login-subtitle {
+        .branch-option-details {
+            font-size: 0.85rem;
             color: #666;
-            font-size: 0.9rem;
         }
         
-        .login-form .form-group {
-            margin-bottom: 20px;
-        }
-        
-        .login-form label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-            color: var(--gray-dark);
-            font-size: 0.95rem;
-        }
-        
-        .login-form input {
-            width: 100%;
-            padding: 14px 18px;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 0.95rem;
-            transition: all 0.3s;
-        }
-        
-        .login-form input:focus {
-            outline: none;
-            border-color: var(--primary-purple);
-            box-shadow: 0 0 0 3px rgba(138, 43, 226, 0.2);
-        }
-        
-        .login-btn {
-            width: 100%;
-            padding: 16px;
-            background: linear-gradient(135deg, var(--primary-purple) 0%, var(--secondary-purple) 100%);
-            color: var(--white);
-            border: none;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
+        .change-branch-footer {
+            padding: 20px;
             display: flex;
-            align-items: center;
-            justify-content: center;
             gap: 10px;
+            border-top: 1px solid #f0f0f0;
         }
         
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px var(--shadow-color);
-        }
-        
-        .login-message {
-            margin-top: 15px;
-            padding: 12px;
-            border-radius: 10px;
-            text-align: center;
-            font-weight: 500;
-            font-size: 0.9rem;
-            display: none;
-        }
-        
-        .login-error {
-            background: rgba(220, 53, 69, 0.1);
-            color: var(--danger-color);
-            border: 1px solid rgba(220, 53, 69, 0.2);
-        }
-        
-        /* Modal de confirmación */
+        /* Confirmation Modal */
         .mobile-modal {
             position: fixed;
             top: 0;
@@ -998,6 +1093,14 @@
             .app-content {
                 padding: 12px 10px;
             }
+            
+            .login-screen {
+                padding: 20px;
+            }
+            
+            .login-container {
+                padding: 20px;
+            }
         }
         
         @media (max-width: 480px) {
@@ -1025,17 +1128,31 @@
                 bottom: 15px;
                 right: 15px;
             }
+            
+            .login-title {
+                font-size: 1.4rem;
+            }
+            
+            .login-form input,
+            .login-form select {
+                padding: 12px 15px;
+                font-size: 0.9rem;
+            }
         }
         
         @media (max-width: 380px) {
             .product-list {
                 grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
             }
+            
+            .login-container {
+                padding: 15px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Login Screen -->
+    <!-- Login Screen - MODIFICADO -->
     <div id="loginScreen" class="login-screen">
         <div class="login-container">
             <div class="login-header">
@@ -1057,6 +1174,13 @@
                     <input type="password" id="password" placeholder="Ingrese su contraseña" required>
                 </div>
                 
+                <div class="form-group">
+                    <label for="loginBranchSelect">Sucursal</label>
+                    <select id="loginBranchSelect" class="form-select" required>
+                        <option value="">Seleccionar sucursal</option>
+                    </select>
+                </div>
+                
                 <button type="submit" class="login-btn">
                     <i class="bi bi-box-arrow-in-right"></i>
                     Ingresar al Sistema
@@ -1064,7 +1188,7 @@
             </form>
             
             <div id="loginMessage" class="login-message login-error d-none">
-                Usuario o contraseña incorrectos
+                Usuario, contraseña o sucursal incorrectos
             </div>
         </div>
     </div>
@@ -1094,17 +1218,18 @@
                 </div>
             </div>
             
-            <div class="branch-selector-header" onclick="document.getElementById('branchSelect').focus()">
-                <div class="branch-info">
-                    <i class="bi bi-shop branch-icon"></i>
-                    <div class="branch-text">
-                        <div class="branch-label">SUCURSAL</div>
-                        <select class="branch-select" id="branchSelect">
-                            <option value="">Seleccionar Sucursal</option>
-                        </select>
+            <!-- Current Branch Display - REEMPLAZA al selector -->
+            <div class="current-branch-info">
+                <div class="branch-display">
+                    <i class="bi bi-shop branch-display-icon"></i>
+                    <div class="branch-display-text">
+                        <div class="branch-display-label">SUCURSAL ACTUAL</div>
+                        <div class="branch-display-name" id="currentBranchName">Cargando...</div>
                     </div>
                 </div>
-                <i class="bi bi-chevron-down branch-arrow"></i>
+                <button class="change-branch-btn" onclick="openChangeBranchModal()">
+                    <i class="bi bi-arrow-repeat"></i> Cambiar
+                </button>
             </div>
             
             <div style="text-align: center;">
@@ -1124,14 +1249,7 @@
 
             <!-- Products List -->
             <div class="product-list" id="productList">
-                <div class="empty-state" id="selectBranchMessage">
-                    <div class="empty-state-icon">
-                        <i class="bi bi-shop"></i>
-                    </div>
-                    <div class="empty-state-text">Selecciona una sucursal</div>
-                    <div class="empty-state-subtext">Elige una sucursal para ver los productos</div>
-                </div>
-                <div class="loader" id="productsLoader" style="display: none;">
+                <div class="loader" id="productsLoader">
                     <div class="spinner"></div>
                 </div>
                 <!-- Los productos se cargarán aquí -->
@@ -1145,7 +1263,7 @@
         </button>
     </div>
 
-    <!-- Cart Screen - PANTALLA SEPARADA -->
+    <!-- Cart Screen -->
     <div class="cart-screen" id="cartScreen">
         <div class="cart-header">
             <div class="cart-header-left">
@@ -1180,6 +1298,30 @@
                 </button>
                 <button class="cart-btn cart-btn-confirm" onclick="confirmSale()">
                     <i class="bi bi-check-circle"></i> Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Branch Modal -->
+    <div class="change-branch-modal" id="changeBranchModal">
+        <div class="change-branch-content">
+            <div class="change-branch-header">
+                <h2>Cambiar Sucursal</h2>
+            </div>
+            
+            <div class="change-branch-body">
+                <div class="branch-list" id="branchList">
+                    <!-- Las sucursales se cargarán aquí -->
+                </div>
+            </div>
+            
+            <div class="change-branch-footer">
+                <button class="modal-btn modal-btn-cancel" onclick="closeChangeBranchModal()">
+                    Cancelar
+                </button>
+                <button class="modal-btn modal-btn-confirm" onclick="changeBranch()">
+                    Cambiar Sucursal
                 </button>
             </div>
         </div>
@@ -1223,25 +1365,31 @@
         let branchProducts = [];
         let filteredProducts = [];
         let cart = [];
+        let selectedBranchForChange = null;
 
         document.addEventListener('DOMContentLoaded', function() {
             initializeMobileApp();
         });
 
         function initializeMobileApp() {
-            // Verificar si ya hay una sesión activa
+            // Verificar si ya hay una sesión activa con sucursal
             const savedUser = localStorage.getItem('currentSalesUser');
-            if (savedUser) {
+            const savedBranch = localStorage.getItem('currentBranch');
+            
+            if (savedUser && savedBranch) {
                 currentUser = JSON.parse(savedUser);
+                currentBranch = JSON.parse(savedBranch);
                 showMainApp();
-                loadBranches();
+                loadProducts();
+            } else {
+                // Cargar sucursales para el login
+                loadBranchesForLogin();
             }
 
             // Configurar eventos
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
             document.getElementById('logoutBtn').addEventListener('click', handleLogout);
             document.getElementById('productSearch').addEventListener('input', searchProducts);
-            document.getElementById('branchSelect').addEventListener('change', changeBranch);
             
             // Configurar tecla Enter para búsqueda
             document.getElementById('productSearch').addEventListener('keypress', function(e) {
@@ -1251,9 +1399,9 @@
             });
         }
 
-        async function loadBranches() {
+        async function loadBranchesForLogin() {
             try {
-                // Cargar todas las sucursales
+                // Cargar todas las sucursales para el selector del login
                 const response = await fetch(
                     `${SUPABASE_URL}/rest/v1/branches?order=name.asc`,
                     {
@@ -1267,10 +1415,10 @@
                 if (!response.ok) throw new Error('Error al cargar sucursales');
                 
                 allBranches = await response.json();
-                const branchSelect = document.getElementById('branchSelect');
+                const branchSelect = document.getElementById('loginBranchSelect');
                 
                 // Limpiar opciones existentes
-                branchSelect.innerHTML = '<option value="">Seleccionar Sucursal</option>';
+                branchSelect.innerHTML = '<option value="">Seleccionar sucursal</option>';
                 
                 // Agregar opciones de sucursal
                 allBranches.forEach(branch => {
@@ -1279,13 +1427,6 @@
                     option.textContent = branch.name;
                     branchSelect.appendChild(option);
                 });
-                
-                // Si hay una sucursal guardada en localStorage, seleccionarla
-                const savedBranchId = localStorage.getItem('currentBranchId');
-                if (savedBranchId) {
-                    branchSelect.value = savedBranchId;
-                    changeBranch();
-                }
                 
             } catch (error) {
                 console.error('Error al cargar sucursales:', error);
@@ -1298,10 +1439,11 @@
             
             const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
+            const branchId = document.getElementById('loginBranchSelect').value;
             const messageDiv = document.getElementById('loginMessage');
             
             // Validar campos
-            if (!username || !password) {
+            if (!username || !password || !branchId) {
                 messageDiv.textContent = 'Por favor complete todos los campos';
                 messageDiv.classList.remove('d-none');
                 return;
@@ -1341,9 +1483,25 @@
                 
                 if (user.password === password) {
                     currentUser = user;
+                    
+                    // Buscar la sucursal seleccionada
+                    const selectedBranch = allBranches.find(b => b.id == branchId);
+                    
+                    if (!selectedBranch) {
+                        messageDiv.textContent = 'Sucursal no válida';
+                        messageDiv.classList.remove('d-none');
+                        showToast('Sucursal no válida', 'error');
+                        return;
+                    }
+                    
+                    currentBranch = selectedBranch;
+                    
+                    // Guardar en localStorage
                     localStorage.setItem('currentSalesUser', JSON.stringify(user));
+                    localStorage.setItem('currentBranch', JSON.stringify(selectedBranch));
+                    
                     showMainApp();
-                    loadBranches();
+                    loadProducts();
                 } else {
                     messageDiv.textContent = 'Contraseña incorrecta';
                     messageDiv.classList.remove('d-none');
@@ -1365,7 +1523,7 @@
                 currentUser = null;
                 currentBranch = null;
                 localStorage.removeItem('currentSalesUser');
-                localStorage.removeItem('currentBranchId');
+                localStorage.removeItem('currentBranch');
                 showLoginScreen();
                 cart = [];
                 updateCart();
@@ -1380,6 +1538,9 @@
             document.getElementById('cartScreen').classList.remove('open');
             document.getElementById('loginForm').reset();
             document.getElementById('loginMessage').classList.add('d-none');
+            
+            // Recargar sucursales
+            loadBranchesForLogin();
         }
 
         function showMainApp() {
@@ -1391,49 +1552,26 @@
             document.getElementById('userName').textContent = currentUser.nombre;
             document.getElementById('userInitial').textContent = currentUser.nombre.charAt(0).toUpperCase();
             
-            showToast(`Bienvenido ${currentUser.nombre}`, 'success');
+            // Actualizar información de la sucursal
+            document.getElementById('currentBranchName').textContent = currentBranch.name;
+            
+            showToast(`Bienvenido ${currentUser.nombre} - ${currentBranch.name}`, 'success');
         }
 
-        async function changeBranch() {
-            const branchSelect = document.getElementById('branchSelect');
-            const branchId = branchSelect.value;
+        async function loadProducts() {
+            if (!currentBranch) return;
             
-            if (!branchId) {
-                // Mostrar mensaje para seleccionar sucursal
-                document.getElementById('selectBranchMessage').style.display = 'block';
-                document.getElementById('productList').innerHTML = '';
-                document.getElementById('productList').appendChild(document.getElementById('selectBranchMessage'));
-                currentBranch = null;
-                branchProducts = [];
-                filteredProducts = [];
-                cart = [];
-                updateCart();
-                return;
-            }
-            
-            // Ocultar mensaje de selección
-            document.getElementById('selectBranchMessage').style.display = 'none';
-            
-            // Mostrar loader
             const productList = document.getElementById('productList');
             const loader = document.getElementById('productsLoader');
+            
+            // Mostrar loader
             loader.style.display = 'flex';
+            productList.innerHTML = '';
             
             try {
-                // Buscar la sucursal seleccionada
-                currentBranch = allBranches.find(b => b.id == branchId);
-                
-                if (!currentBranch) {
-                    showToast('Sucursal no encontrada', 'error');
-                    return;
-                }
-                
-                // Guardar selección en localStorage
-                localStorage.setItem('currentBranchId', branchId);
-                
-                // Cargar productos de la sucursal seleccionada
+                // Cargar productos de la sucursal actual
                 const response = await fetch(
-                    `${SUPABASE_URL}/rest/v1/branch_inventory?branch_id=eq.${branchId}&select=*,products(*)`,
+                    `${SUPABASE_URL}/rest/v1/branch_inventory?branch_id=eq.${currentBranch.id}&select=*,products(*)`,
                     {
                         headers: {
                             'apikey': SUPABASE_KEY,
@@ -1456,23 +1594,22 @@
                 branchProducts.sort((a, b) => a.name.localeCompare(b.name));
                 filteredProducts = [...branchProducts];
                 
-                // Limpiar carrito cuando se cambia de sucursal
+                // Limpiar carrito cuando se cargan productos
                 cart = [];
                 updateCart();
                 
                 displayProducts();
-                showToast(`Sucursal: ${currentBranch.name}`, 'success');
                 
             } catch (error) {
                 console.error('Error al cargar productos:', error);
                 productList.innerHTML = `
-                    <div class="empty-state">
+                    <div class="empty-state" style="grid-column: 1 / -1;">
                         <div class="empty-state-icon">
                             <i class="bi bi-exclamation-triangle"></i>
                         </div>
                         <div class="empty-state-text">Error al cargar productos</div>
                         <div class="empty-state-subtext">Verifique su conexión a internet</div>
-                        <button class="add-to-cart-btn mt-3" onclick="changeBranch()">
+                        <button class="add-to-cart-btn mt-3" onclick="loadProducts()">
                             <i class="bi bi-arrow-clockwise"></i> Reintentar
                         </button>
                     </div>
@@ -1576,7 +1713,7 @@
 
         function searchProducts() {
             if (!currentBranch) {
-                showToast('Primero selecciona una sucursal', 'warning');
+                showToast('No hay sucursal seleccionada', 'warning');
                 return;
             }
             
@@ -1599,7 +1736,7 @@
 
         function addToCart(productId) {
             if (!currentBranch) {
-                showToast('Primero selecciona una sucursal', 'warning');
+                showToast('No hay sucursal seleccionada', 'warning');
                 return;
             }
             
@@ -1762,9 +1899,91 @@
             cartScreen.classList.remove('open');
         }
 
+        function openChangeBranchModal() {
+            const modal = document.getElementById('changeBranchModal');
+            const branchList = document.getElementById('branchList');
+            
+            // Limpiar selección previa
+            selectedBranchForChange = null;
+            
+            // Cargar lista de sucursales
+            branchList.innerHTML = allBranches.map(branch => `
+                <div class="branch-option ${branch.id === currentBranch.id ? 'selected' : ''}" 
+                     onclick="selectBranchForChange(${branch.id})"
+                     data-branch-id="${branch.id}">
+                    <div class="branch-option-name">${branch.name}</div>
+                    <div class="branch-option-details">
+                        ${branch.id === currentBranch.id ? '✓ Sucursal actual' : 'Haz clic para seleccionar'}
+                    </div>
+                </div>
+            `).join('');
+            
+            modal.classList.add('open');
+        }
+
+        function closeChangeBranchModal() {
+            const modal = document.getElementById('changeBranchModal');
+            modal.classList.remove('open');
+        }
+
+        function selectBranchForChange(branchId) {
+            // Quitar selección anterior
+            document.querySelectorAll('.branch-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Agregar selección nueva
+            const selectedOption = document.querySelector(`.branch-option[data-branch-id="${branchId}"]`);
+            if (selectedOption) {
+                selectedOption.classList.add('selected');
+                selectedBranchForChange = allBranches.find(b => b.id == branchId);
+            }
+        }
+
+        async function changeBranch() {
+            if (!selectedBranchForChange) {
+                showToast('Por favor selecciona una sucursal', 'warning');
+                return;
+            }
+            
+            if (selectedBranchForChange.id === currentBranch.id) {
+                showToast('Ya estás en esta sucursal', 'info');
+                closeChangeBranchModal();
+                return;
+            }
+            
+            // Verificar si hay items en el carrito
+            if (cart.length > 0) {
+                if (!confirm(`Al cambiar de sucursal se vaciará el carrito actual.\n¿Deseas continuar?`)) {
+                    return;
+                }
+            }
+            
+            // Cerrar modal
+            closeChangeBranchModal();
+            
+            // Actualizar sucursal actual
+            currentBranch = selectedBranchForChange;
+            
+            // Guardar en localStorage
+            localStorage.setItem('currentBranch', JSON.stringify(currentBranch));
+            
+            // Actualizar display
+            document.getElementById('currentBranchName').textContent = currentBranch.name;
+            
+            // Vaciar carrito
+            cart = [];
+            updateCart();
+            
+            // Cargar productos de la nueva sucursal
+            loadProducts();
+            
+            showToast(`Sucursal cambiada a: ${currentBranch.name}`, 'success');
+        }
+
         function confirmSale() {
             if (!currentBranch) {
-                showToast('Primero selecciona una sucursal', 'warning');
+                showToast('No hay sucursal seleccionada', 'warning');
                 return;
             }
             
@@ -1930,7 +2149,7 @@
                 updateCart();
                 
                 // Recargar productos para actualizar stock
-                changeBranch();
+                loadProducts();
                 
                 showToast('✅ Venta registrada exitosamente', 'success');
                 
@@ -1976,6 +2195,9 @@
         window.closeModal = closeModal;
         window.openCartScreen = openCartScreen;
         window.closeCartScreen = closeCartScreen;
+        window.openChangeBranchModal = openChangeBranchModal;
+        window.closeChangeBranchModal = closeChangeBranchModal;
+        window.selectBranchForChange = selectBranchForChange;
         window.changeBranch = changeBranch;
     </script>
 </body>
