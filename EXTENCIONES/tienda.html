@@ -71,7 +71,7 @@
         .app-header {
             background: linear-gradient(135deg, var(--primary-purple) 0%, var(--secondary-purple) 100%);
             color: var(--white);
-            padding: 20px 15px;
+            padding: 15px;
             position: sticky;
             top: 0;
             z-index: 100;
@@ -82,6 +82,40 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .branch-selector-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255,255,255,0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .branch-selector-header:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .branch-select {
+            background: transparent;
+            border: none;
+            color: var(--white);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            outline: none;
+            min-width: 150px;
+        }
+        
+        .branch-select option {
+            background: var(--primary-purple);
+            color: var(--white);
         }
         
         .user-info {
@@ -139,7 +173,7 @@
         .app-content {
             padding: 20px 15px;
             padding-bottom: 100px;
-            min-height: calc(100vh - 140px);
+            min-height: calc(100vh - 160px);
         }
         
         /* Search Bar estilo móvil */
@@ -724,11 +758,6 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        @keyframes slideIn {
-            from { transform: translateX(-100%); }
-            to { transform: translateX(0); }
-        }
-        
         .fade-in {
             animation: fadeIn 0.4s ease-out;
         }
@@ -820,6 +849,10 @@
                 height: 60px;
                 font-size: 1.5rem;
             }
+            
+            .branch-select {
+                min-width: 120px;
+            }
         }
     </style>
 </head>
@@ -832,7 +865,7 @@
                     <i class="bi bi-shop"></i>
                 </div>
                 <h1 class="login-title">TIENDA MÓVIL</h1>
-                <p class="login-subtitle">Sistema de Ventas para Vendedores</p>
+                <p class="login-subtitle">Sistema de Ventas Multi-sucursal</p>
             </div>
             
             <form id="loginForm" class="login-form">
@@ -860,7 +893,14 @@
 
     <!-- Main App -->
     <div id="mainApp" class="mobile-app d-none">
-
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <span id="currentTime">9:41</span>
+            <div class="status-icons">
+                <i class="bi bi-wifi"></i>
+                <i class="bi bi-battery-full"></i>
+            </div>
+        </div>
 
         <!-- App Header -->
         <div class="app-header">
@@ -871,13 +911,20 @@
                     </div>
                     <div class="user-details">
                         <div class="user-name" id="userName">Vendedor</div>
-                        <div class="user-role">Ventas</div>
+                        <div class="user-role">Punto de Venta</div>
                     </div>
                 </div>
                 <button class="add-to-cart-btn" id="logoutBtn">
                     <i class="bi bi-box-arrow-right"></i>
                     Salir
                 </button>
+            </div>
+            
+            <div class="branch-selector-header">
+                <i class="bi bi-shop"></i>
+                <select class="branch-select" id="branchSelect">
+                    <option value="">Seleccionar Sucursal</option>
+                </select>
             </div>
             
             <div class="app-title">
@@ -897,7 +944,14 @@
 
             <!-- Products List -->
             <div class="product-list" id="productList">
-                <div class="loader" id="productsLoader">
+                <div class="empty-state" id="selectBranchMessage">
+                    <div class="empty-state-icon">
+                        <i class="bi bi-shop"></i>
+                    </div>
+                    <div class="empty-state-text">Selecciona una sucursal</div>
+                    <div class="empty-state-subtext">Elige una sucursal para ver los productos disponibles</div>
+                </div>
+                <div class="loader" id="productsLoader" style="display: none;">
                     <div class="spinner"></div>
                 </div>
                 <!-- Los productos se cargarán aquí -->
@@ -974,17 +1028,34 @@
     
     <script>
         // Configuración de Supabase
-        const SUPABASE_URL = 'https://zrbhhiayfaedatwlzqch.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpyYmhoaWF5ZmFlZGF0d2x6cWNoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjExMTcwMjgsImV4cCI6MjA3NjY5MzAyOH0.b97mGNErXGRuIorOPTf6m1awGlIyrXaAI4VS65aR-5o';
+        const SUPABASE_URL = 'https://dcgtfnhdqplkjqdozyby.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_pMX5T-LoSov7aOsOSksF8g_7kjVFkvi';
 
         // Variables globales
         let currentUser = null;
-        let allProducts = [];
+        let currentBranch = null;
+        let allBranches = [];
+        let branchProducts = [];
         let filteredProducts = [];
         let cart = [];
         let cartOpen = false;
 
+        // Actualizar hora en tiempo real
+        function updateTime() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString('es-ES', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: false 
+            });
+            document.getElementById('currentTime').textContent = timeString;
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
+            // Iniciar reloj
+            updateTime();
+            setInterval(updateTime, 60000);
+            
             initializeMobileApp();
         });
 
@@ -994,46 +1065,78 @@
             if (savedUser) {
                 currentUser = JSON.parse(savedUser);
                 showMainApp();
+                loadBranches();
             }
 
             // Configurar eventos
             document.getElementById('loginForm').addEventListener('submit', handleLogin);
             document.getElementById('logoutBtn').addEventListener('click', handleLogout);
             document.getElementById('productSearch').addEventListener('input', searchProducts);
+            document.getElementById('branchSelect').addEventListener('change', changeBranch);
             
-            // Configurar drag para el carrito (para móviles)
-            setupCartDrag();
-        }
-
-        function setupCartDrag() {
-            const cartSection = document.getElementById('cartSection');
-            let startY = 0;
-            let startHeight = 0;
-
-            cartSection.addEventListener('touchstart', function(e) {
-                startY = e.touches[0].clientY;
-                startHeight = cartSection.getBoundingClientRect().height;
-            });
-
-            cartSection.addEventListener('touchmove', function(e) {
-                if (!cartOpen) return;
-                
-                const currentY = e.touches[0].clientY;
-                const deltaY = startY - currentY;
-                const newHeight = startHeight + deltaY;
-                
-                if (newHeight > 200 && newHeight < window.innerHeight - 100) {
-                    cartSection.style.height = `${newHeight}px`;
+            // Configurar tecla Enter para búsqueda
+            document.getElementById('productSearch').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    searchProducts();
                 }
             });
+        }
+
+        async function loadBranches() {
+            try {
+                // Cargar todas las sucursales
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/branches?order=name.asc`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
+                
+                if (!response.ok) throw new Error('Error al cargar sucursales');
+                
+                allBranches = await response.json();
+                const branchSelect = document.getElementById('branchSelect');
+                
+                // Limpiar opciones existentes
+                branchSelect.innerHTML = '<option value="">Seleccionar Sucursal</option>';
+                
+                // Agregar opciones de sucursal
+                allBranches.forEach(branch => {
+                    const option = document.createElement('option');
+                    option.value = branch.id;
+                    option.textContent = branch.name;
+                    branchSelect.appendChild(option);
+                });
+                
+                // Si hay una sucursal guardada en localStorage, seleccionarla
+                const savedBranchId = localStorage.getItem('currentBranchId');
+                if (savedBranchId) {
+                    branchSelect.value = savedBranchId;
+                    changeBranch();
+                }
+                
+            } catch (error) {
+                console.error('Error al cargar sucursales:', error);
+                showToast('Error al cargar sucursales', 'error');
+            }
         }
 
         async function handleLogin(e) {
             e.preventDefault();
             
-            const username = document.getElementById('username').value;
+            const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             const messageDiv = document.getElementById('loginMessage');
+            
+            // Validar campos
+            if (!username || !password) {
+                messageDiv.textContent = 'Por favor complete todos los campos';
+                messageDiv.classList.remove('d-none');
+                return;
+            }
             
             // Mostrar loader
             const submitBtn = e.target.querySelector('button[type="submit"]');
@@ -1044,7 +1147,7 @@
             try {
                 // Cargar usuarios desde la base de datos
                 const response = await fetch(
-                    `${SUPABASE_URL}/rest/v1/users`,
+                    `${SUPABASE_URL}/rest/v1/users?username=eq.${username}`,
                     {
                         headers: {
                             'apikey': SUPABASE_KEY,
@@ -1058,17 +1161,24 @@
                 const usuarios = await response.json();
 
                 // Verificar credenciales
-                const user = usuarios.find(u => u.username === username && u.password === password);
+                if (usuarios.length === 0) {
+                    messageDiv.textContent = 'Usuario no encontrado';
+                    messageDiv.classList.remove('d-none');
+                    showToast('Usuario no encontrado', 'error');
+                    return;
+                }
                 
-                if (user) {
+                const user = usuarios[0];
+                
+                if (user.password === password) {
                     currentUser = user;
                     localStorage.setItem('currentSalesUser', JSON.stringify(user));
                     showMainApp();
-                    showToast('Sesión iniciada correctamente', 'success');
+                    loadBranches();
                 } else {
-                    messageDiv.textContent = 'Usuario o contraseña incorrectos';
+                    messageDiv.textContent = 'Contraseña incorrecta';
                     messageDiv.classList.remove('d-none');
-                    showToast('Credenciales incorrectas', 'error');
+                    showToast('Contraseña incorrecta', 'error');
                 }
             } catch (error) {
                 console.error('Error en el login:', error);
@@ -1084,10 +1194,13 @@
         function handleLogout() {
             if (confirm('¿Está seguro de que desea cerrar sesión?')) {
                 currentUser = null;
+                currentBranch = null;
                 localStorage.removeItem('currentSalesUser');
+                localStorage.removeItem('currentBranchId');
                 showLoginScreen();
                 cart = [];
                 updateCart();
+                showToast('Sesión cerrada correctamente', 'success');
             }
         }
 
@@ -1098,27 +1211,57 @@
             document.getElementById('loginMessage').classList.add('d-none');
         }
 
-        async function showMainApp() {
+        function showMainApp() {
             document.getElementById('loginScreen').classList.add('d-none');
             document.getElementById('mainApp').classList.remove('d-none');
             
+            // Actualizar información del usuario
             document.getElementById('userName').textContent = currentUser.nombre;
-            document.getElementById('userInitial').textContent = currentUser.nombre.charAt(0);
+            document.getElementById('userInitial').textContent = currentUser.nombre.charAt(0).toUpperCase();
             
-            // Cargar productos
-            await loadProducts();
-            showToast('Bienvenido ' + currentUser.nombre, 'success');
+            showToast(`Bienvenido ${currentUser.nombre}`, 'success');
         }
 
-        async function loadProducts() {
+        async function changeBranch() {
+            const branchSelect = document.getElementById('branchSelect');
+            const branchId = branchSelect.value;
+            
+            if (!branchId) {
+                // Mostrar mensaje para seleccionar sucursal
+                document.getElementById('selectBranchMessage').style.display = 'block';
+                document.getElementById('productList').innerHTML = '';
+                document.getElementById('productList').appendChild(document.getElementById('selectBranchMessage'));
+                currentBranch = null;
+                branchProducts = [];
+                filteredProducts = [];
+                cart = [];
+                updateCart();
+                return;
+            }
+            
+            // Ocultar mensaje de selección
+            document.getElementById('selectBranchMessage').style.display = 'none';
+            
+            // Mostrar loader
             const productList = document.getElementById('productList');
             const loader = document.getElementById('productsLoader');
+            loader.style.display = 'flex';
             
             try {
-                loader.style.display = 'flex';
+                // Buscar la sucursal seleccionada
+                currentBranch = allBranches.find(b => b.id == branchId);
                 
+                if (!currentBranch) {
+                    showToast('Sucursal no encontrada', 'error');
+                    return;
+                }
+                
+                // Guardar selección en localStorage
+                localStorage.setItem('currentBranchId', branchId);
+                
+                // Cargar productos de la sucursal seleccionada
                 const response = await fetch(
-                    `${SUPABASE_URL}/rest/v1/products?order=name.asc`,
+                    `${SUPABASE_URL}/rest/v1/branch_inventory?branch_id=eq.${branchId}&select=*,products(*)`,
                     {
                         headers: {
                             'apikey': SUPABASE_KEY,
@@ -1129,10 +1272,24 @@
 
                 if (!response.ok) throw new Error('Error al cargar productos');
 
-                allProducts = await response.json();
-                filteredProducts = [...allProducts];
+                const inventory = await response.json();
+                branchProducts = inventory.map(item => ({
+                    ...item.products,
+                    inventory_id: item.id,
+                    branch_stock: item.stock,
+                    minimum_stock: item.minimum_stock || 5
+                }));
+                
+                // Ordenar por nombre
+                branchProducts.sort((a, b) => a.name.localeCompare(b.name));
+                filteredProducts = [...branchProducts];
+                
+                // Limpiar carrito cuando se cambia de sucursal
+                cart = [];
+                updateCart();
                 
                 displayProducts();
+                showToast(`Sucursal: ${currentBranch.name}`, 'success');
                 
             } catch (error) {
                 console.error('Error al cargar productos:', error);
@@ -1143,6 +1300,9 @@
                         </div>
                         <div class="empty-state-text">Error al cargar productos</div>
                         <div class="empty-state-subtext">Verifique su conexión a internet</div>
+                        <button class="add-to-cart-btn mt-3" onclick="changeBranch()">
+                            <i class="bi bi-arrow-clockwise"></i> Reintentar
+                        </button>
                     </div>
                 `;
                 showToast('Error al cargar productos', 'error');
@@ -1158,10 +1318,10 @@
                 productList.innerHTML = `
                     <div class="empty-state">
                         <div class="empty-state-icon">
-                            <i class="bi bi-search"></i>
+                            <i class="bi bi-box"></i>
                         </div>
-                        <div class="empty-state-text">No se encontraron productos</div>
-                        <div class="empty-state-subtext">Intenta con otros términos de búsqueda</div>
+                        <div class="empty-state-text">No hay productos en esta sucursal</div>
+                        <div class="empty-state-subtext">La sucursal no tiene productos en inventario</div>
                     </div>
                 `;
                 return;
@@ -1169,26 +1329,36 @@
 
             productList.innerHTML = filteredProducts.map(product => {
                 // Verificar stock
-                const isOutOfStock = product.stock === 0;
-                const isLowStock = product.stock > 0 && product.stock <= product.minimum_stock;
+                const stock = product.branch_stock || 0;
+                const minStock = product.minimum_stock || 5;
+                const isOutOfStock = stock === 0;
+                const isLowStock = stock > 0 && stock <= minStock;
                 
                 let stockClass = '';
                 let stockText = '';
+                let stockIcon = 'bi-box';
                 
                 if (isOutOfStock) {
                     stockClass = 'stock-out';
                     stockText = 'Agotado';
+                    stockIcon = 'bi-x-circle';
                 } else if (isLowStock) {
                     stockClass = 'stock-low';
-                    stockText = `${product.stock} unidades`;
+                    stockText = `${stock} unidades (Bajo)`;
+                    stockIcon = 'bi-exclamation-triangle';
                 } else {
-                    stockText = `${product.stock} unidades`;
+                    stockText = `${stock} unidades`;
+                    stockIcon = 'bi-check-circle';
                 }
                 
                 // Verificar si está en el carrito
                 const cartItem = cart.find(item => item.id === product.id);
                 const isInCart = cartItem !== undefined;
                 const cartQuantity = isInCart ? cartItem.quantity : 0;
+                
+                // Calcular stock disponible después de lo agregado al carrito
+                const availableStock = stock - (isInCart ? cartQuantity : 0);
+                const canAddMore = availableStock > 0;
                 
                 return `
                 <div class="product-item fade-in" data-id="${product.id}">
@@ -1197,7 +1367,7 @@
                             <div class="product-name">${product.name}</div>
                             <span class="product-code">${product.code}</span>
                         </div>
-                        <div class="product-price">${product.sale_price.toFixed(2)}</div>
+                        <div class="product-price">${parseFloat(product.sale_price).toFixed(2)}</div>
                     </div>
                     
                     ${product.description ? `
@@ -1208,7 +1378,7 @@
                     
                     <div class="product-footer">
                         <div class="product-stock ${stockClass}">
-                            <i class="bi bi-box"></i> ${stockText}
+                            <i class="bi ${stockIcon}"></i> ${stockText}
                         </div>
                         
                         ${isInCart ? `
@@ -1217,7 +1387,7 @@
                                 ${cartQuantity} en carrito
                             </span>
                             <button class="add-to-cart-btn" onclick="addToCart(${product.id})" 
-                                    ${isOutOfStock ? 'disabled' : ''}>
+                                    ${!canAddMore ? 'disabled' : ''}>
                                 <i class="bi bi-plus-lg"></i> Agregar
                             </button>
                         </div>
@@ -1234,15 +1404,21 @@
         }
 
         function searchProducts() {
+            if (!currentBranch) {
+                showToast('Primero selecciona una sucursal', 'warning');
+                return;
+            }
+            
             const searchTerm = document.getElementById('productSearch').value.toLowerCase().trim();
             
             if (searchTerm === '') {
-                filteredProducts = [...allProducts];
+                filteredProducts = [...branchProducts];
             } else {
-                filteredProducts = allProducts.filter(product => {
+                filteredProducts = branchProducts.filter(product => {
                     return (
                         product.name.toLowerCase().includes(searchTerm) ||
-                        product.code.toLowerCase().includes(searchTerm)
+                        product.code.toLowerCase().includes(searchTerm) ||
+                        (product.description && product.description.toLowerCase().includes(searchTerm))
                     );
                 });
             }
@@ -1251,24 +1427,33 @@
         }
 
         function addToCart(productId) {
-            const product = allProducts.find(p => p.id === productId);
+            if (!currentBranch) {
+                showToast('Primero selecciona una sucursal', 'warning');
+                return;
+            }
+            
+            const product = branchProducts.find(p => p.id === productId);
             if (!product) return;
             
+            const stock = product.branch_stock || 0;
+            
             // Verificar stock
-            if (product.stock === 0) {
+            if (stock === 0) {
                 showToast('Producto agotado', 'error');
                 return;
             }
             
             // Buscar en el carrito
             const existingItem = cart.find(item => item.id === productId);
+            const currentQuantity = existingItem ? existingItem.quantity : 0;
+            
+            // Verificar stock disponible
+            if (currentQuantity >= stock) {
+                showToast('Stock insuficiente', 'warning');
+                return;
+            }
             
             if (existingItem) {
-                // Verificar stock disponible
-                if (existingItem.quantity >= product.stock) {
-                    showToast('Stock insuficiente', 'warning');
-                    return;
-                }
                 existingItem.quantity += 1;
                 existingItem.subtotal = existingItem.quantity * existingItem.sale_price;
             } else {
@@ -1277,16 +1462,17 @@
                     id: product.id,
                     code: product.code,
                     name: product.name,
-                    sale_price: product.sale_price,
+                    sale_price: parseFloat(product.sale_price),
                     quantity: 1,
-                    subtotal: product.sale_price,
-                    stock: product.stock
+                    subtotal: parseFloat(product.sale_price),
+                    stock: stock,
+                    inventory_id: product.inventory_id
                 });
             }
             
             updateCart();
             displayProducts(); // Actualizar vista
-            showToast('Producto agregado', 'success');
+            showToast(`${product.name} agregado al carrito`, 'success');
             
             // Mostrar carrito automáticamente si estaba cerrado
             if (!cartOpen) {
@@ -1328,13 +1514,20 @@
                     <div class="cart-item-info">
                         <div class="cart-item-name">${item.name}</div>
                         <div class="cart-item-price">Bs. ${item.sale_price.toFixed(2)} c/u</div>
+                        <small class="text-muted">Código: ${item.code}</small>
                     </div>
                     
                     <div class="cart-item-controls">
                         <div class="quantity-control">
-                            <button class="quantity-btn" onclick="updateQuantity(${item.id}, -1)">-</button>
+                            <button class="quantity-btn" onclick="updateQuantity(${item.id}, -1)" 
+                                    ${item.quantity <= 1 ? 'style="opacity:0.5"' : ''}>
+                                -
+                            </button>
                             <span class="quantity-display">${item.quantity}</span>
-                            <button class="quantity-btn" onclick="updateQuantity(${item.id}, 1)">+</button>
+                            <button class="quantity-btn" onclick="updateQuantity(${item.id}, 1)" 
+                                    ${item.quantity >= item.stock ? 'style="opacity:0.5"' : ''}>
+                                +
+                            </button>
                         </div>
                         
                         <button class="remove-item-btn" onclick="removeFromCart(${item.id})">
@@ -1372,17 +1565,18 @@
             const itemIndex = cart.findIndex(item => item.id === productId);
             
             if (itemIndex !== -1) {
+                const itemName = cart[itemIndex].name;
                 cart.splice(itemIndex, 1);
                 updateCart();
                 displayProducts(); // Actualizar vista
-                showToast('Producto removido', 'info');
+                showToast(`${itemName} removido del carrito`, 'info');
             }
         }
 
         function clearCart() {
             if (cart.length === 0) return;
             
-            if (confirm('¿Está seguro de que desea vaciar el carrito?')) {
+            if (confirm('¿Está seguro de que desea vaciar el carrito?\nSe perderán todos los productos agregados.')) {
                 cart = [];
                 updateCart();
                 displayProducts();
@@ -1402,6 +1596,11 @@
         }
 
         function confirmSale() {
+            if (!currentBranch) {
+                showToast('Primero selecciona una sucursal', 'warning');
+                return;
+            }
+            
             if (cart.length === 0) {
                 showToast('El carrito está vacío', 'error');
                 return;
@@ -1421,31 +1620,37 @@
             
             // Crear contenido del recibo
             let receiptHTML = `
-                <div style="font-family: monospace; font-size: 0.9rem;">
+                <div style="font-family: 'Courier New', monospace; font-size: 0.9rem;">
                     <div style="text-align: center; margin-bottom: 20px;">
-                        <h3 style="color: var(--primary-purple); margin: 0;">TIENDA</h3>
-                        <p style="margin: 5px 0;">Punto de Venta</p>
+                        <h3 style="color: var(--primary-purple); margin: 0; font-size: 1.2rem;">${currentBranch.name}</h3>
+                        <p style="margin: 5px 0; font-size: 0.8rem;">Punto de Venta Móvil</p>
+                        <hr style="border: none; border-top: 1px solid #ccc; margin: 10px 0;">
                     </div>
                     
-                    <div style="margin-bottom: 15px;">
+                    <div style="margin-bottom: 15px; font-size: 0.85rem;">
                         <p><strong>Vendedor:</strong> ${currentUser.nombre}</p>
+                        <p><strong>Sucursal:</strong> ${currentBranch.name}</p>
                         <p><strong>Fecha:</strong> ${new Date().toLocaleString('es-ES')}</p>
+                        <p><strong>Ticket #:</strong> ${Date.now().toString().slice(-6)}</p>
+                        <hr style="border: none; border-top: 1px dashed #ccc; margin: 10px 0;">
                     </div>
                     
-                    <hr style="border: none; border-top: 1px dashed #ccc; margin: 15px 0;">
-                    
                     <div style="margin-bottom: 15px;">
+                    <div style="display: flex; justify-content: space-between; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #eee; padding-bottom: 5px;">
+                        <span>Producto</span>
+                        <span style="text-align: right;">Total</span>
+                    </div>
             `;
             
             // Agregar items
-            cart.forEach(item => {
+            cart.forEach((item, index) => {
                 receiptHTML += `
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <div>
-                            ${item.quantity}x ${item.name}
-                            <br><small>Bs. ${item.sale_price.toFixed(2)} c/u</small>
+                    <div style="margin-bottom: 8px; ${index % 2 === 0 ? 'background: #f9f9f9; padding: 5px;' : ''}">
+                        <div style="font-weight: 600;">${item.quantity}x ${item.name}</div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.85rem;">
+                            <span>Bs. ${item.sale_price.toFixed(2)} c/u</span>
+                            <span>Bs. ${item.subtotal.toFixed(2)}</span>
                         </div>
-                        <div>Bs. ${item.subtotal.toFixed(2)}</div>
                     </div>
                 `;
             });
@@ -1455,13 +1660,15 @@
                     
                     <hr style="border: none; border-top: 1px dashed #ccc; margin: 15px 0;">
                     
-                    <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.1rem;">
+                    <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 1.1rem; background: var(--light-purple); padding: 10px; border-radius: 5px;">
                         <span>TOTAL:</span>
                         <span>Bs. ${total.toFixed(2)}</span>
                     </div>
                     
-                    <div style="text-align: center; margin-top: 25px; color: #666; font-size: 0.8rem;">
+                    <div style="text-align: center; margin-top: 25px; color: #666; font-size: 0.8rem; padding-top: 15px; border-top: 1px dashed #ccc;">
                         <p>¡Gracias por su compra!</p>
+                        <p><i class="bi bi-shop"></i> ${currentBranch.name}</p>
+                        <p style="margin-top: 10px; font-size: 0.75rem;">Ticket generado electrónicamente</p>
                     </div>
                 </div>
             `;
@@ -1471,10 +1678,16 @@
 
         async function finalizeSale() {
             try {
+                // Verificar que haya sucursal seleccionada
+                if (!currentBranch) {
+                    showToast('No hay sucursal seleccionada', 'error');
+                    return;
+                }
+                
                 // Verificar stock nuevamente antes de finalizar
                 for (const item of cart) {
-                    const product = allProducts.find(p => p.id === item.id);
-                    if (!product || product.stock < item.quantity) {
+                    const product = branchProducts.find(p => p.id === item.id);
+                    if (!product || (product.branch_stock || 0) < item.quantity) {
                         showToast(`Stock insuficiente para ${item.name}`, 'error');
                         return;
                     }
@@ -1483,6 +1696,7 @@
                 // Preparar datos de la venta
                 const saleData = {
                     user_id: currentUser.id,
+                    branch_id: currentBranch.id,
                     products: JSON.stringify(cart.map(item => ({
                         id: item.id,
                         code: item.code,
@@ -1494,6 +1708,12 @@
                     total_amount: cart.reduce((sum, item) => sum + item.subtotal, 0),
                     created_at: new Date().toISOString()
                 };
+                
+                // Mostrar loading en el botón
+                const confirmBtn = document.querySelector('.modal-btn-confirm');
+                const originalBtnText = confirmBtn.innerHTML;
+                confirmBtn.innerHTML = '<i class="bi bi-arrow-clockwise spin"></i> Procesando...';
+                confirmBtn.disabled = true;
                 
                 // Guardar venta en la base de datos
                 const response = await fetch(`${SUPABASE_URL}/rest/v1/sales`, {
@@ -1509,13 +1729,13 @@
                 
                 if (!response.ok) throw new Error('Error al guardar la venta');
                 
-                // Actualizar stock de productos
+                // Actualizar stock en la sucursal
                 for (const item of cart) {
-                    const product = allProducts.find(p => p.id === item.id);
-                    const newStock = product.stock - item.quantity;
+                    const product = branchProducts.find(p => p.id === item.id);
+                    const newStock = (product.branch_stock || 0) - item.quantity;
                     
                     await fetch(
-                        `${SUPABASE_URL}/rest/v1/products?id=eq.${item.id}`,
+                        `${SUPABASE_URL}/rest/v1/branch_inventory?id=eq.${product.inventory_id}`,
                         {
                             method: 'PATCH',
                             headers: {
@@ -1524,10 +1744,17 @@
                                 'Authorization': `Bearer ${SUPABASE_KEY}`,
                                 'Prefer': 'return=minimal'
                             },
-                            body: JSON.stringify({ stock: newStock })
+                            body: JSON.stringify({ 
+                                stock: newStock,
+                                updated_at: new Date().toISOString()
+                            })
                         }
                     );
                 }
+                
+                // Restaurar botón
+                confirmBtn.innerHTML = originalBtnText;
+                confirmBtn.disabled = false;
                 
                 // Cerrar modal y limpiar carrito
                 closeModal();
@@ -1536,13 +1763,23 @@
                 toggleCart();
                 
                 // Recargar productos para actualizar stock
-                await loadProducts();
+                changeBranch();
                 
-                showToast('Venta registrada exitosamente', 'success');
+                showToast('✅ Venta registrada exitosamente', 'success');
+                
+                // Mostrar resumen de venta
+                setTimeout(() => {
+                    alert(`🎉 Venta completada\n💰 Total: Bs. ${saleData.total_amount.toFixed(2)}\n📦 Productos: ${cart.length}\n🏪 Sucursal: ${currentBranch.name}`);
+                }, 500);
                 
             } catch (error) {
                 console.error('Error al finalizar venta:', error);
-                showToast('Error al registrar la venta', 'error');
+                showToast('❌ Error al registrar la venta', 'error');
+                
+                // Restaurar botón en caso de error
+                const confirmBtn = document.querySelector('.modal-btn-confirm');
+                confirmBtn.innerHTML = 'Finalizar Venta';
+                confirmBtn.disabled = false;
             }
         }
 
@@ -1571,7 +1808,7 @@
         window.finalizeSale = finalizeSale;
         window.closeModal = closeModal;
         window.toggleCart = toggleCart;
+        window.changeBranch = changeBranch;
     </script>
 </body>
 </html>
-
