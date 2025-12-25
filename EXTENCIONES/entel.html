@@ -314,8 +314,8 @@
             color: white;
         }
         
-        .status-nuevo {
-            background: linear-gradient(135deg, var(--success-color) 0%, #34ce57 100%);
+        .status-error {
+            background: linear-gradient(135deg, var(--error-color) 0%, #ff8c42 100%);
             color: white;
         }
         
@@ -324,8 +324,8 @@
             color: white;
         }
         
-        .status-error {
-            background: linear-gradient(135deg, var(--error-color) 0%, #ff8c42 100%);
+        .status-novalido {
+            background: linear-gradient(135deg, #6c757d 0%, #8b96a0 100%);
             color: white;
         }
         
@@ -546,8 +546,8 @@
             color: white;
         }
         
-        .status-badge-nuevo {
-            background: var(--success-color);
+        .status-badge-error {
+            background: var(--error-color);
             color: white;
         }
         
@@ -556,8 +556,8 @@
             color: white;
         }
         
-        .status-badge-error {
-            background: var(--error-color);
+        .status-badge-novalido {
+            background: #6c757d;
             color: white;
         }
         
@@ -654,9 +654,9 @@
                                 <label for="status" class="form-label">Estado</label>
                                 <select class="form-select app-form-control" id="status" required>
                                     <option value="ECHO">Echo</option>
-                                    <option value="NUEVO">Nuevo</option>
-                                    <option value="CORTE">Corte</option>
                                     <option value="ERROR">Error</option>
+                                    <option value="CORTE">Corte</option>
+                                    <option value="NO VALIDO">No Valido</option>
                                 </select>
                             </div>
                             <button type="submit" class="btn app-btn app-btn-primary w-100 text-white pulse-animation">
@@ -700,9 +700,9 @@
                         <div class="history-filter p-3">
                             <button class="filter-btn active" data-filter="all">Todos</button>
                             <button class="filter-btn" data-filter="echo">Echo</button>
-                            <button class="filter-btn" data-filter="nuevo">Nuevo</button>
-                            <button class="filter-btn" data-filter="corte">Corte</button>
                             <button class="filter-btn" data-filter="error">Error</button>
+                            <button class="filter-btn" data-filter="corte">Corte</button>
+                            <button class="filter-btn" data-filter="novalido">No Valido</button>
                         </div>
                         
                         <!-- Lista del historial -->
@@ -886,12 +886,12 @@
                 let command;
                 if (status === "CORTE") {
                     command = `*222*2*${phoneNumber}*19*1#`;  // Comando para estado CORTE
-                } else if (status === "ERROR") {
-                    command = `*222*2*${phoneNumber}*21*1#`;  // Comando para estado ERROR
+                } else if (status === "NO VALIDO") {
+                    command = `*222*2*${phoneNumber}*21*1#`;  // Comando para estado NO VALIDO
                 } else if (status === "ECHO") {
                     command = `*222*2*${phoneNumber}*20*1#`;  // Comando para estado ECHO
                 } else {
-                    command = `*222*2*${phoneNumber}*20*1#`;  // Comando para estado NUEVO
+                    command = `*222*2*${phoneNumber}*21*1#`;  // Comando para estado ERROR (antes NUEVO)
                 }
                 
                 // Guardar en la base de datos
@@ -1071,9 +1071,9 @@
             }
 
             // Contar recargas por estado
-            const nonCorteHistory = history.filter(item => item.estado !== 'CORTE' && item.estado !== 'ERROR');
+            const nonCorteHistory = history.filter(item => item.estado !== 'CORTE' && item.estado !== 'ERROR' && item.estado !== 'NO VALIDO');
             const corteHistoryCount = history.filter(item => item.estado === 'CORTE').length;
-            const errorHistoryCount = history.filter(item => item.estado === 'ERROR').length;
+            const errorHistoryCount = history.filter(item => item.estado === 'ERROR' || item.estado === 'NO VALIDO').length;
             
             // Actualizar contadores
             historyCount.textContent = nonCorteHistory.length;
@@ -1086,10 +1086,11 @@
             historyList.innerHTML = history.map((item, index) => {
                 const isCorte = item.estado === 'CORTE';
                 const isError = item.estado === 'ERROR';
+                const isNoValido = item.estado === 'NO VALIDO';
                 const isEcho = item.estado === 'ECHO';
                 let itemClass = 'history-item';
                 if (isCorte) itemClass = 'history-item-corte';
-                if (isError) itemClass = 'history-item-error';
+                if (isError || isNoValido) itemClass = 'history-item-error';
                 
                 const numero = numeroActual - index; // El más reciente tiene el número más alto
                 
@@ -1101,14 +1102,14 @@
                 const isRecent = diffMins < 60;
                 
                 return `
-                <div class="${itemClass} p-3 border-bottom" data-status="${item.estado.toLowerCase()}" data-date="${item.created_at}">
+                <div class="${itemClass} p-3 border-bottom" data-status="${item.estado.toLowerCase().replace(' ', '')}" data-date="${item.created_at}">
                     ${isRecent ? '<div class="new-item-indicator"></div>' : ''}
                     <div class="history-item-header">
                         <div class="history-item-main">
                             <div class="numero-badge">${numero}</div>
                             <div class="history-item-content">
                                 <div class="phone-info">
-                                    <div class="phone-display ${isCorte ? 'text-danger' : isError ? 'text-warning' : 'text-primary'}">${item.phone_number}</div>
+                                    <div class="phone-display ${isCorte ? 'text-danger' : isError || isNoValido ? 'text-warning' : 'text-primary'}">${item.phone_number}</div>
                                 </div>
                                 <div class="history-timestamp">
                                     <span class="user-info">
@@ -1120,23 +1121,23 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="history-status-badge ${isCorte ? 'status-badge-corte' : isError ? 'status-badge-error' : isEcho ? 'status-badge-echo' : 'status-badge-nuevo'}">
-                            <i class="bi ${isCorte ? 'bi-exclamation-triangle' : isError ? 'bi-x-circle' : isEcho ? 'bi-check-circle' : 'bi-check-circle'}"></i>
+                        <div class="history-status-badge ${isCorte ? 'status-badge-corte' : isError ? 'status-badge-error' : isNoValido ? 'status-badge-novalido' : isEcho ? 'status-badge-echo' : 'status-badge-error'}">
+                            <i class="bi ${isCorte ? 'bi-exclamation-triangle' : isError || isNoValido ? 'bi-x-circle' : isEcho ? 'bi-check-circle' : 'bi-x-circle'}"></i>
                             <div class="echo-text">ECHO</div>
                         </div>
                     </div>
                     
                     <div class="d-flex align-items-center justify-content-between">
                         <div class="d-flex align-items-center">
-                            <select class="status-select ${item.estado === 'ECHO' ? 'status-echo' : item.estado === 'NUEVO' ? 'status-nuevo' : item.estado === 'CORTE' ? 'status-corte' : 'status-error'}" 
+                            <select class="status-select ${item.estado === 'ECHO' ? 'status-echo' : item.estado === 'ERROR' ? 'status-error' : item.estado === 'CORTE' ? 'status-corte' : 'status-novalido'}" 
                                     data-id="${item.id}" onchange="updateStatus(this)">
                                 <option value="ECHO" ${item.estado === 'ECHO' ? 'selected' : ''}>Echo</option>
-                                <option value="NUEVO" ${item.estado === 'NUEVO' ? 'selected' : ''}>Nuevo</option>
-                                <option value="CORTE" ${item.estado === 'CORTE' ? 'selected' : ''}>Corte</option>
                                 <option value="ERROR" ${item.estado === 'ERROR' ? 'selected' : ''}>Error</option>
+                                <option value="CORTE" ${item.estado === 'CORTE' ? 'selected' : ''}>Corte</option>
+                                <option value="NO VALIDO" ${item.estado === 'NO VALIDO' ? 'selected' : ''}>No Valido</option>
                             </select>
                             ${isCorte ? '<span class="corte-indicator"><i class="bi bi-exclamation-circle me-1"></i>EN CORTE</span>' : ''}
-                            ${isError ? '<span class="error-indicator"><i class="bi bi-x-circle me-1"></i>ERROR</span>' : ''}
+                            ${isError || isNoValido ? '<span class="error-indicator"><i class="bi bi-x-circle me-1"></i>${isError ? "ERROR" : "NO VALIDO"}</span>' : ''}
                         </div>
                     </div>
                     
@@ -1181,12 +1182,12 @@
                 
                 if (newStatus === "CORTE") {
                     command = `*222*2*${phoneNumber}*19*1#`;  // Comando para estado CORTE
-                } else if (newStatus === "ERROR") {
-                    command = `*222*2*${phoneNumber}*21*1#`;  // Comando para estado ERROR
+                } else if (newStatus === "NO VALIDO") {
+                    command = `*222*2*${phoneNumber}*21*1#`;  // Comando para estado NO VALIDO
                 } else if (newStatus === "ECHO") {
                     command = `*222*2*${phoneNumber}*20*1#`;  // Comando para estado ECHO
                 } else {
-                    command = `*222*2*${phoneNumber}*20*1#`;  // Comando para estado NUEVO
+                    command = `*222*2*${phoneNumber}*21*1#`;  // Comando para estado ERROR
                 }
                 
                 // Actualizar el estado y comando en la base de datos
