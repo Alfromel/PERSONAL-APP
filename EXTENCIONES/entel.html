@@ -24,6 +24,23 @@
             --error-color: #ff6b35;
             --gray-color: #6c757d;
             --light-gray: #8b96a0;
+            
+            /* Colores específicos para estados */
+            --echo-color: #17a2b8;
+            --echo-light: #e7f6f8;
+            --echo-dark: #138496;
+            
+            --error-color: #ff6b35;
+            --error-light: #fff2ed;
+            --error-dark: #e5531b;
+            
+            --corte-color: #dc3545;
+            --corte-light: #fce8ea;
+            --corte-dark: #c82333;
+            
+            --novalido-color: #6c757d;
+            --novalido-light: #f8f9fa;
+            --novalido-dark: #545b62;
         }
         
         body {
@@ -59,24 +76,17 @@
             text-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
         
-        .history-item {
-            border-left: 4px solid var(--entel-color);
-            transition: all 0.3s;
-            background-color: white;
-            position: relative;
-            padding: 15px;
-            margin-bottom: 8px;
-            border-radius: 0 8px 8px 0;
-        }
-        
-        .history-item-corte {
-            border-left: 4px solid var(--danger-color);
-            background: linear-gradient(135deg, rgba(220, 53, 69, 0.03) 0%, rgba(220, 53, 69, 0.08) 100%);
+        /* ESTADOS MEJORADOS - SISTEMA COMPLETO */
+        .history-item-echo {
+            border-left: 4px solid var(--echo-color);
+            background: linear-gradient(135deg, rgba(23, 162, 184, 0.03) 0%, rgba(23, 162, 184, 0.08) 100%);
             transition: all 0.3s;
             position: relative;
             padding: 15px;
             margin-bottom: 8px;
-            border-radius: 0 8px 8px 0;
+            border-radius: 0 12px 12px 0;
+            border: 1px solid rgba(23, 162, 184, 0.1);
+            box-shadow: 0 2px 8px rgba(23, 162, 184, 0.05);
         }
         
         .history-item-error {
@@ -86,12 +96,57 @@
             position: relative;
             padding: 15px;
             margin-bottom: 8px;
-            border-radius: 0 8px 8px 0;
+            border-radius: 0 12px 12px 0;
+            border: 1px solid rgba(255, 107, 53, 0.1);
+            box-shadow: 0 2px 8px rgba(255, 107, 53, 0.05);
         }
         
-        .history-item:hover, .history-item-corte:hover, .history-item-error:hover {
-            transform: translateX(3px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        .history-item-corte {
+            border-left: 4px solid var(--corte-color);
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.03) 0%, rgba(220, 53, 69, 0.08) 100%);
+            transition: all 0.3s;
+            position: relative;
+            padding: 15px;
+            margin-bottom: 8px;
+            border-radius: 0 12px 12px 0;
+            border: 1px solid rgba(220, 53, 69, 0.1);
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.05);
+        }
+        
+        .history-item-novalido {
+            border-left: 4px solid var(--novalido-color);
+            background: linear-gradient(135deg, rgba(108, 117, 125, 0.03) 0%, rgba(108, 117, 125, 0.08) 100%);
+            transition: all 0.3s;
+            position: relative;
+            padding: 15px;
+            margin-bottom: 8px;
+            border-radius: 0 12px 12px 0;
+            border: 1px solid rgba(108, 117, 125, 0.1);
+            box-shadow: 0 2px 8px rgba(108, 117, 125, 0.05);
+        }
+        
+        .history-item-echo:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.15);
+            background: linear-gradient(135deg, rgba(23, 162, 184, 0.05) 0%, rgba(23, 162, 184, 0.12) 100%);
+        }
+        
+        .history-item-error:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 15px rgba(255, 107, 53, 0.15);
+            background: linear-gradient(135deg, rgba(255, 107, 53, 0.05) 0%, rgba(255, 107, 53, 0.12) 100%);
+        }
+        
+        .history-item-corte:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 15px rgba(220, 53, 69, 0.15);
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.05) 0%, rgba(220, 53, 69, 0.12) 100%);
+        }
+        
+        .history-item-novalido:hover {
+            transform: translateX(4px);
+            box-shadow: 0 4px 15px rgba(108, 117, 125, 0.15);
+            background: linear-gradient(135deg, rgba(108, 117, 125, 0.05) 0%, rgba(108, 117, 125, 0.12) 100%);
         }
         
         .user-badge {
@@ -104,7 +159,6 @@
             font-weight: bold;
             font-size: 1.3em;
             letter-spacing: 1px;
-            color: var(--entel-dark);
         }
         
         /* Estilos para app nativa */
@@ -205,6 +259,7 @@
             box-shadow: 0 8px 25px rgba(0,136,204,0.7);
         }
         
+        /* BADGES DE ESTADO MEJORADOS */
         .history-badge {
             background: linear-gradient(135deg, var(--entel-color) 0%, var(--entel-secondary) 100%);
             color: white;
@@ -215,26 +270,48 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
         
-        .corte-badge {
-            background: linear-gradient(135deg, var(--danger-color) 0%, #e74c3c 100%);
+        .echo-badge {
+            background: linear-gradient(135deg, var(--echo-color) 0%, var(--echo-dark) 100%);
             color: white;
             border-radius: 20px;
             padding: 5px 12px;
             font-size: 0.8rem;
             font-weight: 600;
             margin-left: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(23, 162, 184, 0.3);
         }
         
         .error-badge {
-            background: linear-gradient(135deg, var(--error-color) 0%, #ff8c42 100%);
+            background: linear-gradient(135deg, var(--error-color) 0%, var(--error-dark) 100%);
             color: white;
             border-radius: 20px;
             padding: 5px 12px;
             font-size: 0.8rem;
             font-weight: 600;
             margin-left: 5px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(255, 107, 53, 0.3);
+        }
+        
+        .corte-badge {
+            background: linear-gradient(135deg, var(--corte-color) 0%, var(--corte-dark) 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 5px;
+            box-shadow: 0 2px 5px rgba(220, 53, 69, 0.3);
+        }
+        
+        .novalido-badge {
+            background: linear-gradient(135deg, var(--novalido-color) 0%, var(--novalido-dark) 100%);
+            color: white;
+            border-radius: 20px;
+            padding: 5px 12px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 5px;
+            box-shadow: 0 2px 5px rgba(108, 117, 125, 0.3);
         }
         
         .user-avatar {
@@ -296,7 +373,7 @@
             border-top: none;
         }
         
-        /* Estilos para el selector de estado */
+        /* SELECTOR DE ESTADO MEJORADO */
         .status-select {
             border-radius: 20px;
             padding: 6px 15px;
@@ -307,26 +384,31 @@
             transition: all 0.3s;
             box-shadow: 0 2px 5px rgba(0,0,0,0.1);
             min-width: 90px;
+            text-align: center;
         }
         
         .status-echo {
-            background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
+            background: linear-gradient(135deg, var(--echo-color) 0%, var(--echo-dark) 100%);
             color: white;
+            border: 1px solid rgba(23, 162, 184, 0.2);
         }
         
         .status-error {
-            background: linear-gradient(135deg, var(--error-color) 0%, #ff8c42 100%);
+            background: linear-gradient(135deg, var(--error-color) 0%, var(--error-dark) 100%);
             color: white;
+            border: 1px solid rgba(255, 107, 53, 0.2);
         }
         
         .status-corte {
-            background: linear-gradient(135deg, var(--danger-color) 0%, #e74c3c 100%);
+            background: linear-gradient(135deg, var(--corte-color) 0%, var(--corte-dark) 100%);
             color: white;
+            border: 1px solid rgba(220, 53, 69, 0.2);
         }
         
         .status-novalido {
-            background: linear-gradient(135deg, #6c757d 0%, #8b96a0 100%);
+            background: linear-gradient(135deg, var(--novalido-color) 0%, var(--novalido-dark) 100%);
             color: white;
+            border: 1px solid rgba(108, 117, 125, 0.2);
         }
         
         .status-select:focus {
@@ -334,24 +416,54 @@
             box-shadow: 0 0 0 2px rgba(0,0,0,0.1);
         }
         
-        .corte-indicator {
-            color: var(--danger-color);
+        .status-select:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        /* INDICADORES DE ESTADO MEJORADOS */
+        .echo-indicator {
+            color: var(--echo-dark);
             font-weight: bold;
             font-size: 0.75rem;
-            background: rgba(220, 53, 69, 0.1);
+            background: var(--echo-light);
             padding: 3px 8px;
             border-radius: 12px;
             margin-left: 8px;
+            border: 1px solid rgba(23, 162, 184, 0.2);
         }
         
         .error-indicator {
-            color: var(--error-color);
+            color: var(--error-dark);
             font-weight: bold;
             font-size: 0.75rem;
-            background: rgba(255, 107, 53, 0.1);
+            background: var(--error-light);
             padding: 3px 8px;
             border-radius: 12px;
             margin-left: 8px;
+            border: 1px solid rgba(255, 107, 53, 0.2);
+        }
+        
+        .corte-indicator {
+            color: var(--corte-dark);
+            font-weight: bold;
+            font-size: 0.75rem;
+            background: var(--corte-light);
+            padding: 3px 8px;
+            border-radius: 12px;
+            margin-left: 8px;
+            border: 1px solid rgba(220, 53, 69, 0.2);
+        }
+        
+        .novalido-indicator {
+            color: var(--novalido-dark);
+            font-weight: bold;
+            font-size: 0.75rem;
+            background: var(--novalido-light);
+            padding: 3px 8px;
+            border-radius: 12px;
+            margin-left: 8px;
+            border: 1px solid rgba(108, 117, 125, 0.2);
         }
         
         .numero-badge {
@@ -370,7 +482,7 @@
             flex-shrink: 0;
         }
         
-        /* Nuevos estilos para el historial mejorado */
+        /* HISTORIAL MEJORADO */
         .history-container {
             max-height: 500px;
             overflow-y: auto;
@@ -463,6 +575,7 @@
             transition: all 0.3s;
             flex: 1;
             text-align: center;
+            font-weight: 500;
         }
         
         .filter-btn.active {
@@ -529,36 +642,77 @@
             animation: pulse 1.5s infinite;
         }
         
-        .history-status-badge {
-            width: 26px;
-            height: 26px;
+        /* BURBUJA DE ESTADO MEJORADA */
+        .status-bubble {
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.7rem;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
             margin-left: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+            position: relative;
+            transition: all 0.3s;
         }
         
-        .status-badge-echo {
-            background: #17a2b8;
+        .status-bubble:hover {
+            transform: scale(1.1);
+        }
+        
+        .status-bubble-echo {
+            background: linear-gradient(135deg, var(--echo-color) 0%, var(--echo-dark) 100%);
             color: white;
         }
         
-        .status-badge-error {
-            background: var(--error-color);
+        .status-bubble-error {
+            background: linear-gradient(135deg, var(--error-color) 0%, var(--error-dark) 100%);
             color: white;
         }
         
-        .status-badge-corte {
-            background: var(--danger-color);
+        .status-bubble-corte {
+            background: linear-gradient(135deg, var(--corte-color) 0%, var(--corte-dark) 100%);
             color: white;
         }
         
-        .status-badge-novalido {
-            background: #6c757d;
+        .status-bubble-novalido {
+            background: linear-gradient(135deg, var(--novalido-color) 0%, var(--novalido-dark) 100%);
             color: white;
+        }
+        
+        /* Badge de estado dentro de la burbuja */
+        .status-bubble-badge {
+            position: absolute;
+            bottom: -3px;
+            right: -3px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.5rem;
+            font-weight: bold;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        .status-bubble-badge-echo {
+            color: var(--echo-dark);
+        }
+        
+        .status-bubble-badge-error {
+            color: var(--error-dark);
+        }
+        
+        .status-bubble-badge-corte {
+            color: var(--corte-dark);
+        }
+        
+        .status-bubble-badge-novalido {
+            color: var(--novalido-dark);
         }
         
         .phone-info {
@@ -586,12 +740,135 @@
             font-weight: 500;
         }
         
-        .echo-text {
+        /* Estado específico para números de teléfono */
+        .phone-echo {
+            color: var(--echo-dark);
+        }
+        
+        .phone-error {
+            color: var(--error-dark);
+        }
+        
+        .phone-corte {
+            color: var(--corte-dark);
+        }
+        
+        .phone-novalido {
+            color: var(--novalido-dark);
+        }
+        
+        /* Animación para cambios de estado */
+        @keyframes statusChange {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .status-changing {
+            animation: statusChange 0.5s ease-in-out;
+        }
+        
+        /* Contador de estados mejorado */
+        .status-counter {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            margin-left: 8px;
+        }
+        
+        .counter-badge {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             font-size: 0.7rem;
-            color: var(--success-color);
             font-weight: bold;
-            margin-top: 4px;
-            text-align: center;
+            color: white;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        
+        .counter-echo {
+            background: var(--echo-color);
+        }
+        
+        .counter-error {
+            background: var(--error-color);
+        }
+        
+        .counter-corte {
+            background: var(--corte-color);
+        }
+        
+        .counter-novalido {
+            background: var(--novalido-color);
+        }
+        
+        /* Tooltip para burbujas */
+        .status-tooltip {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s;
+            z-index: 10;
+        }
+        
+        .status-bubble:hover .status-tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        /* Resumen de estados en tarjeta */
+        .status-summary {
+            display: flex;
+            justify-content: space-around;
+            padding: 10px 0;
+            border-top: 1px solid #e9ecef;
+            border-bottom: 1px solid #e9ecef;
+            margin: 15px 0;
+        }
+        
+        .status-summary-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .status-summary-count {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .status-summary-label {
+            font-size: 0.75rem;
+            color: var(--gray-color);
+        }
+        
+        .status-summary-echo .status-summary-count {
+            color: var(--echo-color);
+        }
+        
+        .status-summary-error .status-summary-count {
+            color: var(--error-color);
+        }
+        
+        .status-summary-corte .status-summary-count {
+            color: var(--corte-color);
+        }
+        
+        .status-summary-novalido .status-summary-count {
+            color: var(--novalido-color);
         }
     </style>
 </head>
@@ -675,8 +952,12 @@
                         </div>
                         <div class="d-flex align-items-center">
                             <span class="history-badge" id="historyCount">0</span>
-                            <span class="corte-badge" id="corteCount">0</span>
-                            <span class="error-badge" id="errorCount">0</span>
+                            <div class="status-counter">
+                                <span class="counter-badge counter-echo" id="echoCount" title="Echo">0</span>
+                                <span class="counter-badge counter-error" id="errorCount" title="Error">0</span>
+                                <span class="counter-badge counter-corte" id="corteCount" title="Corte">0</span>
+                                <span class="counter-badge counter-novalido" id="novalidoCount" title="No Válido">0</span>
+                            </div>
                             <button id="clearHistoryBtn" class="clear-history-btn ms-2" title="Descargar PDF y eliminar historial">
                                 <i class="bi bi-trash"></i>
                             </button>
@@ -694,6 +975,26 @@
                         <div id="dateFilterInfo" class="date-filter-info d-none">
                             <i class="bi bi-calendar-check me-2"></i>
                             <span>Día: <span id="currentDateDisplay"></span></span>
+                        </div>
+                        
+                        <!-- Resumen de estados -->
+                        <div class="status-summary d-none" id="statusSummary">
+                            <div class="status-summary-item status-summary-echo">
+                                <span class="status-summary-count" id="summaryEcho">0</span>
+                                <span class="status-summary-label">Echo</span>
+                            </div>
+                            <div class="status-summary-item status-summary-error">
+                                <span class="status-summary-count" id="summaryError">0</span>
+                                <span class="status-summary-label">Error</span>
+                            </div>
+                            <div class="status-summary-item status-summary-corte">
+                                <span class="status-summary-count" id="summaryCorte">0</span>
+                                <span class="status-summary-label">Corte</span>
+                            </div>
+                            <div class="status-summary-item status-summary-novalido">
+                                <span class="status-summary-count" id="summaryNovalido">0</span>
+                                <span class="status-summary-label">No Válido</span>
+                            </div>
                         </div>
                         
                         <!-- Filtros de estado -->
@@ -891,7 +1192,7 @@
                 } else if (status === "ECHO") {
                     command = `*222*2*${phoneNumber}*20*1#`;  // Comando para estado ECHO
                 } else {
-                    command = `*222*2*${phoneNumber}*21*1#`;  // Comando para estado ERROR (antes NUEVO)
+                    command = `*222*2*${phoneNumber}*21*1#`;  // Comando para estado ERROR
                 }
                 
                 // Guardar en la base de datos
@@ -911,7 +1212,7 @@
         }
 
         async function saveRechargeToDatabase(phoneNumber, status, command) {
-            // Obtener fecha y hora actual del dispositivo del usuario - FECHA LOCAL DEL DISPOSITIVO
+            // Obtener fecha y hora actual del dispositivo del usuario
             const now = new Date();
             
             const timestamp = now.toLocaleString('es-ES', {
@@ -963,6 +1264,7 @@
             const historyList = document.getElementById('historyList');
             const emptyHistory = document.getElementById('emptyHistory');
             const dateFilterInfo = document.getElementById('dateFilterInfo');
+            const statusSummary = document.getElementById('statusSummary');
             
             loadingDiv.classList.remove('d-none');
             historyList.innerHTML = '';
@@ -985,7 +1287,7 @@
 
                 let rechargeHistory = await response.json();
                 
-                // Obtener fecha actual del dispositivo - FECHA LOCAL DEL DISPOSITIVO
+                // Obtener fecha actual del dispositivo
                 const now = new Date();
                 const todayString = now.toLocaleDateString('es-ES', {
                     day: '2-digit',
@@ -993,7 +1295,7 @@
                     year: 'numeric'
                 });
                 
-                // Aplicar filtro automático por fecha del dispositivo - LÓGICA DEFINITIVA
+                // Aplicar filtro automático por fecha del dispositivo
                 currentDateFilter = todayString;
                 rechargeHistory = filterHistoryByDate(rechargeHistory, todayString);
                 
@@ -1016,11 +1318,17 @@
                 
                 currentUserHistory = rechargeHistory; // Guardar historial filtrado y ordenado
                 
+                // Calcular estadísticas por estado
+                const stats = calculateStatusStats(rechargeHistory);
+                updateStatusCounters(stats);
+                
                 // Mostrar u ocultar elementos según si hay historial
                 if (rechargeHistory.length > 0) {
                     emptyHistory.classList.add('d-none');
+                    statusSummary.classList.remove('d-none');
                 } else {
                     emptyHistory.classList.remove('d-none');
+                    statusSummary.classList.add('d-none');
                 }
                 
                 displayHistory(rechargeHistory);
@@ -1033,22 +1341,58 @@
             }
         }
 
-        // FUNCIÓN DEFINITIVA PARA FILTRAR POR FECHA - COMPARACIÓN DIRECTA DE TEXTO
+        // Calcular estadísticas por estado
+        function calculateStatusStats(history) {
+            const stats = {
+                echo: 0,
+                error: 0,
+                corte: 0,
+                novalido: 0,
+                total: history.length
+            };
+            
+            history.forEach(item => {
+                switch(item.estado) {
+                    case 'ECHO':
+                        stats.echo++;
+                        break;
+                    case 'ERROR':
+                        stats.error++;
+                        break;
+                    case 'CORTE':
+                        stats.corte++;
+                        break;
+                    case 'NO VALIDO':
+                        stats.novalido++;
+                        break;
+                }
+            });
+            
+            return stats;
+        }
+
+        // Actualizar contadores de estado
+        function updateStatusCounters(stats) {
+            document.getElementById('historyCount').textContent = stats.total;
+            document.getElementById('echoCount').textContent = stats.echo;
+            document.getElementById('errorCount').textContent = stats.error;
+            document.getElementById('corteCount').textContent = stats.corte;
+            document.getElementById('novalidoCount').textContent = stats.novalido;
+            
+            // Actualizar resumen
+            document.getElementById('summaryEcho').textContent = stats.echo;
+            document.getElementById('summaryError').textContent = stats.error;
+            document.getElementById('summaryCorte').textContent = stats.corte;
+            document.getElementById('summaryNovalido').textContent = stats.novalido;
+        }
+
+        // FUNCIÓN DEFINITIVA PARA FILTRAR POR FECHA
         function filterHistoryByDate(history, dateString) {
             return history.filter(item => {
                 try {
-                    // LÓGICA PRINCIPAL: Comparación directa de texto de fecha
-                    // dateString viene en formato: "19/11/2024"
-                    // item.timestamp viene en formato: "19/11/2024, 15:30:25"
-                    
                     const timestampText = item.timestamp;
-                    
-                    // Extraer solo la parte de la fecha (antes de la coma)
                     const fechaPart = timestampText.split(',')[0].trim();
-                    
-                    // Comparación EXACTA de texto de fecha
                     return fechaPart === dateString;
-                    
                 } catch (error) {
                     console.error('Error al procesar fecha del item:', item, error);
                     return false;
@@ -1058,39 +1402,71 @@
 
         function displayHistory(history) {
             const historyList = document.getElementById('historyList');
-            const historyCount = document.getElementById('historyCount');
-            const corteCount = document.getElementById('corteCount');
-            const errorCount = document.getElementById('errorCount');
             
             if (history.length === 0) {
                 historyList.innerHTML = '';
-                historyCount.textContent = '0';
-                corteCount.textContent = '0';
-                errorCount.textContent = '0';
                 return;
             }
 
-            // Contar recargas por estado
-            const nonCorteHistory = history.filter(item => item.estado !== 'CORTE' && item.estado !== 'ERROR' && item.estado !== 'NO VALIDO');
-            const corteHistoryCount = history.filter(item => item.estado === 'CORTE').length;
-            const errorHistoryCount = history.filter(item => item.estado === 'ERROR' || item.estado === 'NO VALIDO').length;
-            
-            // Actualizar contadores
-            historyCount.textContent = nonCorteHistory.length;
-            corteCount.textContent = corteHistoryCount;
-            errorCount.textContent = errorHistoryCount;
-            
             // Crear un array con todas las recargas numeradas correctamente
             let numeroActual = history.length;
             
             historyList.innerHTML = history.map((item, index) => {
-                const isCorte = item.estado === 'CORTE';
-                const isError = item.estado === 'ERROR';
-                const isNoValido = item.estado === 'NO VALIDO';
-                const isEcho = item.estado === 'ECHO';
-                let itemClass = 'history-item';
-                if (isCorte) itemClass = 'history-item-corte';
-                if (isError || isNoValido) itemClass = 'history-item-error';
+                const estado = item.estado;
+                const estadoLower = estado.toLowerCase().replace(' ', '');
+                
+                // Determinar clases según el estado
+                let itemClass = '';
+                let phoneClass = '';
+                let indicatorClass = '';
+                let indicatorText = '';
+                let statusClass = '';
+                let bubbleClass = '';
+                let bubbleBadgeClass = '';
+                let iconClass = '';
+                
+                switch(estado) {
+                    case 'ECHO':
+                        itemClass = 'history-item-echo';
+                        phoneClass = 'phone-echo';
+                        indicatorClass = 'echo-indicator';
+                        indicatorText = 'ECHO';
+                        statusClass = 'status-echo';
+                        bubbleClass = 'status-bubble-echo';
+                        bubbleBadgeClass = 'status-bubble-badge-echo';
+                        iconClass = 'bi bi-check-circle';
+                        break;
+                    case 'ERROR':
+                        itemClass = 'history-item-error';
+                        phoneClass = 'phone-error';
+                        indicatorClass = 'error-indicator';
+                        indicatorText = 'ERROR';
+                        statusClass = 'status-error';
+                        bubbleClass = 'status-bubble-error';
+                        bubbleBadgeClass = 'status-bubble-badge-error';
+                        iconClass = 'bi bi-x-circle';
+                        break;
+                    case 'CORTE':
+                        itemClass = 'history-item-corte';
+                        phoneClass = 'phone-corte';
+                        indicatorClass = 'corte-indicator';
+                        indicatorText = 'EN CORTE';
+                        statusClass = 'status-corte';
+                        bubbleClass = 'status-bubble-corte';
+                        bubbleBadgeClass = 'status-bubble-badge-corte';
+                        iconClass = 'bi bi-exclamation-triangle';
+                        break;
+                    case 'NO VALIDO':
+                        itemClass = 'history-item-novalido';
+                        phoneClass = 'phone-novalido';
+                        indicatorClass = 'novalido-indicator';
+                        indicatorText = 'NO VÁLIDO';
+                        statusClass = 'status-novalido';
+                        bubbleClass = 'status-bubble-novalido';
+                        bubbleBadgeClass = 'status-bubble-badge-novalido';
+                        iconClass = 'bi bi-slash-circle';
+                        break;
+                }
                 
                 const numero = numeroActual - index; // El más reciente tiene el número más alto
                 
@@ -1101,15 +1477,21 @@
                 const diffMins = Math.floor(diffMs / 60000);
                 const isRecent = diffMins < 60;
                 
+                // Texto para el estado en la burbuja
+                const estadoBurbuja = estado === 'NO VALIDO' ? 'NV' : estado.charAt(0);
+                
                 return `
-                <div class="${itemClass} p-3 border-bottom" data-status="${item.estado.toLowerCase().replace(' ', '')}" data-date="${item.created_at}">
+                <div class="${itemClass} p-3 border-bottom" data-status="${estadoLower}" data-date="${item.created_at}">
                     ${isRecent ? '<div class="new-item-indicator"></div>' : ''}
                     <div class="history-item-header">
                         <div class="history-item-main">
                             <div class="numero-badge">${numero}</div>
                             <div class="history-item-content">
                                 <div class="phone-info">
-                                    <div class="phone-display ${isCorte ? 'text-danger' : isError || isNoValido ? 'text-warning' : 'text-primary'}">${item.phone_number}</div>
+                                    <div class="phone-display ${phoneClass}">${item.phone_number}</div>
+                                    <span class="${indicatorClass}">
+                                        <i class="bi ${iconClass.replace('bi ', '')} me-1"></i>${indicatorText}
+                                    </span>
                                 </div>
                                 <div class="history-timestamp">
                                     <span class="user-info">
@@ -1121,23 +1503,22 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="history-status-badge ${isCorte ? 'status-badge-corte' : isError ? 'status-badge-error' : isNoValido ? 'status-badge-novalido' : isEcho ? 'status-badge-echo' : 'status-badge-error'}">
-                            <i class="bi ${isCorte ? 'bi-exclamation-triangle' : isError || isNoValido ? 'bi-x-circle' : isEcho ? 'bi-check-circle' : 'bi-x-circle'}"></i>
-                            <div class="echo-text">ECHO</div>
+                        <div class="status-bubble ${bubbleClass}">
+                            <i class="${iconClass}"></i>
+                            <div class="status-bubble-badge ${bubbleBadgeClass}">${estadoBurbuja}</div>
+                            <div class="status-tooltip">${estado}</div>
                         </div>
                     </div>
                     
-                    <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center justify-content-between mt-2">
                         <div class="d-flex align-items-center">
-                            <select class="status-select ${item.estado === 'ECHO' ? 'status-echo' : item.estado === 'ERROR' ? 'status-error' : item.estado === 'CORTE' ? 'status-corte' : 'status-novalido'}" 
+                            <select class="status-select ${statusClass}" 
                                     data-id="${item.id}" onchange="updateStatus(this)">
-                                <option value="ECHO" ${item.estado === 'ECHO' ? 'selected' : ''}>Echo</option>
-                                <option value="ERROR" ${item.estado === 'ERROR' ? 'selected' : ''}>Error</option>
-                                <option value="CORTE" ${item.estado === 'CORTE' ? 'selected' : ''}>Corte</option>
-                                <option value="NO VALIDO" ${item.estado === 'NO VALIDO' ? 'selected' : ''}>No Valido</option>
+                                <option value="ECHO" ${estado === 'ECHO' ? 'selected' : ''}>Echo</option>
+                                <option value="ERROR" ${estado === 'ERROR' ? 'selected' : ''}>Error</option>
+                                <option value="CORTE" ${estado === 'CORTE' ? 'selected' : ''}>Corte</option>
+                                <option value="NO VALIDO" ${estado === 'NO VALIDO' ? 'selected' : ''}>No Valido</option>
                             </select>
-                            ${isCorte ? '<span class="corte-indicator"><i class="bi bi-exclamation-circle me-1"></i>EN CORTE</span>' : ''}
-                            ${isError || isNoValido ? '<span class="error-indicator"><i class="bi bi-x-circle me-1"></i>${isError ? "ERROR" : "NO VALIDO"}</span>' : ''}
                         </div>
                     </div>
                     
@@ -1174,6 +1555,9 @@
         async function updateStatus(selectElement) {
             const id = selectElement.getAttribute('data-id');
             const newStatus = selectElement.value;
+            
+            // Aplicar animación de cambio
+            selectElement.parentElement.parentElement.parentElement.classList.add('status-changing');
             
             try {
                 // Generar el comando correcto según el nuevo estado
@@ -1218,6 +1602,8 @@
             } catch (error) {
                 console.error('Error al actualizar el estado:', error);
                 alert('Error al actualizar el estado. Intente nuevamente.');
+                // Remover animación en caso de error
+                selectElement.parentElement.parentElement.parentElement.classList.remove('status-changing');
             }
         }
 
@@ -1391,4 +1777,3 @@
     </script>
 </body>
 </html>
-
