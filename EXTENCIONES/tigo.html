@@ -270,6 +270,46 @@
             box-shadow: 0 2px 5px rgba(108, 117, 125, 0.3);
         }
         
+        /* BURBUJA AZUL PARA RECARGAS VÁLIDAS (ECHO + ERROR) */
+        .recargas-validas-bubble {
+            background: linear-gradient(135deg, var(--tigo-color) 0%, var(--tigo-secondary) 100%);
+            color: white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.4rem;
+            box-shadow: 0 4px 15px rgba(0, 94, 184, 0.4);
+            margin-left: 10px;
+            position: relative;
+            transition: all 0.3s;
+        }
+        
+        .recargas-validas-bubble:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0, 94, 184, 0.6);
+        }
+        
+        .recargas-validas-count {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: white;
+            color: var(--tigo-color);
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            border: 2px solid var(--tigo-color);
+        }
+        
         .user-avatar {
             width: 40px;
             height: 40px;
@@ -522,6 +562,33 @@
         .phone-novalido {
             color: #545b62;
         }
+        
+        .history-item-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        
+        .history-action-btn {
+            flex: 1;
+            background: var(--tigo-light);
+            border: 1px solid rgba(0, 94, 184, 0.2);
+            border-radius: 8px;
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            color: var(--tigo-dark);
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+        
+        .history-action-btn:hover {
+            background: var(--tigo-color);
+            color: white;
+            transform: translateY(-1px);
+        }
     </style>
 </head>
 <body>
@@ -588,7 +655,7 @@
                                     <option value="NO VALIDO">No Valido</option>
                                 </select>
                             </div>
-                            <button type="submit" class="btn app-btn app-btn-primary w-100 pulse-animation">
+                            <button type="submit" class="btn app-btn app-btn-primary w-100">
                                 <i class="bi bi-telephone-fill me-2"></i> Llamar para Recargar
                             </button>
                         </form>
@@ -603,7 +670,12 @@
                             <span>Mis Recargas</span>
                         </div>
                         <div class="d-flex align-items-center">
-                            <span class="history-badge" id="historyCount">0</span>
+                            <!-- BURBUJA AZUL CON RECARGAS VÁLIDAS (ECHO + ERROR) -->
+                            <div class="recargas-validas-bubble" title="Recargas Válidas (Echo + Error)">
+                                <i class="bi bi-phone"></i>
+                                <div class="recargas-validas-count" id="recargasValidasCount">0</div>
+                            </div>
+                            
                             <span class="echo-badge" id="echoCount">0</span>
                             <span class="error-badge" id="errorCount">0</span>
                             <span class="novalido-badge" id="novalidoCount">0</span>
@@ -800,14 +872,11 @@
                 // Limpiar el formulario
                 document.getElementById('phoneNumber').value = '';
                 
-                // Copiar el número al portapapeles
+                // Copiar el número al portapapeles y llamar
                 navigator.clipboard.writeText(phoneNumber).then(() => {
-                    // SOLUCIÓN: Codificar el comando *66# para que funcione en todos los dispositivos
-                    // El carácter # se codifica como %23 en formato URI
                     window.location.href = `tel:*66%23`;
                 }).catch(err => {
                     console.error('Error al copiar: ', err);
-                    // Si falla la copia, igual realizar la llamada
                     window.location.href = `tel:*66%23`;
                 });
                 
@@ -818,7 +887,6 @@
         }
 
         async function saveRechargeToDatabase(phoneNumber, status) {
-            // Obtener fecha y hora actual del dispositivo del usuario - FECHA LOCAL DEL DISPOSITIVO
             const now = new Date();
             
             const timestamp = now.toLocaleString('es-ES', {
@@ -830,7 +898,6 @@
                 second: '2-digit'
             });
             
-            // Usar formato ISO para ordenamiento correcto
             const created_at = now.toISOString();
 
             const rechargeData = {
@@ -842,7 +909,6 @@
                 created_at: created_at
             };
 
-            // Llamada real a Supabase - tabla TIGO
             const response = await fetch(`${SUPABASE_URL}/rest/v1/tigo_recharge_history`, {
                 method: 'POST',
                 headers: {
@@ -858,7 +924,6 @@
                 throw new Error('Error al guardar en la base de datos');
             }
 
-            // Recargar el historial después de guardar
             loadRechargeHistory();
             
             return { success: true };
@@ -874,7 +939,6 @@
             historyList.innerHTML = '';
 
             try {
-                // Llamada real a Supabase - tabla TIGO - filtrar por usuario actual
                 const response = await fetch(
                     `${SUPABASE_URL}/rest/v1/tigo_recharge_history?user_id=eq.${currentUser.id}&order=created_at.desc`,
                     {
@@ -891,7 +955,6 @@
 
                 let rechargeHistory = await response.json();
                 
-                // Obtener fecha actual del dispositivo - FECHA LOCAL DEL DISPOSITIVO
                 const now = new Date();
                 const todayString = now.toLocaleDateString('es-ES', {
                     day: '2-digit',
@@ -899,11 +962,9 @@
                     year: 'numeric'
                 });
                 
-                // Aplicar filtro automático por fecha del dispositivo - LÓGICA DEFINITIVA
                 currentDateFilter = todayString;
                 rechargeHistory = filterHistoryByDate(rechargeHistory, todayString);
                 
-                // Mostrar información del filtro
                 const dateDisplay = now.toLocaleDateString('es-ES', { 
                     weekday: 'long', 
                     year: 'numeric', 
@@ -913,16 +974,14 @@
                 document.getElementById('currentDateDisplay').textContent = dateDisplay;
                 dateFilterInfo.classList.remove('d-none');
                 
-                // Ordenar por fecha/hora del dispositivo del usuario (más reciente primero)
                 rechargeHistory.sort((a, b) => {
                     const dateA = new Date(a.created_at);
                     const dateB = new Date(b.created_at);
-                    return dateB.getTime() - dateA.getTime(); // Más reciente primero
+                    return dateB.getTime() - dateA.getTime();
                 });
                 
-                currentUserHistory = rechargeHistory; // Guardar historial filtrado y ordenado
+                currentUserHistory = rechargeHistory;
                 
-                // Mostrar u ocultar elementos según si hay historial
                 if (rechargeHistory.length > 0) {
                     emptyHistory.classList.add('d-none');
                 } else {
@@ -939,22 +998,12 @@
             }
         }
 
-        // FUNCIÓN DEFINITIVA PARA FILTRAR POR FECHA - COMPARACIÓN DIRECTA DE TEXTO
         function filterHistoryByDate(history, dateString) {
             return history.filter(item => {
                 try {
-                    // LÓGICA PRINCIPAL: Comparación directa de texto de fecha
-                    // dateString viene en formato: "19/11/2024"
-                    // item.timestamp viene en formato: "19/11/2024, 15:30:25"
-                    
                     const timestampText = item.timestamp;
-                    
-                    // Extraer solo la parte de la fecha (antes de la coma)
                     const fechaPart = timestampText.split(',')[0].trim();
-                    
-                    // Comparación EXACTA de texto de fecha
                     return fechaPart === dateString;
-                    
                 } catch (error) {
                     console.error('Error al procesar fecha del item:', item, error);
                     return false;
@@ -964,32 +1013,32 @@
 
         function displayHistory(history) {
             const historyList = document.getElementById('historyList');
-            const historyCount = document.getElementById('historyCount');
             const echoCountElement = document.getElementById('echoCount');
             const errorCountElement = document.getElementById('errorCount');
             const novalidoCountElement = document.getElementById('novalidoCount');
+            const recargasValidasCount = document.getElementById('recargasValidasCount');
             
             if (history.length === 0) {
                 historyList.innerHTML = '';
-                historyCount.textContent = '0';
                 echoCountElement.textContent = '0';
                 errorCountElement.textContent = '0';
                 novalidoCountElement.textContent = '0';
+                recargasValidasCount.textContent = '0';
                 return;
             }
 
-            // Contar recargas por estado
             const echoHistory = history.filter(item => item.estado === 'ECHO');
             const errorHistory = history.filter(item => item.estado === 'ERROR');
             const novalidoHistory = history.filter(item => item.estado === 'NO VALIDO');
             
-            // Actualizar contadores
-            historyCount.textContent = echoHistory.length;
+            // CONTAR SOLO RECARGAS VÁLIDAS (ECHO + ERROR)
+            const totalValidas = echoHistory.length + errorHistory.length;
+            
             echoCountElement.textContent = echoHistory.length;
             errorCountElement.textContent = errorHistory.length;
             novalidoCountElement.textContent = novalidoHistory.length;
+            recargasValidasCount.textContent = totalValidas;
             
-            // Crear un array con todas las recargas numeradas correctamente
             let numeroActual = history.length;
             
             historyList.innerHTML = history.map((item, index) => {
@@ -1035,32 +1084,29 @@
                     iconClass = 'bi bi-slash-circle';
                 }
                 
-                const numero = numeroActual - index; // El más reciente tiene el número más alto
-                
-                // Verificar si es una recarga reciente (menos de 1 hora)
+                const numero = numeroActual - index;
                 const now = new Date();
                 const itemDate = new Date(item.created_at);
                 const diffMs = now - itemDate;
                 const diffMins = Math.floor(diffMs / 60000);
                 const isRecent = diffMins < 60;
                 
-                // Texto para el estado en la burbuja
                 const estadoBurbuja = item.estado === 'NO VALIDO' ? 'NV' : item.estado.charAt(0);
                 
                 return `
                 <div class="${itemClass} p-3 border-bottom" data-status="${item.estado.toLowerCase().replace(' ', '')}" data-date="${item.created_at}">
                     ${isRecent ? '<div class="new-item-indicator"></div>' : ''}
-                    <div class="history-item-header">
-                        <div class="history-item-main">
+                    <div class="history-item-header d-flex justify-content-between align-items-start">
+                        <div class="d-flex align-items-center">
                             <div class="numero-badge">${numero}</div>
-                            <div class="history-item-content">
-                                <div class="phone-info">
+                            <div>
+                                <div class="phone-info mb-1">
                                     <div class="phone-display ${phoneClass}">${item.phone_number}</div>
                                     <span class="${indicatorClass}">
                                         <i class="bi ${iconClass.replace('bi ', '')} me-1"></i>${indicatorText}
                                     </span>
                                 </div>
-                                <div class="history-timestamp">
+                                <div class="d-flex flex-wrap gap-2">
                                     <span class="user-info">
                                         <i class="bi bi-person-circle"></i> ${item.user_name}
                                     </span>
@@ -1073,11 +1119,10 @@
                         <div class="status-bubble ${bubbleClass}">
                             <i class="${iconClass}"></i>
                             <div class="status-bubble-badge ${bubbleBadgeClass}">${estadoBurbuja}</div>
-                            <div class="status-tooltip">${item.estado}</div>
                         </div>
                     </div>
                     
-                    <div class="d-flex align-items-center justify-content-between mt-2">
+                    <div class="d-flex align-items-center justify-content-between mt-3">
                         <div class="d-flex align-items-center">
                             <select class="status-select ${statusClass}" 
                                     data-id="${item.id}" onchange="updateStatus(this)">
@@ -1089,7 +1134,7 @@
                     </div>
                     
                     <div class="history-item-actions">
-                        <button class="history-action-btn" onclick="copyNumber('${item.phone_number}')">
+                        <button class="history-action-btn" onclick="copyNumber('${item.phone_number}', this)">
                             <i class="bi bi-phone"></i> Copiar Número
                         </button>
                         <button class="history-action-btn" onclick="callWithCodeAndCopy('${item.phone_number}')">
@@ -1106,7 +1151,6 @@
             const newStatus = selectElement.value;
             
             try {
-                // Actualizar el estado en la base de datos TIGO
                 const response = await fetch(
                     `${SUPABASE_URL}/rest/v1/tigo_recharge_history?id=eq.${id}`,
                     {
@@ -1127,7 +1171,6 @@
                     throw new Error('Error al actualizar el estado');
                 }
 
-                // Recargar el historial para actualizar los contadores y estilos
                 loadRechargeHistory();
                 
             } catch (error) {
@@ -1136,62 +1179,49 @@
             }
         }
 
-        // Función para copiar solo el número
-        function copyNumber(number) {
+        function copyNumber(number, button) {
             navigator.clipboard.writeText(number).then(() => {
-                // Mostrar mensaje de éxito
-                const originalText = event.target.textContent;
-                event.target.innerHTML = '<i class="bi bi-check"></i> ¡Número Copiado!';
-                event.target.style.background = 'var(--success-color)';
-                event.target.style.color = 'white';
-                event.target.style.borderColor = 'var(--success-color)';
+                const originalText = button.innerHTML;
+                button.innerHTML = '<i class="bi bi-check"></i> ¡Copiado!';
+                button.style.background = 'var(--success-color)';
+                button.style.color = 'white';
+                button.style.borderColor = 'var(--success-color)';
                 
                 setTimeout(() => {
-                    event.target.innerHTML = originalText;
-                    event.target.style.background = '';
-                    event.target.style.color = '';
-                    event.target.style.borderColor = '';
+                    button.innerHTML = originalText;
+                    button.style.background = '';
+                    button.style.color = '';
+                    button.style.borderColor = '';
                 }, 2000);
             }).catch(err => {
                 console.error('Error al copiar: ', err);
             });
         }
 
-        // Función para llamar al comando *66# y copiar el número
         function callWithCodeAndCopy(number) {
-            // Copiar el número al portapapeles
             navigator.clipboard.writeText(number).then(() => {
-                // SOLUCIÓN: Codificar el comando *66# para que funcione en todos los dispositivos
-                // El carácter # se codifica como %23 en formato URI
                 window.location.href = `tel:*66%23`;
             }).catch(err => {
                 console.error('Error al copiar: ', err);
-                // Si falla la copia, igual realizar la llamada
                 window.location.href = `tel:*66%23`;
             });
         }
 
         function showClearHistoryModal() {
-            // Verificar si hay historial para limpiar
             if (currentUserHistory.length === 0) {
                 alert('No hay historial para descargar y eliminar');
                 return;
             }
             
-            // Mostrar el modal
             const modal = new bootstrap.Modal(document.getElementById('clearHistoryModal'));
             modal.show();
         }
 
         async function confirmClearHistory() {
             try {
-                // Generar PDF antes de eliminar
                 await generateHistoryPDF();
-                
-                // Eliminar el historial de la base de datos TIGO
                 await deleteUserHistory();
                 
-                // Cerrar el modal
                 const modal = bootstrap.Modal.getInstance(document.getElementById('clearHistoryModal'));
                 modal.hide();
                 
@@ -1205,7 +1235,6 @@
 
         async function deleteUserHistory() {
             try {
-                // Eliminar todos los registros del usuario actual de la base de datos TIGO
                 const response = await fetch(
                     `${SUPABASE_URL}/rest/v1/tigo_recharge_history?user_id=eq.${currentUser.id}`,
                     {
@@ -1222,7 +1251,6 @@
                     throw new Error('Error al eliminar el historial de la base de datos');
                 }
 
-                // Recargar el historial (ahora estará vacío)
                 loadRechargeHistory();
                 
             } catch (error) {
@@ -1234,24 +1262,18 @@
         function generateHistoryPDF() {
             return new Promise((resolve, reject) => {
                 try {
-                    // Usar jsPDF desde la variable global
                     const { jsPDF } = window.jspdf;
-                    
-                    // Crear nuevo documento PDF
                     const doc = new jsPDF();
                     
-                    // Título
                     doc.setFontSize(20);
-                    doc.setTextColor(0, 94, 184); // Color TIGO
+                    doc.setTextColor(0, 94, 184);
                     doc.text('Historial de Recargas - TIGO', 20, 20);
                     
-                    // Información del usuario
                     doc.setFontSize(12);
                     doc.setTextColor(0, 0, 0);
                     doc.text(`Usuario: ${currentUser.nombre}`, 20, 35);
                     doc.text(`Fecha de generación: ${new Date().toLocaleString('es-ES')}`, 20, 42);
                     
-                    // Tabla de recargas
                     const tableColumn = ["#", "Teléfono", "Estado", "Fecha"];
                     const tableRows = [];
                     
@@ -1265,7 +1287,6 @@
                         tableRows.push(rowData);
                     });
                     
-                    // Agregar tabla al PDF
                     doc.autoTable({
                         head: [tableColumn],
                         body: tableRows,
@@ -1276,7 +1297,7 @@
                             cellPadding: 3
                         },
                         headStyles: {
-                            fillColor: [0, 94, 184], // Color TIGO
+                            fillColor: [0, 94, 184],
                             textColor: 255
                         },
                         alternateRowStyles: {
@@ -1284,7 +1305,6 @@
                         }
                     });
                     
-                    // Guardar el PDF
                     const fileName = `Historial_Recargas_TIGO_${currentUser.nombre}_${new Date().toISOString().slice(0,10)}.pdf`;
                     doc.save(fileName);
                     
