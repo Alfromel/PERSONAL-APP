@@ -558,36 +558,7 @@
             margin-top: 6px;
         }
         
-        .history-filter {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .filter-btn {
-            background: white;
-            border: 1px solid #e0e0e0;
-            border-radius: 20px;
-            padding: 6px 15px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            flex: 1;
-            text-align: center;
-            font-weight: 500;
-        }
-        
-        .filter-btn.active {
-            background: var(--entel-color);
-            color: white;
-            border-color: var(--entel-color);
-        }
-        
-        .filter-btn:hover:not(.active) {
-            background: var(--entel-light);
-            border-color: var(--entel-color);
-        }
+        /* QUITÉ LOS BOTONES DE FILTRO - LOS ELIMINÉ COMPLETAMENTE */
         
         .history-summary {
             display: flex;
@@ -951,6 +922,7 @@
                             <span>Mis Recargas</span>
                         </div>
                         <div class="d-flex align-items-center">
+                            <!-- MODIFICADO: Ahora solo cuenta estados válidos (todos menos NO VALIDO) -->
                             <span class="history-badge" id="historyCount">0</span>
                             <div class="status-counter">
                                 <span class="counter-badge counter-echo" id="echoCount" title="Echo">0</span>
@@ -971,10 +943,10 @@
                             <p class="mt-2 text-muted">Cargando historial...</p>
                         </div>
                         
-                        <!-- Información del filtro automático -->
+                        <!-- Información del filtro automático - MEJORADO -->
                         <div id="dateFilterInfo" class="date-filter-info d-none">
                             <i class="bi bi-calendar-check me-2"></i>
-                            <span>Día: <span id="currentDateDisplay"></span></span>
+                            <span>Hoy: <span id="currentDateDisplay"></span></span>
                         </div>
                         
                         <!-- Resumen de estados -->
@@ -997,16 +969,7 @@
                             </div>
                         </div>
                         
-                        <!-- Filtros de estado -->
-                        <div class="history-filter p-3">
-                            <button class="filter-btn active" data-filter="all">Todos</button>
-                            <button class="filter-btn" data-filter="echo">Echo</button>
-                            <button class="filter-btn" data-filter="error">Error</button>
-                            <button class="filter-btn" data-filter="corte">Corte</button>
-                            <button class="filter-btn" data-filter="novalido">No Valido</button>
-                        </div>
-                        
-                        <!-- Lista del historial -->
+                        <!-- LISTA DEL HISTORIAL (SIN BOTONES DE FILTRO) -->
                         <div class="history-container" id="historyContainer">
                             <div id="historyList">
                                 <!-- El historial se cargará aquí -->
@@ -1079,15 +1042,6 @@
             document.getElementById('rechargeForm').addEventListener('submit', handleRecharge);
             document.getElementById('clearHistoryBtn').addEventListener('click', showClearHistoryModal);
             document.getElementById('confirmClearHistory').addEventListener('click', confirmClearHistory);
-            
-            // Configurar filtros del historial
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
-                    filterHistory(this.getAttribute('data-filter'));
-                });
-            });
         }
 
         // Función para cargar usuarios desde la base de datos
@@ -1299,7 +1253,7 @@
                 currentDateFilter = todayString;
                 rechargeHistory = filterHistoryByDate(rechargeHistory, todayString);
                 
-                // Mostrar información del filtro
+                // Mostrar información del filtro - MEJORADO
                 const dateDisplay = now.toLocaleDateString('es-ES', { 
                     weekday: 'long', 
                     year: 'numeric', 
@@ -1371,9 +1325,12 @@
             return stats;
         }
 
-        // Actualizar contadores de estado
+        // Actualizar contadores de estado - MODIFICADO: burbuja azul cuenta solo estados válidos
         function updateStatusCounters(stats) {
-            document.getElementById('historyCount').textContent = stats.total;
+            // MODIFICACIÓN IMPORTANTE: La burbuja azul ahora cuenta solo estados válidos
+            const totalValidos = stats.total - stats.novalido;
+            document.getElementById('historyCount').textContent = totalValidos;
+            
             document.getElementById('echoCount').textContent = stats.echo;
             document.getElementById('errorCount').textContent = stats.error;
             document.getElementById('corteCount').textContent = stats.corte;
@@ -1533,23 +1490,6 @@
                 </div>
                 `;
             }).join('');
-        }
-
-        function filterHistory(filter) {
-            const items = document.querySelectorAll('#historyList > div');
-            
-            items.forEach(item => {
-                if (filter === 'all') {
-                    item.style.display = 'block';
-                } else {
-                    const status = item.getAttribute('data-status');
-                    if (status === filter) {
-                        item.style.display = 'block';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                }
-            });
         }
 
         async function updateStatus(selectElement) {
