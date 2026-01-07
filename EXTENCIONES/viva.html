@@ -24,6 +24,7 @@
             --falta-color: #FFA500; /* Naranja para estado FALTA */
             --echo-color: #28a745;  /* Verde para estado ECHO */
             --error-color: #dc3545; /* Rojo para estado ERROR */
+            --no-valido-color: #6f42c1; /* Púrpura para estado NO_VALIDO */
         }
         
         body {
@@ -160,6 +161,11 @@
             background: linear-gradient(135deg, rgba(220, 53, 69, 0.05) 0%, rgba(220, 53, 69, 0.1) 100%);
         }
         
+        .history-item-no_valido {
+            border-left: 4px solid var(--no-valido-color);
+            background: linear-gradient(135deg, rgba(111, 66, 193, 0.05) 0%, rgba(111, 66, 193, 0.1) 100%);
+        }
+        
         .phone-display {
             font-family: 'Courier New', monospace;
             font-weight: bold;
@@ -191,6 +197,11 @@
         
         .badge-error {
             background: var(--error-color);
+            color: white;
+        }
+        
+        .badge-no_valido {
+            background: var(--no-valido-color);
             color: white;
         }
         
@@ -337,6 +348,34 @@
             background: #c82333;
             transform: translateY(-1px);
         }
+        
+        .no-valido-btn {
+            background: var(--no-valido-color);
+            color: white;
+            border: none;
+            border-radius: 20px;
+            padding: 6px 15px;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+            margin-left: 8px;
+        }
+        
+        .no-valido-btn:hover {
+            background: #5a32a3;
+            transform: translateY(-1px);
+        }
+        
+        /* NUEVO: Información del filtro por fecha */
+        .date-filter-info {
+            background-color: var(--viva-light);
+            border-radius: 8px;
+            padding: 10px 15px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            text-align: center;
+            color: var(--viva-dark);
+            font-weight: 500;
+        }
     </style>
 </head>
 <body>
@@ -350,7 +389,7 @@
             <form id="loginForm">
                 <div class="mb-3">
                     <label for="username" class="form-label">Usuario</label>
-                    <input type="text" class="form-control app-form-control" id="username" required>
+                    input type="text" class="form-control app-form-control" id="username" required>
                 </div>
                 <div class="mb-4">
                     <label for="password" class="form-label">Contraseña</label>
@@ -444,6 +483,13 @@
                                 </div>
                                 <p class="mt-2 text-muted">Cargando recargas pendientes...</p>
                             </div>
+                            
+                            <!-- NUEVO: Información del filtro automático por día -->
+                            <div id="dateFilterInfoPendientes" class="date-filter-info d-none">
+                                <i class="bi bi-calendar-check me-2"></i>
+                                <span>Hoy: <span id="currentDateDisplayPendientes"></span></span>
+                            </div>
+                            
                             <div class="history-container">
                                 <div id="pendientesList">
                                     <!-- Las recargas pendientes se cargarán aquí -->
@@ -477,6 +523,13 @@
                                 </div>
                                 <p class="mt-2 text-muted">Cargando historial...</p>
                             </div>
+                            
+                            <!-- NUEVO: Información del filtro automático por día -->
+                            <div id="dateFilterInfo" class="date-filter-info d-none">
+                                <i class="bi bi-calendar-check me-2"></i>
+                                <span>Hoy: <span id="currentDateDisplay"></span></span>
+                            </div>
+                            
                             <div class="history-container">
                                 <div id="historyList">
                                     <!-- El historial se cargará aquí -->
@@ -762,9 +815,11 @@
         async function loadPendientes() {
             const loadingDiv = document.getElementById('loadingPendientes');
             const emptyDiv = document.getElementById('emptyPendientes');
+            const dateFilterInfo = document.getElementById('dateFilterInfoPendientes');
             
             loadingDiv.classList.remove('d-none');
             emptyDiv.classList.add('d-none');
+            dateFilterInfo.classList.add('d-none');
 
             try {
                 const response = await fetch(
@@ -782,7 +837,31 @@
                     throw new Error('Error al cargar recargas pendientes');
                 }
 
-                const pendientes = await response.json();
+                let pendientes = await response.json();
+                
+                // ========== MODIFICACIÓN: FILTRAR POR DÍA ==========
+                // Obtener fecha actual del dispositivo
+                const now = new Date();
+                const todayString = now.toLocaleDateString('es-ES', {
+                    day: '2-digit',
+                    month: '2-digit', 
+                    year: 'numeric'
+                });
+                
+                // Aplicar filtro automático por fecha del dispositivo
+                pendientes = filterHistoryByDate(pendientes, todayString);
+                
+                // Mostrar información del filtro
+                const dateDisplay = now.toLocaleDateString('es-ES', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+                document.getElementById('currentDateDisplayPendientes').textContent = dateDisplay;
+                dateFilterInfo.classList.remove('d-none');
+                // ========== FIN MODIFICACIÓN ==========
+                
                 displayPendientes(pendientes);
                 
             } catch (error) {
@@ -791,6 +870,20 @@
             } finally {
                 loadingDiv.classList.add('d-none');
             }
+        }
+
+        // ========== NUEVA FUNCIÓN: FILTRAR POR FECHA ==========
+        function filterHistoryByDate(history, dateString) {
+            return history.filter(item => {
+                try {
+                    const timestampText = item.timestamp;
+                    const fechaPart = timestampText.split(',')[0].trim();
+                    return fechaPart === dateString;
+                } catch (error) {
+                    console.error('Error al procesar fecha del item:', item, error);
+                    return false;
+                }
+            });
         }
 
         function displayPendientes(pendientes) {
@@ -835,6 +928,9 @@
                             </button>
                             <button class="error-btn" onclick="marcarComoError(${item.id}, '${item.phone_number}')">
                                 <i class="bi bi-x-circle me-1"></i> Error
+                            </button>
+                            <button class="no-valido-btn" onclick="marcarComoNoValido(${item.id}, '${item.phone_number}')">
+                                <i class="bi bi-slash-circle me-1"></i> No Válido
                             </button>
                         </div>
                     </div>
@@ -910,13 +1006,42 @@
             }
         }
 
+        async function marcarComoNoValido(id, phoneNumber) {
+            if (!confirm(`¿Está seguro de marcar el número ${phoneNumber} como NO VÁLIDO?\n\nEste estado indica que el número no es válido para recargar.`)) {
+                return;
+            }
+            
+            try {
+                const btn = event.target;
+                btn.innerHTML = '<i class="bi bi-arrow-repeat spinner-border spinner-border-sm me-1"></i>';
+                btn.disabled = true;
+
+                // Cambiar estado a NO_VALIDO
+                await updateRechargeStatus(id, 'NO_VALIDO');
+                
+                // Mostrar mensaje y redirigir al historial
+                alert('Recarga marcada como NO VÁLIDO. Se ha movido al historial.');
+                showTab('historial');
+                loadRechargeHistory();
+                
+            } catch (error) {
+                console.error('Error en marcarComoNoValido:', error);
+                alert('Error al marcar como NO VÁLIDO: ' + error.message);
+                const btn = event.target;
+                btn.innerHTML = '<i class="bi bi-slash-circle me-1"></i> No Válido';
+                btn.disabled = false;
+            }
+        }
+
         // ========== HISTORIAL ==========
         async function loadRechargeHistory() {
             const loadingDiv = document.getElementById('loadingHistory');
             const emptyDiv = document.getElementById('emptyHistory');
+            const dateFilterInfo = document.getElementById('dateFilterInfo');
             
             loadingDiv.classList.remove('d-none');
             emptyDiv.classList.add('d-none');
+            dateFilterInfo.classList.add('d-none');
 
             try {
                 const response = await fetch(
@@ -934,7 +1059,31 @@
                     throw new Error('Error al cargar el historial');
                 }
 
-                const history = await response.json();
+                let history = await response.json();
+                
+                // ========== MODIFICACIÓN: FILTRAR POR DÍA ==========
+                // Obtener fecha actual del dispositivo
+                const now = new Date();
+                const todayString = now.toLocaleDateString('es-ES', {
+                    day: '2-digit',
+                    month: '2-digit', 
+                    year: 'numeric'
+                });
+                
+                // Aplicar filtro automático por fecha del dispositivo
+                history = filterHistoryByDate(history, todayString);
+                
+                // Mostrar información del filtro
+                const dateDisplay = now.toLocaleDateString('es-ES', { 
+                    weekday: 'long', 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric' 
+                });
+                document.getElementById('currentDateDisplay').textContent = dateDisplay;
+                dateFilterInfo.classList.remove('d-none');
+                // ========== FIN MODIFICACIÓN ==========
+                
                 currentUserHistory = history;
                 displayHistory(history);
                 
@@ -962,26 +1111,15 @@
                 const itemClass = `history-item-${item.estado.toLowerCase()}`;
                 const badgeClass = `badge-${item.estado.toLowerCase()}`;
                 
+                // Crear opciones para el select según el estado actual
                 let estadoOptions = '';
-                if (item.estado === 'FALTA') {
-                    estadoOptions = `
-                        <option value="FALTA" selected>Falta</option>
-                        <option value="ECHO">Echo</option>
-                        <option value="ERROR">Error</option>
-                    `;
-                } else if (item.estado === 'ERROR') {
-                    estadoOptions = `
-                        <option value="FALTA">Falta</option>
-                        <option value="ECHO">Echo</option>
-                        <option value="ERROR" selected>Error</option>
-                    `;
-                } else {
-                    estadoOptions = `
-                        <option value="FALTA">Falta</option>
-                        <option value="ECHO" selected>Echo</option>
-                        <option value="ERROR">Error</option>
-                    `;
-                }
+                const estados = ['FALTA', 'ECHO', 'ERROR', 'NO_VALIDO'];
+                
+                estadoOptions = estados.map(estado => 
+                    `<option value="${estado}" ${item.estado === estado ? 'selected' : ''}>
+                        ${estado === 'NO_VALIDO' ? 'No Válido' : estado}
+                    </option>`
+                ).join('');
                 
                 return `
                 <div class="history-item ${itemClass}">
@@ -992,7 +1130,8 @@
                                 <div class="phone-display ${
                                     item.estado === 'FALTA' ? 'text-warning' : 
                                     item.estado === 'ECHO' ? 'text-success' : 
-                                    item.estado === 'ERROR' ? 'text-danger' : 'text-primary'
+                                    item.estado === 'ERROR' ? 'text-danger' : 
+                                    item.estado === 'NO_VALIDO' ? 'text-purple' : 'text-primary'
                                 }">${item.phone_number}</div>
                                 <div class="user-info">
                                     <i class="bi bi-person-circle me-1"></i>
@@ -1002,7 +1141,9 @@
                                 </div>
                             </div>
                         </div>
-                        <span class="${badgeClass}">${item.estado}</span>
+                        <span class="${badgeClass}">
+                            ${item.estado === 'NO_VALIDO' ? 'No Válido' : item.estado}
+                        </span>
                     </div>
                     <div class="d-flex justify-content-between align-items-center">
                         <select class="form-select form-select-sm" style="width: auto;" 
@@ -1025,11 +1166,14 @@
 
         async function updateRechargeStatus(id, newStatus) {
             try {
-                // Si se cambia a ERROR desde FALTA, verificar que el usuario realmente quiera hacerlo
-                if (newStatus === 'ERROR') {
-                    const recarga = currentUserHistory.find(item => item.id === id);
-                    if (recarga && recarga.estado === 'FALTA') {
-                        if (!confirm(`¿Está seguro de marcar el número ${recarga.phone_number} como ERROR? Esta acción no se puede deshacer.`)) {
+                // Confirmación especial para ciertos cambios de estado
+                const recarga = currentUserHistory.find(item => item.id === id);
+                
+                if (recarga) {
+                    // Confirmar cambios a ERROR o NO_VALIDO desde FALTA
+                    if ((newStatus === 'ERROR' || newStatus === 'NO_VALIDO') && recarga.estado === 'FALTA') {
+                        const estadoTexto = newStatus === 'ERROR' ? 'ERROR' : 'NO VÁLIDO';
+                        if (!confirm(`¿Está seguro de marcar el número ${recarga.phone_number} como ${estadoTexto}? Esta acción no se puede deshacer.`)) {
                             // Recargar el historial para restaurar el estado anterior
                             loadRechargeHistory();
                             return;
@@ -1057,7 +1201,6 @@
                 }
                 
                 // Si se cambió de FALTA a otro estado, actualizar el badge de pendientes
-                const recarga = currentUserHistory.find(item => item.id === id);
                 if (recarga && recarga.estado === 'FALTA' && newStatus !== 'FALTA') {
                     updatePendienteBadge();
                 }
@@ -1120,7 +1263,7 @@
                 return;
             }
             
-            if (confirm('¿Está seguro de que desea eliminar permanentemente todo el historial de recargas?')) {
+            if (confirm('¿Está seguro de que desea eliminar permanentemente todo el historial de recargas?\n\nEsta acción NO se puede deshacer.')) {
                 clearHistory();
             }
         }
@@ -1153,4 +1296,3 @@
     </script>
 </body>
 </html>
-
