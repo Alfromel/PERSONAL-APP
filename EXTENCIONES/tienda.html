@@ -344,6 +344,64 @@
             min-height: calc(100vh - 170px);
         }
         
+        /* Tab Navigation */
+        .tab-navigation {
+            display: flex;
+            background: var(--white);
+            border-bottom: 2px solid var(--light-purple);
+            margin-bottom: 15px;
+            border-radius: 10px 10px 0 0;
+            overflow: hidden;
+        }
+        
+        .tab-btn {
+            flex: 1;
+            padding: 12px 15px;
+            text-align: center;
+            background: var(--white);
+            border: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .tab-btn.active {
+            color: var(--primary-purple);
+            background: var(--light-purple);
+        }
+        
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-purple);
+        }
+        
+        .tab-badge {
+            background: var(--primary-purple);
+            color: var(--white);
+            border-radius: 12px;
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            margin-left: 5px;
+        }
+        
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease-out;
+        }
+        
         /* Search Bar */
         .mobile-search {
             position: relative;
@@ -529,6 +587,129 @@
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
+        }
+        
+        /* History List */
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .history-item {
+            background: var(--white);
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            border: 1px solid #f0f0f0;
+            transition: all 0.3s;
+        }
+        
+        .history-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: var(--primary-purple);
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .history-id {
+            font-weight: 700;
+            color: var(--primary-purple);
+            font-size: 0.9rem;
+        }
+        
+        .history-date {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .history-total {
+            font-weight: 700;
+            color: var(--primary-purple);
+            font-size: 1.1rem;
+        }
+        
+        .history-total::before {
+            content: 'Bs. ';
+            font-size: 0.8rem;
+        }
+        
+        .history-products {
+            margin-bottom: 10px;
+        }
+        
+        .history-product {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 5px 0;
+            border-bottom: 1px dashed #f0f0f0;
+        }
+        
+        .history-product:last-child {
+            border-bottom: none;
+        }
+        
+        .history-product-name {
+            flex: 1;
+            font-size: 0.85rem;
+        }
+        
+        .history-product-details {
+            text-align: right;
+            font-size: 0.85rem;
+        }
+        
+        .history-product-quantity {
+            color: #666;
+            margin-right: 5px;
+        }
+        
+        .history-product-subtotal {
+            color: var(--primary-purple);
+            font-weight: 600;
+            min-width: 70px;
+        }
+        
+        .history-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 10px;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .history-sucursal {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .download-receipt-btn-small {
+            background: var(--light-purple);
+            color: var(--primary-purple);
+            border: none;
+            border-radius: 5px;
+            padding: 5px 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .download-receipt-btn-small:hover {
+            background: var(--primary-purple);
+            color: var(--white);
         }
         
         /* Cart Screen */
@@ -1340,17 +1521,40 @@
 
         <!-- App Content -->
         <div class="app-content">
-            <!-- Search Bar -->
-            <div class="mobile-search">
-                <i class="bi bi-search mobile-search-icon"></i>
-                <input type="text" class="mobile-search-input" id="productSearch" 
-                       placeholder="Buscar productos...">
+            <!-- Tab Navigation -->
+            <div class="tab-navigation">
+                <button class="tab-btn active" data-tab="products" onclick="switchTab('products')">
+                    Productos
+                </button>
+                <button class="tab-btn" data-tab="history" onclick="switchTab('history')">
+                    Mi Historial
+                    <span class="tab-badge" id="historyBadge">0</span>
+                </button>
             </div>
 
-            <!-- Products List -->
-            <div class="product-list" id="productList">
-                <div class="loader" id="productsLoader">
-                    <div class="spinner"></div>
+            <!-- Products Tab -->
+            <div id="productsTab" class="tab-content active">
+                <!-- Search Bar -->
+                <div class="mobile-search">
+                    <i class="bi bi-search mobile-search-icon"></i>
+                    <input type="text" class="mobile-search-input" id="productSearch" 
+                           placeholder="Buscar productos...">
+                </div>
+
+                <!-- Products List -->
+                <div class="product-list" id="productList">
+                    <div class="loader" id="productsLoader">
+                        <div class="spinner"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- History Tab -->
+            <div id="historyTab" class="tab-content">
+                <div class="history-list" id="historyList">
+                    <div class="loader" id="historyLoader">
+                        <div class="spinner"></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1460,6 +1664,7 @@
         let cart = [];
         let selectedBranchForChange = null;
         let lastSaleData = null;
+        let salesHistory = [];
 
         document.addEventListener('DOMContentLoaded', function() {
             initializeMobileApp();
@@ -1652,6 +1857,25 @@
             showToast(`Bienvenido ${currentUser.nombre} - ${currentBranch.name}`, 'success');
         }
 
+        function switchTab(tabName) {
+            // Cambiar botones activos
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`.tab-btn[data-tab="${tabName}"]`).classList.add('active');
+            
+            // Cambiar contenido activo
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`${tabName}Tab`).classList.add('active');
+            
+            // Si es la pestaña de historial, cargar historial
+            if (tabName === 'history') {
+                loadSalesHistory();
+            }
+        }
+
         async function loadProducts() {
             if (!currentBranch) return;
             
@@ -1709,6 +1933,58 @@
                     </div>
                 `;
                 showToast('Error al cargar productos', 'error');
+            } finally {
+                loader.style.display = 'none';
+            }
+        }
+
+        async function loadSalesHistory() {
+            if (!currentUser) return;
+            
+            const historyList = document.getElementById('historyList');
+            const loader = document.getElementById('historyLoader');
+            const historyBadge = document.getElementById('historyBadge');
+            
+            // Mostrar loader
+            loader.style.display = 'flex';
+            historyList.innerHTML = '';
+            
+            try {
+                // Cargar historial de ventas del usuario actual
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/sales?user_id=eq.${currentUser.id}&order=fecha_hora.desc&limit=50`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
+
+                if (!response.ok) throw new Error('Error al cargar historial');
+
+                salesHistory = await response.json();
+                
+                // Actualizar badge
+                historyBadge.textContent = salesHistory.length;
+                
+                displaySalesHistory();
+                
+            } catch (error) {
+                console.error('Error al cargar historial:', error);
+                historyList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="bi bi-exclamation-triangle"></i>
+                        </div>
+                        <div class="empty-state-text">Error al cargar historial</div>
+                        <div class="empty-state-subtext">Verifique su conexión a internet</div>
+                        <button class="add-to-cart-btn mt-3" onclick="loadSalesHistory()">
+                            <i class="bi bi-arrow-clockwise"></i> Reintentar
+                        </button>
+                    </div>
+                `;
+                showToast('Error al cargar historial', 'error');
             } finally {
                 loader.style.display = 'none';
             }
@@ -1799,6 +2075,76 @@
                             <i class="bi bi-cart-plus"></i>
                         </button>
                         `}
+                    </div>
+                </div>
+                `;
+            }).join('');
+        }
+
+        function displaySalesHistory() {
+            const historyList = document.getElementById('historyList');
+            
+            if (salesHistory.length === 0) {
+                historyList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">
+                            <i class="bi bi-receipt"></i>
+                        </div>
+                        <div class="empty-state-text">No hay ventas registradas</div>
+                        <div class="empty-state-subtext">Realiza tu primera venta para ver tu historial</div>
+                    </div>
+                `;
+                return;
+            }
+
+            historyList.innerHTML = salesHistory.map(sale => {
+                let products = [];
+                try {
+                    products = JSON.parse(sale.products);
+                } catch (e) {
+                    console.error('Error parsing sale products:', e);
+                }
+                
+                const ticketNumber = sale.id;
+                const totalAmount = parseFloat(sale.total_amount || 0).toFixed(2);
+                const fechaHora = sale.fecha_hora || 'Fecha no disponible';
+                
+                // Obtener nombre de sucursal si está disponible
+                let sucursalName = currentBranch.name;
+                if (sale.branch_id && allBranches.length > 0) {
+                    const branch = allBranches.find(b => b.id == sale.branch_id);
+                    if (branch) {
+                        sucursalName = branch.name;
+                    }
+                }
+                
+                return `
+                <div class="history-item fade-in">
+                    <div class="history-header">
+                        <div>
+                            <div class="history-id">Venta #${ticketNumber}</div>
+                            <div class="history-date">${fechaHora}</div>
+                        </div>
+                        <div class="history-total">${totalAmount}</div>
+                    </div>
+                    
+                    <div class="history-products">
+                        ${products.map(product => `
+                            <div class="history-product">
+                                <div class="history-product-name">${product.name || 'Producto'}</div>
+                                <div class="history-product-details">
+                                    <span class="history-product-quantity">${product.quantity || 0}x</span>
+                                    <span class="history-product-subtotal">Bs. ${parseFloat(product.subtotal || 0).toFixed(2)}</span>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="history-footer">
+                        <div class="history-sucursal">${sucursalName}</div>
+                        <button class="download-receipt-btn-small" onclick="downloadHistoryReceipt(${sale.id})">
+                            <i class="bi bi-download"></i> Factura
+                        </button>
                     </div>
                 </div>
                 `;
@@ -2217,6 +2563,9 @@
                 // Mostrar mensaje de éxito con opción de descargar factura
                 showSuccessMessage();
                 
+                // Recargar historial después de una venta exitosa
+                loadSalesHistory();
+                
             } catch (error) {
                 console.error('Error al finalizar venta:', error);
                 showToast('❌ Error al registrar la venta', 'error');
@@ -2395,6 +2744,147 @@
             }
         }
 
+        async function downloadHistoryReceipt(saleId) {
+            try {
+                // Buscar la venta en el historial
+                const sale = salesHistory.find(s => s.id === saleId);
+                if (!sale) {
+                    showToast('Venta no encontrada', 'error');
+                    return;
+                }
+                
+                let products = [];
+                try {
+                    products = JSON.parse(sale.products);
+                } catch (e) {
+                    console.error('Error parsing sale products:', e);
+                }
+                
+                // Obtener nombre de sucursal
+                let sucursalName = currentBranch.name;
+                if (sale.branch_id && allBranches.length > 0) {
+                    const branch = allBranches.find(b => b.id == sale.branch_id);
+                    if (branch) {
+                        sucursalName = branch.name;
+                    }
+                }
+                
+                // Obtener información del usuario (vendedor)
+                let userName = currentUser.nombre;
+                
+                if (!window.jspdf) {
+                    showToast('Error al generar PDF', 'error');
+                    return;
+                }
+                
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF();
+                
+                // Configuración inicial
+                const pageWidth = doc.internal.pageSize.getWidth();
+                let yPos = 15;
+                
+                // Encabezado
+                doc.setFontSize(18);
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(138, 43, 226);
+                doc.text("TIENDA MÓVIL", pageWidth / 2, yPos, { align: "center" });
+                
+                doc.setFontSize(10);
+                doc.setTextColor(100, 100, 100);
+                doc.text("Sistema de Ventas Multi-sucursal", pageWidth / 2, yPos + 7, { align: "center" });
+                
+                yPos += 20;
+                
+                // Línea separadora
+                doc.setDrawColor(200, 200, 200);
+                doc.line(15, yPos, pageWidth - 15, yPos);
+                yPos += 10;
+                
+                // Información de la venta
+                doc.setFontSize(12);
+                doc.setFont("helvetica", "bold");
+                doc.setTextColor(0, 0, 0);
+                doc.text("FACTURA DE VENTA", pageWidth / 2, yPos, { align: "center" });
+                
+                yPos += 10;
+                
+                doc.setFontSize(10);
+                doc.setFont("helvetica", "normal");
+                
+                // Detalles de la venta
+                doc.text(`Ticket #: ${sale.id}`, 15, yPos);
+                doc.text(`Fecha: ${sale.fecha_hora || 'No disponible'}`, pageWidth - 15, yPos, { align: "right" });
+                yPos += 7;
+                
+                doc.text(`Sucursal: ${sucursalName}`, 15, yPos);
+                yPos += 7;
+                
+                doc.text(`Vendedor: ${userName}`, 15, yPos);
+                yPos += 15;
+                
+                // Tabla de productos
+                // Encabezado de la tabla
+                doc.setFont("helvetica", "bold");
+                doc.setFillColor(240, 240, 255);
+                doc.rect(15, yPos, pageWidth - 30, 10, 'F');
+                doc.text("Producto", 20, yPos + 7);
+                doc.text("Cant.", 130, yPos + 7);
+                doc.text("Precio", 150, yPos + 7);
+                doc.text("Total", 180, yPos + 7);
+                
+                yPos += 15;
+                
+                // Productos
+                doc.setFont("helvetica", "normal");
+                products.forEach((product, index) => {
+                    if (yPos > 250) {
+                        doc.addPage();
+                        yPos = 20;
+                    }
+                    
+                    doc.text(product.name ? product.name.substring(0, 30) : 'Producto', 20, yPos);
+                    doc.text(product.quantity ? product.quantity.toString() : '0', 130, yPos);
+                    doc.text(`Bs. ${parseFloat(product.price || 0).toFixed(2)}`, 150, yPos);
+                    doc.text(`Bs. ${parseFloat(product.subtotal || 0).toFixed(2)}`, 180, yPos);
+                    yPos += 7;
+                });
+                
+                yPos += 10;
+                
+                // Línea separadora
+                doc.setDrawColor(200, 200, 200);
+                doc.line(15, yPos, pageWidth - 15, yPos);
+                yPos += 10;
+                
+                // Total
+                doc.setFont("helvetica", "bold");
+                doc.setFontSize(12);
+                doc.text("TOTAL:", 120, yPos);
+                doc.text(`Bs. ${parseFloat(sale.total_amount || 0).toFixed(2)}`, 180, yPos);
+                yPos += 20;
+                
+                // Pie de página
+                doc.setFontSize(8);
+                doc.setFont("helvetica", "normal");
+                doc.setTextColor(100, 100, 100);
+                doc.text("Factura histórica - Generada desde historial", pageWidth / 2, yPos, { align: "center" });
+                yPos += 5;
+                doc.text("Factura generada electrónicamente", pageWidth / 2, yPos, { align: "center" });
+                yPos += 5;
+                doc.text(`Tienda Móvil - ${sucursalName}`, pageWidth / 2, yPos, { align: "center" });
+                
+                // Guardar PDF
+                doc.save(`Factura-Historial-${sale.id}.pdf`);
+                
+                showToast('✅ Factura histórica descargada', 'success');
+                
+            } catch (error) {
+                console.error('Error al generar factura histórica:', error);
+                showToast('Error al generar la factura', 'error');
+            }
+        }
+
         function closeModalAndReset() {
             // Cerrar modal
             closeModal();
@@ -2430,6 +2920,7 @@
         }
 
         // Hacer funciones accesibles globalmente
+        window.switchTab = switchTab;
         window.addToCart = addToCart;
         window.updateQuantity = updateQuantity;
         window.removeFromCart = removeFromCart;
@@ -2445,7 +2936,7 @@
         window.selectBranchForChange = selectBranchForChange;
         window.changeBranch = changeBranch;
         window.downloadReceipt = downloadReceipt;
+        window.downloadHistoryReceipt = downloadHistoryReceipt;
     </script>
 </body>
 </html>
-
