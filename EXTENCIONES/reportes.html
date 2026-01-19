@@ -37,29 +37,35 @@
             font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', sans-serif;
         }
         
-        body {
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
             background: var(--white);
             color: var(--dark);
             font-size: 15px;
             line-height: 1.4;
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
         }
         
-        /* App Container */
+        /* App Container - Ajustado para ocupar toda la pantalla */
         .app-container {
+            width: 100%;
             height: 100vh;
+            height: -webkit-fill-available;
+            height: fill-available;
             background: var(--white);
             position: relative;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
         
-        /* Header de App */
+        /* Header de App - Ajustado para todos los dispositivos */
         .app-header {
             padding: 16px;
+            padding-top: max(16px, env(safe-area-inset-top, 16px));
             background: var(--white);
             border-bottom: 1px solid var(--gray-3);
             display: flex;
@@ -68,6 +74,8 @@
             position: sticky;
             top: 0;
             z-index: 100;
+            flex-shrink: 0;
+            min-height: 60px;
         }
         
         .header-left {
@@ -121,7 +129,7 @@
             font-size: 14px;
         }
         
-        /* Screens */
+        /* Screens - Ajustado para ocupar el espacio restante */
         .screen {
             position: absolute;
             top: 0;
@@ -132,8 +140,9 @@
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.3s, transform 0.3s;
-            overflow-y: auto;
-            -webkit-overflow-scrolling: touch;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
         
         .screen.active {
@@ -143,8 +152,11 @@
         }
         
         .screen-content {
+            flex: 1;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             padding: 16px;
-            animation: fadeIn 0.3s ease;
+            padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
         }
         
         @keyframes fadeIn {
@@ -152,20 +164,24 @@
             to { opacity: 1; }
         }
         
-        /* Login Screen */
+        /* Login Screen - Ajustado para centrar correctamente */
         .login-container {
             height: 100%;
+            min-height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
-            padding: 40px 24px;
+            align-items: center;
+            padding: 24px;
             max-width: 400px;
             margin: 0 auto;
+            width: 100%;
         }
         
         .logo-container {
             text-align: center;
             margin-bottom: 48px;
+            width: 100%;
         }
         
         .logo {
@@ -200,10 +216,12 @@
         /* Form Elements */
         .form-group {
             margin-bottom: 20px;
+            width: 100%;
         }
         
         .input-wrapper {
             position: relative;
+            width: 100%;
         }
         
         .input-icon {
@@ -603,6 +621,25 @@
             margin-bottom: 20px;
         }
         
+        /* Footer Actions - Ajustado para todos los dispositivos */
+        .footer-actions {
+            position: relative;
+            margin-top: auto;
+            padding: 16px;
+            padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+            background: var(--white);
+            border-top: 1px solid var(--gray-3);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+            flex-shrink: 0;
+        }
+        
+        .screen-with-footer .screen-content {
+            padding-bottom: 90px; /* Espacio para el footer */
+        }
+        
         /* Modal Sheet */
         .modal-sheet {
             position: fixed;
@@ -612,10 +649,13 @@
             background: var(--white);
             border-radius: var(--border-radius) var(--border-radius) 0 0;
             padding: 20px 16px 32px;
+            padding-bottom: max(32px, env(safe-area-inset-bottom, 32px));
             box-shadow: var(--shadow-3);
             z-index: 1000;
             transform: translateY(100%);
             transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+            max-height: 90vh;
+            overflow-y: auto;
         }
         
         .modal-sheet.active {
@@ -763,11 +803,6 @@
             font-weight: 600;
         }
         
-        /* Safe Area */
-        .safe-area {
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-        
         /* Animations */
         @keyframes slideIn {
             from { transform: translateY(10px); opacity: 0; }
@@ -817,15 +852,54 @@
             font-weight: 500;
         }
         
-        /* Footer Actions */
-        .footer-actions {
-            position: fixed;
-            bottom: 20px;
-            left: 16px;
-            right: 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
+        /* Ajustes para iOS y dispositivos con notch */
+        @supports (padding: max(0px)) {
+            .app-header {
+                padding-top: max(16px, env(safe-area-inset-top, 16px));
+            }
+            
+            .screen-content {
+                padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+            }
+            
+            .footer-actions {
+                padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+            }
+            
+            .modal-sheet {
+                padding-bottom: max(32px, env(safe-area-inset-bottom, 32px));
+            }
+        }
+        
+        /* Ajustes para dispositivos muy pequeños */
+        @media (max-height: 600px) {
+            .login-container {
+                padding: 16px;
+                justify-content: flex-start;
+                margin-top: 20px;
+            }
+            
+            .logo-container {
+                margin-bottom: 24px;
+            }
+            
+            .counter-value {
+                font-size: 48px;
+            }
+            
+            .assignment-value {
+                font-size: 48px;
+            }
+        }
+        
+        /* Ajustes para dispositivos muy anchos */
+        @media (min-width: 768px) {
+            .app-container {
+                max-width: 400px;
+                margin: 0 auto;
+                height: 100vh;
+                box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            }
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -1155,6 +1229,9 @@
 
         // Inicializar
         document.addEventListener('DOMContentLoaded', function() {
+            // Ajustar altura inicial
+            adjustHeight();
+            
             // Verificar si hay sesión guardada
             const savedUser = localStorage.getItem('recargas_user');
             if (savedUser) {
@@ -1169,7 +1246,30 @@
             
             // Inicializar eventos
             initInputs();
+            
+            // Ajustar altura en redimensionamiento
+            window.addEventListener('resize', adjustHeight);
+            window.addEventListener('orientationchange', adjustHeight);
         });
+
+        // Función para ajustar altura en todos los dispositivos
+        function adjustHeight() {
+            const vh = window.innerHeight * 0.01;
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+            
+            // Forzar reflow
+            document.querySelectorAll('.screen').forEach(screen => {
+                if (screen.classList.contains('active')) {
+                    const content = screen.querySelector('.screen-content');
+                    if (content) {
+                        content.style.height = 'auto';
+                        setTimeout(() => {
+                            content.style.height = '';
+                        }, 10);
+                    }
+                }
+            });
+        }
 
         function initInputs() {
             const inputs = document.querySelectorAll('.text-input');
@@ -1193,6 +1293,9 @@
         }
 
         function showScreen(screenId) {
+            // Ajustar altura antes de cambiar pantalla
+            adjustHeight();
+            
             // Ocultar todas las pantallas
             document.querySelectorAll('.screen').forEach(screen => {
                 screen.classList.remove('active');
@@ -1206,6 +1309,14 @@
             if (screenHistory[screenHistory.length - 1] !== screenId) {
                 screenHistory.push(screenId);
             }
+            
+            // Scroll al inicio
+            setTimeout(() => {
+                const content = screen.querySelector('.screen-content');
+                if (content) {
+                    content.scrollTop = 0;
+                }
+            }, 10);
         }
 
         function showLoader(text = 'Procesando...') {
