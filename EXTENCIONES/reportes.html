@@ -1,0 +1,1682 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>App Recargas</title>
+    <style>
+        :root {
+            --primary: #007AFF;
+            --primary-dark: #0056CC;
+            --primary-light: #E6F2FF;
+            --secondary: #5856D6;
+            --success: #34C759;
+            --danger: #FF3B30;
+            --warning: #FF9500;
+            --dark: #1C1C1E;
+            --gray-1: #8E8E93;
+            --gray-2: #C7C7CC;
+            --gray-3: #E5E5EA;
+            --gray-4: #F2F2F7;
+            --white: #FFFFFF;
+            
+            --shadow-1: 0 2px 10px rgba(0,0,0,0.08);
+            --shadow-2: 0 4px 20px rgba(0,0,0,0.12);
+            --shadow-3: 0 8px 32px rgba(0,0,0,0.16);
+            
+            --border-radius: 12px;
+            --border-radius-lg: 16px;
+            --border-radius-sm: 8px;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', sans-serif;
+        }
+        
+        body {
+            background: var(--white);
+            color: var(--dark);
+            font-size: 15px;
+            line-height: 1.4;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        
+        /* App Container */
+        .app-container {
+            height: 100vh;
+            background: var(--white);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Header de App */
+        .app-header {
+            padding: 16px;
+            background: var(--white);
+            border-bottom: 1px solid var(--gray-3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .back-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gray-4);
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark);
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .back-btn:active {
+            background: var(--gray-3);
+            transform: scale(0.95);
+        }
+        
+        .header-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--dark);
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .user-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        /* Screens */
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--white);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s, transform 0.3s;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        .screen.active {
+            opacity: 1;
+            pointer-events: all;
+            transform: translateY(0);
+        }
+        
+        .screen-content {
+            padding: 16px;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        /* Login Screen */
+        .login-container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 40px 24px;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        
+        .logo-container {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+        
+        .logo {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            box-shadow: var(--shadow-2);
+        }
+        
+        .logo-icon {
+            font-size: 28px;
+            color: white;
+        }
+        
+        .logo-text {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 4px;
+        }
+        
+        .logo-subtext {
+            font-size: 14px;
+            color: var(--gray-1);
+        }
+        
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-wrapper {
+            position: relative;
+        }
+        
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-2);
+            font-size: 16px;
+            z-index: 1;
+        }
+        
+        .text-input {
+            width: 100%;
+            height: 48px;
+            padding: 0 48px;
+            background: var(--white);
+            border: 1.5px solid var(--gray-3);
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            color: var(--dark);
+            transition: all 0.2s;
+            font-weight: 400;
+        }
+        
+        .text-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--primary-light);
+            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
+        }
+        
+        .text-input::placeholder {
+            color: var(--gray-2);
+        }
+        
+        /* Buttons */
+        .btn {
+            height: 48px;
+            border-radius: var(--border-radius);
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+            overflow: hidden;
+            padding: 0 20px;
+            width: 100%;
+        }
+        
+        .btn:active {
+            transform: scale(0.98);
+        }
+        
+        .btn-primary {
+            background: var(--primary);
+            color: var(--white);
+            box-shadow: var(--shadow-1);
+        }
+        
+        .btn-primary:hover,
+        .btn-primary:active {
+            background: var(--primary-dark);
+        }
+        
+        .btn-secondary {
+            background: var(--white);
+            color: var(--primary);
+            border: 1.5px solid var(--primary);
+        }
+        
+        .btn-secondary:hover,
+        .btn-secondary:active {
+            background: var(--primary-light);
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+            color: var(--white);
+        }
+        
+        /* Cards */
+        .card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow-1);
+            border: 1px solid var(--gray-3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .card:active {
+            transform: scale(0.98);
+            box-shadow: var(--shadow-2);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+        
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .card-subtitle {
+            font-size: 13px;
+            color: var(--gray-1);
+            margin-top: 2px;
+        }
+        
+        /* Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin: 12px 0;
+        }
+        
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 12px 0;
+        }
+        
+        /* Operadora Card */
+        .operadora-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 16px 8px;
+            text-align: center;
+            border: 1.5px solid var(--gray-3);
+            transition: all 0.2s;
+        }
+        
+        .operadora-card.selected {
+            border-color: var(--primary);
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-1);
+        }
+        
+        .operadora-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+            color: var(--primary);
+        }
+        
+        .operadora-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        /* Counter */
+        .counter {
+            text-align: center;
+            padding: 24px 0;
+        }
+        
+        .counter-label {
+            font-size: 14px;
+            color: var(--gray-1);
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+        
+        .counter-value {
+            font-size: 56px;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+            margin: 12px 0;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .counter-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin: 24px 0;
+        }
+        
+        .counter-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid var(--primary);
+            background: var(--white);
+            color: var(--primary);
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .counter-btn:active {
+            background: var(--primary);
+            color: var(--white);
+            transform: scale(0.9);
+        }
+        
+        /* Progress */
+        .progress {
+            height: 4px;
+            background: var(--gray-3);
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 16px 0;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+        
+        /* Chips */
+        .chips-list {
+            margin: 12px 0;
+        }
+        
+        .chip-item {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 14px;
+            margin-bottom: 8px;
+            border: 1.5px solid var(--gray-3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.2s;
+        }
+        
+        .chip-item:active {
+            background: var(--gray-4);
+            transform: scale(0.99);
+        }
+        
+        .chip-info {
+            flex: 1;
+        }
+        
+        .chip-number {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 2px;
+        }
+        
+        .chip-details {
+            font-size: 12px;
+            color: var(--gray-1);
+        }
+        
+        .chip-badge {
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            min-width: 60px;
+            text-align: center;
+        }
+        
+        .badge-success {
+            background: rgba(52, 199, 89, 0.1);
+            color: var(--success);
+        }
+        
+        .badge-warning {
+            background: rgba(255, 149, 0, 0.1);
+            color: var(--warning);
+        }
+        
+        .badge-danger {
+            background: rgba(255, 59, 48, 0.1);
+            color: var(--danger);
+        }
+        
+        /* Assignment */
+        .assignment-card {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: var(--shadow-2);
+        }
+        
+        .chip-display {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        
+        .chip-number-large {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 6px;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        .chip-stock {
+            font-size: 14px;
+            color: var(--gray-1);
+        }
+        
+        .stock-info {
+            font-size: 12px;
+            color: var(--primary);
+            margin-top: 6px;
+            font-weight: 500;
+        }
+        
+        .assignment-display {
+            text-align: center;
+            margin: 24px 0;
+        }
+        
+        .assignment-label {
+            font-size: 14px;
+            color: var(--gray-1);
+            margin-bottom: 12px;
+        }
+        
+        .assignment-value {
+            font-size: 56px;
+            font-weight: 800;
+            color: var(--primary);
+            line-height: 1;
+            margin: 12px 0;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        /* Lists */
+        .list {
+            background: var(--white);
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            margin: 12px 0;
+        }
+        
+        .list-item {
+            padding: 14px;
+            border-bottom: 1px solid var(--gray-3);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: background 0.2s;
+        }
+        
+        .list-item:active {
+            background: var(--gray-4);
+        }
+        
+        .list-item:last-child {
+            border-bottom: none;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+        }
+        
+        .empty-icon {
+            font-size: 48px;
+            color: var(--gray-2);
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        .empty-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+        
+        .empty-text {
+            font-size: 14px;
+            color: var(--gray-1);
+            margin-bottom: 20px;
+        }
+        
+        /* Modal Sheet */
+        .modal-sheet {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            padding: 20px 16px 32px;
+            box-shadow: var(--shadow-3);
+            z-index: 1000;
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+        }
+        
+        .modal-sheet.active {
+            transform: translateY(0);
+        }
+        
+        .sheet-handle {
+            width: 32px;
+            height: 4px;
+            background: var(--gray-2);
+            border-radius: 2px;
+            margin: 0 auto 20px;
+        }
+        
+        .sheet-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--dark);
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        
+        .sheet-subtitle {
+            font-size: 14px;
+            color: var(--gray-1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        /* Backdrop */
+        .backdrop {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .backdrop.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        /* Toast */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: rgba(28, 28, 30, 0.9);
+            color: white;
+            padding: 10px 16px;
+            border-radius: var(--border-radius);
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 1000;
+            transition: transform 0.3s cubic-bezier(0.32, 0.72, 0, 1);
+            max-width: calc(100% - 32px);
+            text-align: center;
+            backdrop-filter: blur(20px);
+        }
+        
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+        
+        .toast.success {
+            background: rgba(52, 199, 89, 0.9);
+        }
+        
+        .toast.error {
+            background: rgba(255, 59, 48, 0.9);
+        }
+        
+        /* Activity Indicator */
+        .activity-indicator {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(255, 255, 255, 0.95);
+            z-index: 1001;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 12px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        
+        .activity-indicator.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--gray-3);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 14px;
+            color: var(--gray-1);
+            font-weight: 500;
+        }
+        
+        /* Summary Cards */
+        .summary-card {
+            background: var(--primary-light);
+            border-radius: var(--border-radius);
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        
+        .summary-label {
+            color: var(--dark);
+            font-weight: 500;
+        }
+        
+        .summary-value {
+            color: var(--primary);
+            font-weight: 600;
+        }
+        
+        /* Safe Area */
+        .safe-area {
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        
+        /* Animations */
+        @keyframes slideIn {
+            from { transform: translateY(10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        .animate-slide-in {
+            animation: slideIn 0.3s ease;
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+        
+        /* Typography */
+        .text-center {
+            text-align: center;
+        }
+        
+        .text-primary {
+            color: var(--primary);
+        }
+        
+        .text-gray {
+            color: var(--gray-1);
+        }
+        
+        .text-danger {
+            color: var(--danger);
+        }
+        
+        .mb-1 { margin-bottom: 8px; }
+        .mb-2 { margin-bottom: 12px; }
+        .mb-3 { margin-bottom: 16px; }
+        .mb-4 { margin-bottom: 20px; }
+        .mt-1 { margin-top: 8px; }
+        .mt-2 { margin-top: 12px; }
+        .mt-3 { margin-top: 16px; }
+        .mt-4 { margin-top: 20px; }
+        
+        /* Section Title */
+        .section-title {
+            font-size: 14px;
+            color: var(--gray-1);
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        /* Footer Actions */
+        .footer-actions {
+            position: fixed;
+            bottom: 20px;
+            left: 16px;
+            right: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Pantalla de Login -->
+        <div id="loginScreen" class="screen active">
+            <div class="screen-content">
+                <div class="login-container">
+                    <div class="logo-container">
+                        <div class="logo">
+                            <div class="logo-icon"><i class="fas fa-mobile-alt"></i></div>
+                        </div>
+                        <div class="logo-text">RecargasApp</div>
+                        <div class="logo-subtext">Gestión profesional</div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <div class="input-wrapper">
+                            <div class="input-icon"><i class="fas fa-user"></i></div>
+                            <input type="text" id="username" class="text-input" placeholder="Usuario">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group mb-3">
+                        <div class="input-wrapper">
+                            <div class="input-icon"><i class="fas fa-lock"></i></div>
+                            <input type="password" id="password" class="text-input" placeholder="Contraseña">
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary" onclick="login()">
+                        <i class="fas fa-sign-in-alt"></i> Iniciar Sesión
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pantalla de Operadora -->
+        <div id="operadoraScreen" class="screen">
+            <div class="app-header">
+                <div class="header-left">
+                    <button class="back-btn" onclick="logout()">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div class="header-title">Operadora</div>
+                </div>
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                </div>
+            </div>
+            
+            <div class="screen-content">
+                <div class="section-title">Selecciona la operadora</div>
+                
+                <div class="grid-3">
+                    <div class="operadora-card" onclick="selectOperadora('TIGO')">
+                        <div class="operadora-icon"><i class="fas fa-signal"></i></div>
+                        <div class="operadora-name">TIGO</div>
+                    </div>
+                    <div class="operadora-card" onclick="selectOperadora('VIVA')">
+                        <div class="operadora-icon"><i class="fas fa-broadcast-tower"></i></div>
+                        <div class="operadora-name">VIVA</div>
+                    </div>
+                    <div class="operadora-card" onclick="selectOperadora('ENTEL')">
+                        <div class="operadora-icon"><i class="fas fa-phone-alt"></i></div>
+                        <div class="operadora-name">ENTEL</div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="counter">
+                        <div class="counter-label">Recargas realizadas</div>
+                        <div class="counter-value" id="recargasCount">20</div>
+                        <div class="counter-controls">
+                            <button class="counter-btn" onclick="changeRecargasCount(-1)">-</button>
+                            <button class="counter-btn" onclick="changeRecargasCount(1)">+</button>
+                        </div>
+                        <div class="text-gray">Ajusta la cantidad</div>
+                    </div>
+                </div>
+                
+                <div class="footer-actions">
+                    <button class="btn btn-primary" onclick="confirmOperadora()" id="btnConfirmOperadora" disabled>
+                        <i class="fas fa-arrow-right"></i> Continuar
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pantalla de Categorías -->
+        <div id="categoriaScreen" class="screen">
+            <div class="app-header">
+                <div class="header-left">
+                    <button class="back-btn" onclick="showScreen('operadoraScreen')">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div class="header-title">Categorías</div>
+                </div>
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatarCat"></div>
+                </div>
+            </div>
+            
+            <div class="screen-content">
+                <div class="summary-card">
+                    <div class="summary-row">
+                        <span class="summary-label">Operadora:</span>
+                        <span class="summary-value" id="summaryOperadora">-</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Recargas pendientes:</span>
+                        <span class="summary-value" id="summaryRecargas">0</span>
+                    </div>
+                </div>
+                
+                <div class="progress">
+                    <div class="progress-bar" id="progressFill" style="width: 0%"></div>
+                </div>
+                
+                <div class="section-title">Selecciona una categoría</div>
+                
+                <div id="categoriesList">
+                    <!-- Las categorías se cargan dinámicamente -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pantalla de Chips -->
+        <div id="chipsScreen" class="screen">
+            <div class="app-header">
+                <div class="header-left">
+                    <button class="back-btn" onclick="showScreen('categoriaScreen')">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div class="header-title" id="chipsTitle">Chips</div>
+                </div>
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatarChip"></div>
+                </div>
+            </div>
+            
+            <div class="screen-content">
+                <div class="summary-card mb-3">
+                    <div class="summary-row">
+                        <span class="summary-label">Categoría:</span>
+                        <span class="summary-value" id="summaryCategoria">-</span>
+                    </div>
+                    <div class="summary-row">
+                        <span class="summary-label">Pendientes:</span>
+                        <span class="summary-value" id="summaryPendientes">0</span>
+                    </div>
+                </div>
+                
+                <div class="section-title">Chips disponibles</div>
+                
+                <div id="chipsList">
+                    <!-- Los chips se cargan dinámicamente -->
+                </div>
+                
+                <div class="footer-actions">
+                    <button class="btn btn-secondary" onclick="showScreen('categoriaScreen')">
+                        <i class="fas fa-arrow-left"></i> Volver a Categorías
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pantalla de Asignación -->
+        <div id="asignacionScreen" class="screen">
+            <div class="app-header">
+                <div class="header-left">
+                    <button class="back-btn" onclick="showScreen('chipsScreen')">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div class="header-title">Asignar</div>
+                </div>
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatarAssign"></div>
+                </div>
+            </div>
+            
+            <div class="screen-content">
+                <div class="assignment-card">
+                    <div class="chip-display">
+                        <div class="chip-number-large" id="selectedChipNumber">-</div>
+                        <div class="chip-stock" id="chipStock">Stock: 0</div>
+                        <div class="stock-info" id="stockRemaining"></div>
+                    </div>
+                    
+                    <div class="assignment-display">
+                        <div class="assignment-label">Cantidad a asignar</div>
+                        <div class="assignment-value" id="assignCount">1</div>
+                        <div class="counter-controls">
+                            <button class="counter-btn" onclick="changeAssignCount(-1)">-</button>
+                            <button class="counter-btn" onclick="changeAssignCount(1)">+</button>
+                        </div>
+                        <div class="text-gray">
+                            Pendientes: <span class="text-primary" id="assignPendientes">0</span>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-actions">
+                        <button class="btn btn-primary mb-1" onclick="assignRecargas()">
+                            <i class="fas fa-check"></i> Confirmar
+                        </button>
+                        
+                        <button class="btn btn-secondary" onclick="showScreen('chipsScreen')">
+                            <i class="fas fa-exchange-alt"></i> Cambiar chip
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Pantalla de Reportes -->
+        <div id="reporteScreen" class="screen">
+            <div class="app-header">
+                <div class="header-left">
+                    <button class="back-btn" onclick="newReport()">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                    <div class="header-title">Reporte</div>
+                </div>
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatarReport"></div>
+                </div>
+            </div>
+            
+            <div class="screen-content">
+                <div class="card text-center">
+                    <div class="mb-3">
+                        <div style="font-size: 48px; color: var(--success);">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                    </div>
+                    
+                    <div class="card-title mb-1">¡Reporte Completado!</div>
+                    <div class="card-subtitle mb-3">
+                        Las recargas han sido asignadas exitosamente
+                    </div>
+                    
+                    <div class="list mb-3">
+                        <div class="list-item">
+                            <div>Operadora</div>
+                            <div class="text-primary" id="confOperadora">-</div>
+                        </div>
+                        <div class="list-item">
+                            <div>Total Recargas</div>
+                            <div class="text-primary" id="confTotal">0</div>
+                        </div>
+                        <div class="list-item">
+                            <div>Categorías usadas</div>
+                            <div class="text-primary" id="confCategorias">0</div>
+                        </div>
+                        <div class="list-item">
+                            <div>Chips utilizados</div>
+                            <div class="text-primary" id="confChips">0</div>
+                        </div>
+                        <div class="list-item">
+                            <div>Fecha</div>
+                            <div class="text-primary" id="confFecha">-</div>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-actions">
+                        <button class="btn btn-primary" onclick="newReport()">
+                            <i class="fas fa-plus-circle"></i> Nuevo Reporte
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Activity Indicator -->
+    <div class="activity-indicator" id="loader">
+        <div class="spinner"></div>
+        <div class="loading-text">Procesando...</div>
+    </div>
+    
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+    
+    <!-- Confirmation Sheet -->
+    <div class="modal-sheet" id="confirmSheet">
+        <div class="sheet-handle"></div>
+        <div class="sheet-title">Confirmar operación</div>
+        <div class="sheet-subtitle" id="sheetMessage">¿Estás seguro de continuar?</div>
+        
+        <div class="footer-actions">
+            <button class="btn btn-danger mb-1" onclick="confirmAction(true)">
+                <i class="fas fa-check"></i> Confirmar
+            </button>
+            
+            <button class="btn btn-secondary" onclick="confirmAction(false)">
+                <i class="fas fa-times"></i> Cancelar
+            </button>
+        </div>
+    </div>
+    
+    <div class="backdrop" id="backdrop" onclick="closeSheet()"></div>
+
+    <script>
+        // Configuración Supabase
+        const SUPABASE_URL = 'https://iyowgljzuryeowyceaio.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_xr2MZ4YwV7zslfp9Wzs2WQ_aSfFX_87';
+
+        // Estado de la aplicación
+        let appState = {
+            user: null,
+            operadora: null,
+            recargasTotal: 20,
+            recargasPendientes: 20,
+            categoriaActual: null,
+            chipSeleccionado: null,
+            asignaciones: [],
+            categorias: [],
+            chips: [],
+            reporteId: null
+        };
+
+        // Historial de pantallas
+        let screenHistory = ['loginScreen'];
+        let pendingAction = null;
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar si hay sesión guardada
+            const savedUser = localStorage.getItem('recargas_user');
+            if (savedUser) {
+                try {
+                    appState.user = JSON.parse(savedUser);
+                    updateUserAvatar();
+                    showScreen('operadoraScreen');
+                } catch (e) {
+                    localStorage.removeItem('recargas_user');
+                }
+            }
+            
+            // Inicializar eventos
+            initInputs();
+        });
+
+        function initInputs() {
+            const inputs = document.querySelectorAll('.text-input');
+            inputs.forEach(input => {
+                input.addEventListener('focus', function() {
+                    this.parentElement.classList.add('focused');
+                });
+                input.addEventListener('blur', function() {
+                    this.parentElement.classList.remove('focused');
+                });
+            });
+        }
+
+        function updateUserAvatar() {
+            if (!appState.user) return;
+            
+            const avatarLetter = appState.user.nombre ? appState.user.nombre.charAt(0).toUpperCase() : 'U';
+            document.querySelectorAll('.user-avatar').forEach(avatar => {
+                avatar.textContent = avatarLetter;
+            });
+        }
+
+        function showScreen(screenId) {
+            // Ocultar todas las pantallas
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Mostrar pantalla actual
+            const screen = document.getElementById(screenId);
+            screen.classList.add('active');
+            
+            // Actualizar historial
+            if (screenHistory[screenHistory.length - 1] !== screenId) {
+                screenHistory.push(screenId);
+            }
+        }
+
+        function showLoader(text = 'Procesando...') {
+            const loader = document.getElementById('loader');
+            loader.querySelector('.loading-text').textContent = text;
+            loader.classList.add('active');
+        }
+
+        function hideLoader() {
+            document.getElementById('loader').classList.remove('active');
+        }
+
+        function showToast(message, type = '') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = `toast ${type}`;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function showConfirm(message, callback) {
+            pendingAction = callback;
+            document.getElementById('sheetMessage').textContent = message;
+            document.getElementById('confirmSheet').classList.add('active');
+            document.getElementById('backdrop').classList.add('active');
+        }
+
+        function confirmAction(result) {
+            closeSheet();
+            if (pendingAction && result) {
+                pendingAction();
+            }
+            pendingAction = null;
+        }
+
+        function closeSheet() {
+            document.getElementById('confirmSheet').classList.remove('active');
+            document.getElementById('backdrop').classList.remove('active');
+        }
+
+        // Login
+        async function login() {
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value.trim();
+            
+            if (!username || !password) {
+                showToast('Ingresa usuario y contraseña', 'error');
+                return;
+            }
+            
+            showLoader('Verificando...');
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/users?username=eq.${encodeURIComponent(username)}&password=eq.${encodeURIComponent(password)}&select=*`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const users = await response.json();
+                    
+                    if (users && users.length > 0) {
+                        appState.user = users[0];
+                        localStorage.setItem('recargas_user', JSON.stringify(appState.user));
+                        
+                        updateUserAvatar();
+                        hideLoader();
+                        showToast(`¡Bienvenido ${appState.user.nombre}!`, 'success');
+                        
+                        setTimeout(() => {
+                            showScreen('operadoraScreen');
+                        }, 500);
+                    } else {
+                        hideLoader();
+                        showToast('Credenciales incorrectas', 'error');
+                    }
+                } else {
+                    throw new Error('Error de conexión');
+                }
+            } catch (error) {
+                hideLoader();
+                console.error('Login error:', error);
+                showToast('Error de conexión', 'error');
+            }
+        }
+
+        function selectOperadora(operadora) {
+            document.querySelectorAll('.operadora-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            const cards = document.querySelectorAll('.operadora-card');
+            const index = operadora === 'TIGO' ? 0 : operadora === 'VIVA' ? 1 : 2;
+            if (cards[index]) {
+                cards[index].classList.add('selected');
+            }
+            
+            appState.operadora = operadora;
+            document.getElementById('btnConfirmOperadora').disabled = false;
+        }
+
+        function changeRecargasCount(change) {
+            let newCount = appState.recargasTotal + change;
+            if (newCount < 1) newCount = 1;
+            if (newCount > 999) newCount = 999;
+            
+            appState.recargasTotal = newCount;
+            appState.recargasPendientes = newCount;
+            
+            document.getElementById('recargasCount').textContent = newCount;
+            document.getElementById('summaryRecargas').textContent = newCount;
+        }
+
+        async function confirmOperadora() {
+            if (!appState.operadora) {
+                showToast('Selecciona una operadora', 'error');
+                return;
+            }
+            
+            showLoader('Cargando...');
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/cat_v1_categorias?select=*&order=nombre.asc`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                if (response.ok) {
+                    appState.categorias = await response.json();
+                    
+                    document.getElementById('summaryOperadora').textContent = appState.operadora;
+                    document.getElementById('summaryRecargas').textContent = appState.recargasTotal;
+                    
+                    displayCategories();
+                    
+                    hideLoader();
+                    showScreen('categoriaScreen');
+                }
+            } catch (error) {
+                hideLoader();
+                console.error('Error:', error);
+                showToast('Error al cargar categorías', 'error');
+            }
+        }
+
+        function displayCategories() {
+            const container = document.getElementById('categoriesList');
+            container.innerHTML = '';
+            
+            if (appState.categorias.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="fas fa-folder-open"></i></div>
+                        <div class="empty-title">Sin categorías</div>
+                        <div class="empty-text">Contacta al administrador</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            appState.categorias.forEach(categoria => {
+                const item = document.createElement('div');
+                item.className = 'list-item animate-slide-in';
+                item.style.animationDelay = `${appState.categorias.indexOf(categoria) * 0.05}s`;
+                item.onclick = () => selectCategoria(categoria);
+                
+                item.innerHTML = `
+                    <div>
+                        <div style="font-weight: 500;">${categoria.nombre}</div>
+                        <div class="chip-details">Haz tap para ver chips</div>
+                    </div>
+                    <div><i class="fas fa-chevron-right text-gray"></i></div>
+                `;
+                
+                container.appendChild(item);
+            });
+        }
+
+        async function selectCategoria(categoria) {
+            appState.categoriaActual = categoria;
+            
+            showLoader('Cargando chips...');
+            
+            try {
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/cat_v1_chips?categoria_id=eq.${categoria.id}&operadora=eq.${appState.operadora}&select=*&order=recargas_disponibles.desc`, {
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`
+                    }
+                });
+                
+                if (response.ok) {
+                    appState.chips = await response.json();
+                    
+                    document.getElementById('summaryCategoria').textContent = categoria.nombre;
+                    document.getElementById('summaryPendientes').textContent = appState.recargasPendientes;
+                    document.getElementById('chipsTitle').textContent = `Chips - ${categoria.nombre}`;
+                    
+                    displayChips();
+                    
+                    hideLoader();
+                    showScreen('chipsScreen');
+                }
+            } catch (error) {
+                hideLoader();
+                console.error('Error:', error);
+                showToast('Error al cargar chips', 'error');
+            }
+        }
+
+        function displayChips() {
+            const container = document.getElementById('chipsList');
+            container.innerHTML = '';
+            
+            if (appState.chips.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon"><i class="fas fa-sim-card"></i></div>
+                        <div class="empty-title">Sin chips</div>
+                        <div class="empty-text">No hay chips disponibles</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            appState.chips.forEach((chip, index) => {
+                let badgeClass = 'badge-success';
+                let badgeText = 'Disponible';
+                
+                if (chip.recargas_disponibles === 0) {
+                    badgeClass = 'badge-danger';
+                    badgeText = 'Agotado';
+                } else if (chip.recargas_disponibles < 10) {
+                    badgeClass = 'badge-warning';
+                    badgeText = 'Bajo stock';
+                }
+                
+                const item = document.createElement('div');
+                item.className = 'chip-item animate-slide-in';
+                item.style.animationDelay = `${index * 0.05}s`;
+                item.onclick = () => selectChip(chip);
+                
+                item.innerHTML = `
+                    <div class="chip-info">
+                        <div class="chip-number">${chip.numero}</div>
+                        <div class="chip-details">${chip.recargas_disponibles} recargas</div>
+                    </div>
+                    <div class="chip-badge ${badgeClass}">${badgeText}</div>
+                `;
+                
+                container.appendChild(item);
+            });
+        }
+
+        function selectChip(chip) {
+            appState.chipSeleccionado = chip;
+            
+            document.getElementById('selectedChipNumber').textContent = chip.numero;
+            document.getElementById('chipStock').textContent = `Stock: ${chip.recargas_disponibles}`;
+            
+            const maxAsignar = Math.min(chip.recargas_disponibles, appState.recargasPendientes);
+            document.getElementById('stockRemaining').textContent = `Máximo: ${maxAsignar}`;
+            
+            appState.asignacionActual = Math.min(1, maxAsignar);
+            document.getElementById('assignCount').textContent = appState.asignacionActual;
+            document.getElementById('assignPendientes').textContent = appState.recargasPendientes;
+            
+            showScreen('asignacionScreen');
+        }
+
+        function changeAssignCount(change) {
+            const maxAsignar = Math.min(
+                appState.chipSeleccionado.recargas_disponibles,
+                appState.recargasPendientes
+            );
+            
+            let newCount = (appState.asignacionActual || 1) + change;
+            if (newCount < 1) newCount = 1;
+            if (newCount > maxAsignar) newCount = maxAsignar;
+            
+            appState.asignacionActual = newCount;
+            document.getElementById('assignCount').textContent = newCount;
+        }
+
+        function assignRecargas() {
+            if (!appState.asignacionActual || appState.asignacionActual < 1) {
+                showToast('Cantidad inválida', 'error');
+                return;
+            }
+            
+            if (appState.asignacionActual > appState.chipSeleccionado.recargas_disponibles) {
+                showToast('Stock insuficiente', 'error');
+                return;
+            }
+            
+            showConfirm(`¿Asignar ${appState.asignacionActual} recargas a ${appState.chipSeleccionado.numero}?`, async () => {
+                showLoader('Asignando...');
+                
+                try {
+                    const nuevoStock = appState.chipSeleccionado.recargas_disponibles - appState.asignacionActual;
+                    
+                    const updateResponse = await fetch(`${SUPABASE_URL}/rest/v1/cat_v1_chips?id=eq.${appState.chipSeleccionado.id}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            recargas_disponibles: nuevoStock
+                        })
+                    });
+                    
+                    if (updateResponse.ok) {
+                        await fetch(`${SUPABASE_URL}/rest/v1/cat_v1_movimientos`, {
+                            method: 'POST',
+                            headers: {
+                                'apikey': SUPABASE_KEY,
+                                'Authorization': `Bearer ${SUPABASE_KEY}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                chip_id: appState.chipSeleccionado.id,
+                                tipo_movimiento: 'REPORTE',
+                                cantidad_anterior: appState.chipSeleccionado.recargas_disponibles,
+                                cantidad_nueva: nuevoStock,
+                                usuario_id: appState.user.id
+                            })
+                        });
+                        
+                        appState.asignaciones.push({
+                            chipId: appState.chipSeleccionado.id,
+                            chipNumero: appState.chipSeleccionado.numero,
+                            categoriaId: appState.categoriaActual.id,
+                            categoriaNombre: appState.categoriaActual.nombre,
+                            cantidad: appState.asignacionActual
+                        });
+                        
+                        appState.recargasPendientes -= appState.asignacionActual;
+                        appState.chipSeleccionado.recargas_disponibles = nuevoStock;
+                        
+                        hideLoader();
+                        showToast(`${appState.asignacionActual} recargas asignadas`, 'success');
+                        
+                        if (appState.recargasPendientes === 0) {
+                            await createReport();
+                            showReport();
+                        } else {
+                            updateProgressBar();
+                            setTimeout(() => {
+                                selectCategoria(appState.categoriaActual);
+                            }, 1000);
+                        }
+                    }
+                } catch (error) {
+                    hideLoader();
+                    console.error('Error:', error);
+                    showToast('Error al asignar', 'error');
+                }
+            });
+        }
+
+        async function createReport() {
+            try {
+                const primeraAsignacion = appState.asignaciones[0];
+                
+                const response = await fetch(`${SUPABASE_URL}/rest/v1/cat_v1_reportes`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_KEY,
+                        'Authorization': `Bearer ${SUPABASE_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        usuario_id: appState.user.id,
+                        operadora: appState.operadora,
+                        cantidad_recargas: appState.recargasTotal,
+                        chip_id: primeraAsignacion.chipId,
+                        categoria_id: primeraAsignacion.categoriaId
+                    })
+                });
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    appState.reporteId = data[0]?.id || data?.id;
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        function showReport() {
+            const categoriasUsadas = [...new Set(appState.asignaciones.map(a => a.categoriaNombre))];
+            const chipsUsados = [...new Set(appState.asignaciones.map(a => a.chipNumero))];
+            
+            document.getElementById('confOperadora').textContent = appState.operadora;
+            document.getElementById('confTotal').textContent = appState.recargasTotal;
+            document.getElementById('confCategorias').textContent = categoriasUsadas.length;
+            document.getElementById('confChips').textContent = chipsUsados.length;
+            document.getElementById('confFecha').textContent = new Date().toLocaleString();
+            
+            showScreen('reporteScreen');
+        }
+
+        function updateProgressBar() {
+            const progress = ((appState.recargasTotal - appState.recargasPendientes) / appState.recargasTotal) * 100;
+            document.getElementById('progressFill').style.width = `${progress}%`;
+        }
+
+        function logout() {
+            showConfirm('¿Cerrar sesión?', () => {
+                appState = {
+                    user: null,
+                    operadora: null,
+                    recargasTotal: 20,
+                    recargasPendientes: 20,
+                    categoriaActual: null,
+                    chipSeleccionado: null,
+                    asignaciones: [],
+                    categorias: [],
+                    chips: [],
+                    reporteId: null
+                };
+                
+                localStorage.removeItem('recargas_user');
+                screenHistory = ['loginScreen'];
+                
+                document.getElementById('username').value = '';
+                document.getElementById('password').value = '';
+                
+                showScreen('loginScreen');
+            });
+        }
+
+        function newReport() {
+            appState.operadora = null;
+            appState.recargasTotal = 20;
+            appState.recargasPendientes = 20;
+            appState.categoriaActual = null;
+            appState.chipSeleccionado = null;
+            appState.asignaciones = [];
+            appState.reporteId = null;
+            
+            document.querySelectorAll('.operadora-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            document.getElementById('recargasCount').textContent = '20';
+            document.getElementById('assignCount').textContent = '1';
+            document.getElementById('progressFill').style.width = '0%';
+            document.getElementById('btnConfirmOperadora').disabled = true;
+            
+            showScreen('operadoraScreen');
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (screenHistory.length > 1) {
+                    screenHistory.pop();
+                    const prevScreen = screenHistory[screenHistory.length - 1];
+                    showScreen(prevScreen);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
