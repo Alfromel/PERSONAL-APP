@@ -54,105 +54,51 @@
         
         /* Login Screen */
         .login-screen {
+            max-width: 100%;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: white;
+            position: relative;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            min-height: 100vh;
             padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         }
         
-        .login-card {
-            background: white;
-            border-radius: var(--border-radius);
-            padding: 30px;
+        .login-container {
             width: 100%;
             max-width: 400px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            text-align: center;
+            padding: 30px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border: 1px solid var(--gray-3);
         }
         
-        .login-logo {
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .login-icon {
             font-size: 48px;
             color: var(--primary);
-            margin-bottom: 20px;
+            margin-bottom: 15px;
         }
         
         .login-title {
             font-size: 24px;
             font-weight: 600;
-            margin-bottom: 10px;
             color: var(--dark);
+            margin-bottom: 5px;
         }
         
         .login-subtitle {
             font-size: 14px;
             color: var(--gray-1);
-            margin-bottom: 30px;
         }
         
-        .login-form .form-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
-        
-        .login-form .form-label {
-            font-weight: 500;
-            margin-bottom: 8px;
-            color: var(--dark);
-        }
-        
-        .login-form .form-control {
-            padding: 12px 16px;
-            border: 1px solid var(--gray-3);
-            border-radius: var(--border-radius-sm);
-            font-size: 16px;
-            transition: all 0.2s;
-        }
-        
-        .login-form .form-control:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
-        }
-        
-        .login-btn {
-            width: 100%;
-            padding: 14px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: var(--border-radius-sm);
-            font-weight: 600;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-top: 10px;
-        }
-        
-        .login-btn:hover {
-            background: var(--primary-dark);
-        }
-        
-        .login-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-        
-        .login-error {
-            color: var(--danger);
-            font-size: 13px;
-            margin-top: 5px;
-            display: none;
-        }
-        
-        .login-footer {
-            margin-top: 20px;
-            font-size: 12px;
-            color: var(--gray-1);
-        }
-        
-        /* Mobile App (hidden initially) */
+        /* Safe area handling */
         .mobile-app {
             max-width: 100%;
             margin: 0 auto;
@@ -162,11 +108,6 @@
             overflow-x: hidden;
             box-shadow: 0 0 20px rgba(0,0,0,0.05);
             display: none;
-        }
-        
-        /* Safe area handling */
-        .mobile-app.show {
-            display: block;
         }
         
         /* Header estilo iOS */
@@ -200,6 +141,23 @@
             font-size: 13px;
             color: var(--gray-1);
             margin-top: 4px;
+        }
+        
+        .logout-btn {
+            position: absolute;
+            right: 16px;
+            top: 12px;
+            background: none;
+            border: none;
+            color: var(--danger);
+            font-size: 13px;
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 6px;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 59, 48, 0.1);
         }
         
         /* Stepper compacto */
@@ -867,10 +825,6 @@
             .stepper {
                 padding: 12px 12px 8px;
             }
-            
-            .login-card {
-                padding: 20px;
-            }
         }
         
         @media (min-width: 414px) and (max-width: 430px) {
@@ -909,78 +863,60 @@
             outline: 2px solid var(--primary);
             outline-offset: 2px;
         }
-        
-        /* Logout button */
-        .logout-btn {
-            background: transparent;
-            border: none;
-            color: var(--gray-1);
-            font-size: 13px;
-            cursor: pointer;
-            margin-top: 5px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .logout-btn:hover {
-            color: var(--danger);
-        }
     </style>
 </head>
 <body>
     <!-- Login Screen -->
     <div class="login-screen" id="loginScreen">
-        <div class="login-card">
-            <div class="login-logo">
-                <i class="bi bi-phone"></i>
+        <div class="login-container">
+            <div class="login-header">
+                <div class="login-icon">
+                    <i class="bi bi-phone"></i>
+                </div>
+                <h1 class="login-title">Sistema de Recargas</h1>
+                <p class="login-subtitle">Ingrese sus credenciales</p>
             </div>
-            <h1 class="login-title">Sistema de Recargas</h1>
-            <p class="login-subtitle">Ingrese sus credenciales para continuar</p>
             
-            <form class="login-form" id="loginForm">
-                <div class="form-group">
-                    <label class="form-label" for="loginUsuario">Usuario</label>
-                    <input type="text" class="form-control" id="loginUsuario" placeholder="Ingrese su usuario" required>
-                    <div class="login-error" id="loginUsuarioError">Usuario requerido</div>
-                </div>
-                
-                <div class="form-group">
-                    <label class="form-label" for="loginPassword">Contraseña</label>
-                    <input type="password" class="form-control" id="loginPassword" placeholder="Ingrese su contraseña" required>
-                    <div class="login-error" id="loginPasswordError">Contraseña requerida</div>
-                    <div class="login-error" id="loginInvalidError" style="display: none;">Usuario o contraseña incorrectos</div>
-                </div>
-                
-                <button type="submit" class="login-btn" id="loginSubmitBtn">
-                    <span id="loginBtnText">Iniciar Sesión</span>
-                    <span id="loginLoading" style="display: none;">
-                        <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-                        Verificando...
-                    </span>
+            <div class="form-group">
+                <label class="form-label">Usuario</label>
+                <input type="text" class="form-control" id="loginUsuario" placeholder="Ingrese su usuario">
+            </div>
+            
+            <div class="form-group">
+                <label class="form-label">Contraseña</label>
+                <input type="password" class="form-control" id="loginPassword" placeholder="Ingrese su contraseña">
+            </div>
+            
+            <div class="form-group">
+                <button class="btn btn-primary w-100" id="loginBtn">
+                    <i class="bi bi-box-arrow-in-right"></i> Iniciar Sesión
                 </button>
-            </form>
+            </div>
             
-            <div class="login-footer">
-                <p>Sistema de gestión de recargas telefónicas</p>
-                <p><small>Versión 1.0.0</small></p>
+            <div class="alert alert-danger mt-3 d-none" id="loginError" role="alert">
+                <i class="bi bi-exclamation-triangle"></i>
+                <span id="errorMessage">Credenciales incorrectas</span>
+            </div>
+            
+            <div class="text-center mt-4">
+                <small class="text-muted">Ingrese usuario y contraseña válidos</small>
             </div>
         </div>
     </div>
     
-    <!-- Mobile App (hidden initially) -->
+    <!-- Main App (oculto hasta login) -->
     <div class="mobile-app" id="mobileApp">
         <!-- Header -->
         <div class="app-header">
+            <button class="logout-btn" id="logoutBtn">
+                <i class="bi bi-box-arrow-right"></i> Salir
+            </button>
             <div class="header-title">
                 <i class="bi bi-phone"></i>
                 <span>Sistema de Recargas</span>
             </div>
-            <div class="header-user">
+            <div class="header-user" id="currentUser">
                 Usuario: <span id="username">Cargando...</span>
-                <button class="logout-btn" onclick="logout()">
-                    <i class="bi bi-box-arrow-right"></i> Cerrar Sesión
-                </button>
             </div>
         </div>
         
@@ -1016,7 +952,12 @@
                     
                     <div class="form-group">
                         <label class="form-label">Usuario</label>
-                        <input type="text" class="form-control" id="inputUsuario" readonly>
+                        <input type="text" class="form-control" id="inputUsuario" disabled>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Contraseña</label>
+                        <input type="password" class="form-control" id="inputPassword" disabled>
                     </div>
                     
                     <div class="form-group">
@@ -1351,150 +1292,30 @@
         });
         
         function initializeApp() {
-            // Verificar si ya hay una sesión activa
-            checkSession();
-            
-            // Configurar eventos del login
-            setupLoginEvents();
-        }
-        
-        function checkSession() {
+            // Verificar si ya hay sesión activa
             const savedUser = localStorage.getItem('userSession');
             if (savedUser) {
-                try {
-                    currentUser = JSON.parse(savedUser);
-                    
-                    // Verificar si la sesión no ha expirado (24 horas)
-                    const sessionTime = localStorage.getItem('sessionTime');
-                    const now = new Date().getTime();
-                    const sessionDuration = 24 * 60 * 60 * 1000; // 24 horas en milisegundos
-                    
-                    if (sessionTime && (now - parseInt(sessionTime)) < sessionDuration) {
-                        // Sesión válida, mostrar la aplicación
-                        showApp();
-                    } else {
-                        // Sesión expirada
-                        logout(true);
-                    }
-                } catch (e) {
-                    // Error al parsear, limpiar sesión
-                    localStorage.removeItem('userSession');
-                    localStorage.removeItem('sessionTime');
-                }
+                currentUser = JSON.parse(savedUser);
+                showApp();
             }
+            
+            setupEventListeners();
         }
         
-        function setupLoginEvents() {
-            const loginForm = document.getElementById('loginForm');
-            const loginUsuario = document.getElementById('loginUsuario');
-            const loginPassword = document.getElementById('loginPassword');
-            const loginSubmitBtn = document.getElementById('loginSubmitBtn');
-            const loginBtnText = document.getElementById('loginBtnText');
-            const loginLoading = document.getElementById('loginLoading');
+        function setupEventListeners() {
+            // Login button
+            document.getElementById('loginBtn').addEventListener('click', handleLogin);
             
-            // Validación en tiempo real
-            loginUsuario.addEventListener('input', function() {
-                if (this.value.trim()) {
-                    document.getElementById('loginUsuarioError').style.display = 'none';
+            // Permitir login con Enter
+            document.getElementById('loginPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    handleLogin();
                 }
             });
             
-            loginPassword.addEventListener('input', function() {
-                if (this.value.trim()) {
-                    document.getElementById('loginPasswordError').style.display = 'none';
-                    document.getElementById('loginInvalidError').style.display = 'none';
-                }
-            });
+            // Logout button
+            document.getElementById('logoutBtn').addEventListener('click', handleLogout);
             
-            // Envío del formulario
-            loginForm.addEventListener('submit', async function(e) {
-                e.preventDefault();
-                
-                // Validar campos
-                let valid = true;
-                
-                if (!loginUsuario.value.trim()) {
-                    document.getElementById('loginUsuarioError').style.display = 'block';
-                    valid = false;
-                }
-                
-                if (!loginPassword.value.trim()) {
-                    document.getElementById('loginPasswordError').style.display = 'block';
-                    valid = false;
-                }
-                
-                if (!valid) return;
-                
-                // Mostrar estado de carga
-                loginBtnText.style.display = 'none';
-                loginLoading.style.display = 'block';
-                loginSubmitBtn.disabled = true;
-                
-                // Intentar login
-                try {
-                    // Aquí normalmente harías una petición a tu backend para autenticar
-                    // Por ahora simulamos una autenticación exitosa
-                    await simulateLogin(loginUsuario.value.trim(), loginPassword.value.trim());
-                    
-                    // Login exitoso
-                    currentUser = {
-                        id: 1,
-                        username: loginUsuario.value.trim(),
-                        nombre: loginUsuario.value.trim()
-                    };
-                    
-                    // Guardar sesión
-                    localStorage.setItem('userSession', JSON.stringify(currentUser));
-                    localStorage.setItem('sessionTime', new Date().getTime().toString());
-                    
-                    // Mostrar la aplicación
-                    showApp();
-                    
-                } catch (error) {
-                    // Mostrar error
-                    document.getElementById('loginInvalidError').style.display = 'block';
-                    loginUsuario.value = '';
-                    loginPassword.value = '';
-                    loginUsuario.focus();
-                } finally {
-                    // Restaurar botón
-                    loginBtnText.style.display = 'block';
-                    loginLoading.style.display = 'none';
-                    loginSubmitBtn.disabled = false;
-                }
-            });
-        }
-        
-        function simulateLogin(username, password) {
-            return new Promise((resolve, reject) => {
-                // Simular un delay de red
-                setTimeout(() => {
-                    // Aquí iría la lógica real de autenticación
-                    // Por ahora, aceptamos cualquier usuario que tenga al menos 3 caracteres
-                    if (username.length >= 3 && password.length >= 3) {
-                        resolve({ success: true, user: { username, nombre: username } });
-                    } else {
-                        reject(new Error('Credenciales inválidas'));
-                    }
-                }, 1000);
-            });
-        }
-        
-        function showApp() {
-            // Ocultar login y mostrar aplicación
-            document.getElementById('loginScreen').style.display = 'none';
-            document.getElementById('mobileApp').classList.add('show');
-            
-            // Mostrar nombre de usuario
-            document.getElementById('username').textContent = currentUser.nombre;
-            document.getElementById('inputUsuario').value = currentUser.username;
-            document.getElementById('summaryUsuario').textContent = currentUser.nombre;
-            
-            // Configurar eventos de la aplicación
-            setupAppEvents();
-        }
-        
-        function setupAppEvents() {
             // Botones de navegación
             document.getElementById('btnPrev').addEventListener('click', prevStep);
             document.getElementById('btnNext').addEventListener('click', nextStep);
@@ -1535,26 +1356,102 @@
             });
         }
         
-        function logout(expired = false) {
-            // Limpiar sesión
-            localStorage.removeItem('userSession');
-            localStorage.removeItem('sessionTime');
+        async function handleLogin() {
+            const username = document.getElementById('loginUsuario').value.trim();
+            const password = document.getElementById('loginPassword').value.trim();
             
-            // Ocultar aplicación y mostrar login
-            document.getElementById('mobileApp').classList.remove('show');
-            document.getElementById('loginScreen').style.display = 'flex';
-            
-            // Limpiar formulario de login
-            document.getElementById('loginForm').reset();
-            document.querySelectorAll('.login-error').forEach(el => el.style.display = 'none');
-            
-            // Mostrar mensaje si la sesión expiró
-            if (expired) {
-                showNotification('Su sesión ha expirado. Por favor, ingrese nuevamente.', 'error');
+            if (!username || !password) {
+                showLoginError('Ingrese usuario y contraseña');
+                return;
             }
             
-            // Reiniciar variables
-            resetForm();
+            try {
+                // Consultar usuarios en Supabase
+                const response = await fetch(
+                    `${SUPABASE_URL}/rest/v1/users?username=eq.${username}&password=eq.${password}&select=*`,
+                    {
+                        headers: {
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`
+                        }
+                    }
+                );
+                
+                if (response.ok) {
+                    const users = await response.json();
+                    
+                    if (users.length > 0) {
+                        // Usuario válido encontrado
+                        currentUser = {
+                            id: users[0].id,
+                            username: users[0].username,
+                            nombre: users[0].nombre || users[0].username
+                        };
+                        
+                        // Guardar sesión
+                        localStorage.setItem('userSession', JSON.stringify(currentUser));
+                        
+                        // Limpiar formulario de login
+                        document.getElementById('loginUsuario').value = '';
+                        document.getElementById('loginPassword').value = '';
+                        hideLoginError();
+                        
+                        // Mostrar aplicación
+                        showApp();
+                        
+                        showNotification('Bienvenido ' + currentUser.nombre, 'success');
+                    } else {
+                        showLoginError('Usuario o contraseña incorrectos');
+                    }
+                } else {
+                    showLoginError('Error al conectar con el servidor');
+                }
+            } catch (error) {
+                console.error('Error en login:', error);
+                showLoginError('Error de conexión');
+            }
+        }
+        
+        function handleLogout() {
+            if (confirm('¿Está seguro que desea salir?')) {
+                currentUser = null;
+                localStorage.removeItem('userSession');
+                
+                // Ocultar aplicación
+                document.getElementById('mobileApp').style.display = 'none';
+                document.getElementById('loginScreen').style.display = 'flex';
+                
+                // Limpiar formularios
+                resetForm();
+            }
+        }
+        
+        function showLoginError(message) {
+            const errorDiv = document.getElementById('loginError');
+            const errorMessage = document.getElementById('errorMessage');
+            
+            errorMessage.textContent = message;
+            errorDiv.classList.remove('d-none');
+            
+            // Ocultar después de 5 segundos
+            setTimeout(() => {
+                errorDiv.classList.add('d-none');
+            }, 5000);
+        }
+        
+        function hideLoginError() {
+            document.getElementById('loginError').classList.add('d-none');
+        }
+        
+        function showApp() {
+            // Mostrar nombre de usuario
+            document.getElementById('username').textContent = currentUser.nombre;
+            document.getElementById('inputUsuario').value = currentUser.username;
+            document.getElementById('inputPassword').value = '********';
+            
+            // Mostrar aplicación
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mobileApp').style.display = 'block';
         }
         
         function selectOperadora(operadora) {
@@ -1630,12 +1527,12 @@
         function prevStep() {
             if (currentStep > 1) {
                 // Ocultar paso actual
-                    document.getElementById(`step${currentStep}`).classList.remove('active');
-                    document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
-                    
-                    currentStep--;
-                    
-                    // Mostrar nuevo paso
+                document.getElementById(`step${currentStep}`).classList.remove('active');
+                document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
+                
+                currentStep--;
+                
+                // Mostrar nuevo paso
                     document.getElementById(`step${currentStep}`).classList.add('active');
                     document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
                     
@@ -2551,8 +2448,6 @@
         window.selectAllChips = selectAllChips;
         window.deselectAllChips = deselectAllChips;
         window.confirmChipsSelection = confirmChipsSelection;
-        window.logout = logout;
     </script>
 </body>
 </html>
-
