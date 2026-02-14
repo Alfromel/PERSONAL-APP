@@ -407,7 +407,7 @@
         
         .chips-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
             gap: 8px;
             margin-top: 8px;
             max-height: 300px;
@@ -424,6 +424,7 @@
             cursor: pointer;
             transition: all 0.2s;
             position: relative;
+            word-break: break-word;
         }
         
         .chip-item:hover {
@@ -435,15 +436,15 @@
             background: rgba(52, 199, 89, 0.08);
         }
         
-        .chip-number {
+        .chip-codigo {
             font-family: 'SF Mono', monospace;
             font-weight: 500;
-            font-size: 13px;
+            font-size: 11px;
             margin-bottom: 4px;
-            letter-spacing: -0.2px;
+            word-break: break-all;
         }
         
-        .chip-recargas {
+        .chip-saldo {
             font-size: 10px;
             color: var(--gray-1);
         }
@@ -671,10 +672,14 @@
         }
         
         .stats-row input[type="number"] {
-            width: 70px;
+            width: 80px;
             padding: 8px 10px;
             text-align: center;
             font-size: 14px;
+        }
+        
+        .stats-row .fw-bold {
+            font-size: 15px;
         }
         
         /* Modal iOS style */
@@ -737,26 +742,6 @@
             border-left: 4px solid var(--danger);
         }
         
-        /* Mayorista Progress compacto */
-        .mayorista-progress {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 12px;
-            padding: 10px;
-            background: rgba(255, 149, 0, 0.08);
-            border-radius: var(--border-radius-sm);
-            border: 1px solid rgba(255, 149, 0, 0.2);
-        }
-        
-        .mayorista-stats {
-            font-size: 13px;
-        }
-        
-        .mayorista-stats strong {
-            color: #996600;
-        }
-        
         /* Loading spinner */
         .loading {
             display: flex;
@@ -787,6 +772,11 @@
             background: var(--success) !important;
         }
         
+        .bg-warning {
+            background: var(--warning) !important;
+            color: white;
+        }
+        
         /* Input group compacto */
         .input-group {
             display: flex;
@@ -815,7 +805,7 @@
             }
             
             .chips-grid {
-                grid-template-columns: repeat(3, 1fr);
+                grid-template-columns: repeat(2, 1fr);
             }
             
             .app-content {
@@ -961,7 +951,7 @@
                     </div>
                     
                     <div class="form-group">
-                        <label class="form-label">Seleccione Operadora Principal</label>
+                        <label class="form-label">Seleccione Operadora</label>
                         <div class="operadora-selector">
                             <div class="operadora-btn" data-operadora="ENTEL">
                                 <div class="operadora-icon entel">
@@ -986,18 +976,24 @@
                     
                     <div class="stats-box">
                         <div class="stats-row">
-                            <span>Recargas para Categorías:</span>
-                            <input type="number" class="form-control" id="inputRecargasCategorias" 
-                                   placeholder="Ej: 40" min="1" style="width: 70px; text-align: center;">
+                            <span>Total de recargas a usar:</span>
+                            <input type="number" class="form-control" id="inputTotalRecargas" 
+                                   placeholder="Ej: 4" min="1" style="width: 70px; text-align: center;">
                         </div>
                         <div class="stats-row">
-                            <span>Recargas para Mayoristas:</span>
-                            <input type="number" class="form-control" id="inputRecargasMayoristas" 
-                                   placeholder="Ej: 30" min="1" style="width: 70px; text-align: center;">
+                            <span class="fw-bold">Saldo equivalente:</span>
+                            <span class="fw-bold" id="totalSaldoDisplay">Bs 0</span>
                         </div>
-                        <div class="stats-row">
-                            <span class="fw-bold">Recargas Totales:</span>
-                            <span class="fw-bold" id="totalRecargasCalculado">0</span>
+                        <div class="stats-row text-info">
+                            <small><i class="bi bi-info-circle"></i> 1 recarga = 20 Bs</small>
+                        </div>
+                        <div class="stats-row bg-light p-2 rounded">
+                            <span class="fw-bold">Recargas para categorías:</span>
+                            <span class="fw-bold" id="recargasCategoriasDisplay">0</span>
+                        </div>
+                        <div class="stats-row bg-light p-2 rounded">
+                            <span class="fw-bold">Recargas para mayoristas:</span>
+                            <span class="fw-bold" id="recargasMayoristasDisplay">0</span>
                         </div>
                     </div>
                 </div>
@@ -1023,6 +1019,15 @@
                             <small class="text-muted">Usadas: <span id="recargasUsadasCategorias">0</span></small>
                             <small class="text-muted">Restantes: <span id="recargasRestantesCategorias">0</span></small>
                         </div>
+                        <div class="d-flex justify-content-between mt-1">
+                            <small class="text-muted">Saldo usado:</small>
+                            <small class="fw-bold" id="saldoUsadoCategorias">Bs 0</small>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-warning" id="sobrantesInfoCategorias" style="display: none; font-size: 12px;">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <span id="sobrantesMensajeCategorias"></span>
                     </div>
                     
                     <div id="categoriasList">
@@ -1070,8 +1075,9 @@
                                 
                                 <div class="alert alert-info mt-3" style="font-size: 12px;">
                                     <i class="bi bi-info-circle"></i>
-                                    <strong>Información:</strong> Cada chip seleccionado consumirá 1 recarga. 
-                                    Puede seleccionar hasta <span id="maxRecargasChips">0</span> chips.
+                                    <strong>Información:</strong> Puede usar chips sobrantes (marcados con borde amarillo) para completar las recargas necesarias.
+                                    <div class="mt-1"><strong>Recargas a usar:</strong> <span id="recargasNecesarias">0</span></div>
+                                    <div class="mt-1"><strong>Saldo total:</strong> Bs <span id="saldoTotalSeleccionado">0</span></div>
                                 </div>
                             </div>
                             <div class="modal-footer">
@@ -1093,30 +1099,6 @@
                         <span>Designar a Mayoristas</span>
                     </div>
                     
-                    <div class="form-group">
-                        <label class="form-label">Seleccione Operadora para Mayoristas</label>
-                        <div class="operadora-selector" id="operadoraMayoristas">
-                            <div class="operadora-btn" data-operadora="ENTEL">
-                                <div class="operadora-icon entel">
-                                    <i class="bi bi-phone"></i>
-                                </div>
-                                <div class="operadora-name">ENTEL</div>
-                            </div>
-                            <div class="operadora-btn" data-operadora="TIGO">
-                                <div class="operadora-icon tigo">
-                                    <i class="bi bi-phone"></i>
-                                </div>
-                                <div class="operadora-name">TIGO</div>
-                            </div>
-                            <div class="operadora-btn" data-operadora="VIVA">
-                                <div class="operadora-icon viva">
-                                    <i class="bi bi-phone"></i>
-                                </div>
-                                <div class="operadora-name">VIVA</div>
-                            </div>
-                        </div>
-                    </div>
-                    
                     <div class="progress-container">
                         <div class="progress-label">
                             <span class="text-muted">Recargas para mayoristas:</span>
@@ -1129,18 +1111,23 @@
                             <small class="text-muted">Usadas: <span id="recargasUsadasMayoristas">0</span></small>
                             <small class="text-muted">Restantes: <span id="recargasRestantesMayoristas">0</span></small>
                         </div>
+                        <div class="d-flex justify-content-between mt-1">
+                            <small class="text-muted">Saldo usado:</small>
+                            <small class="fw-bold" id="saldoUsadoMayoristas">Bs 0</small>
+                        </div>
                     </div>
                     
                     <div id="mayoristasList">
-                        <div class="text-center py-4">
-                            <i class="bi bi-people" style="font-size: 40px; color: var(--gray-2);"></i>
-                            <p class="text-muted mt-2" style="font-size: 13px;">Seleccione una operadora para ver los mayoristas disponibles</p>
+                        <div class="loading">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Cargando...</span>
+                            </div>
                         </div>
                     </div>
                     
                     <div id="noMayoristas" class="d-none text-center py-4">
                         <i class="bi bi-people" style="font-size: 40px; color: var(--gray-2);"></i>
-                        <p class="text-muted mt-2" style="font-size: 13px;">No hay mayoristas disponibles para esta operadora</p>
+                        <p class="text-muted mt-2" style="font-size: 13px;">No hay mayoristas disponibles</p>
                     </div>
                 </div>
             </div>
@@ -1159,47 +1146,62 @@
                     </div>
                     
                     <div class="summary-item">
-                        <span class="summary-label">Operadora Principal:</span>
+                        <span class="summary-label">Operadora:</span>
                         <span class="summary-value" id="summaryOperadora"></span>
                     </div>
                     
                     <div class="summary-item">
-                        <span class="summary-label">Recargas para Categorías:</span>
-                        <span class="summary-value" id="summaryRecargasCategorias"></span>
-                    </div>
-                    
-                    <div class="summary-item">
-                        <span class="summary-label">Recargas para Mayoristas:</span>
-                        <span class="summary-value" id="summaryRecargasMayoristas"></span>
-                    </div>
-                    
-                    <div class="summary-item">
-                        <span class="summary-label">Recargas Totales:</span>
+                        <span class="summary-label">Total recargas:</span>
                         <span class="summary-value" id="summaryTotalRecargas"></span>
                     </div>
                     
                     <div class="summary-item">
-                        <span class="summary-label">Recargas Usadas (Categorías):</span>
-                        <span class="summary-value" id="summaryRecargasUsadasCategorias"></span>
+                        <span class="summary-label">Total saldo:</span>
+                        <span class="summary-value" id="summaryTotalSaldo"></span>
                     </div>
                     
                     <div class="summary-item">
-                        <span class="summary-label">Recargas Usadas (Mayoristas):</span>
-                        <span class="summary-value" id="summaryRecargasUsadasMayoristas"></span>
+                        <span class="summary-label">Recargas en categorías:</span>
+                        <span class="summary-value" id="summaryRecargasCategorias"></span>
                     </div>
                     
                     <div class="summary-item">
-                        <span class="summary-label">Recargas Totales Usadas:</span>
-                        <span class="summary-value" id="summaryRecargasUsadasTotal"></span>
+                        <span class="summary-label">Saldo en categorías:</span>
+                        <span class="summary-value" id="summarySaldoCategorias"></span>
                     </div>
                     
                     <div class="summary-item">
-                        <span class="summary-label">Recargas Sobrantes:</span>
+                        <span class="summary-label">Recargas en mayoristas:</span>
+                        <span class="summary-value" id="summaryRecargasMayoristas"></span>
+                    </div>
+                    
+                    <div class="summary-item">
+                        <span class="summary-label">Saldo en mayoristas:</span>
+                        <span class="summary-value" id="summarySaldoMayoristas"></span>
+                    </div>
+                    
+                    <div class="summary-item">
+                        <span class="summary-label">Recargas usadas total:</span>
+                        <span class="summary-value" id="summaryRecargasUsadas"></span>
+                    </div>
+                    
+                    <div class="summary-item">
+                        <span class="summary-label">Saldo usado total:</span>
+                        <span class="summary-value" id="summarySaldoUsado"></span>
+                    </div>
+                    
+                    <div class="summary-item">
+                        <span class="summary-label">Recargas sobrantes:</span>
                         <span class="summary-value text-danger" id="summaryRecargasSobrantes"></span>
                     </div>
                     
                     <div class="summary-item">
-                        <span class="summary-label">Chips Usados:</span>
+                        <span class="summary-label">Saldo sobrante:</span>
+                        <span class="summary-value text-danger" id="summarySaldoSobrante"></span>
+                    </div>
+                    
+                    <div class="summary-item">
+                        <span class="summary-label">Chips usados:</span>
                         <span class="summary-value" id="summaryChipsUsados"></span>
                     </div>
                     
@@ -1269,13 +1271,15 @@
         // Configuración de Supabase
         const SUPABASE_URL = 'https://iyowgljzuryeowyceaio.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_xr2MZ4YwV7zslfp9Wzs2WQ_aSfFX_87';
+        const VALOR_RECARGA = 20; // 1 recarga = 20 Bs
         
         // Variables globales
         let currentStep = 1;
         let currentUser = null;
         let selectedOperadora = null;
-        let recargasParaCategorias = 0;
-        let recargasParaMayoristas = 0;
+        let totalRecargas = 0;
+        let recargasCategorias = 0;
+        let recargasMayoristas = 0;
         let recargasRestantesCategorias = 0;
         let recargasRestantesMayoristas = 0;
         let categoriasDisponibles = [];
@@ -1284,7 +1288,6 @@
         let selectedMayoristas = [];
         let currentCategoryChips = [];
         let currentCategorySelection = null;
-        let operadoraMayoristas = null;
         
         // Inicializar aplicación
         document.addEventListener('DOMContentLoaded', function() {
@@ -1331,28 +1334,22 @@
                 });
             });
             
-            // Operadora selector (paso 3 - mayoristas)
-            document.querySelectorAll('#operadoraMayoristas .operadora-btn').forEach(btn => {
-                btn.addEventListener('click', function() {
-                    const operadora = this.getAttribute('data-operadora');
-                    selectOperadoraMayoristas(operadora);
-                });
-            });
-            
-            // Input de recargas para categorías
-            document.getElementById('inputRecargasCategorias').addEventListener('input', function() {
-                recargasParaCategorias = parseInt(this.value) || 0;
-                recargasRestantesCategorias = recargasParaCategorias;
-                updateTotales();
-                updateCategoriasDisplay();
-            });
-            
-            // Input de recargas para mayoristas
-            document.getElementById('inputRecargasMayoristas').addEventListener('input', function() {
-                recargasParaMayoristas = parseInt(this.value) || 0;
-                recargasRestantesMayoristas = recargasParaMayoristas;
-                updateTotales();
-                updateMayoristasDisplay();
+            // Input de recargas - AUTOCOPIA AUTOMÁTICA
+            document.getElementById('inputTotalRecargas').addEventListener('input', function() {
+                totalRecargas = parseInt(this.value) || 0;
+                document.getElementById('totalSaldoDisplay').textContent = 'Bs ' + (totalRecargas * VALOR_RECARGA);
+                
+                // AUTOCOPIA: El mismo número para categorías y mayoristas
+                recargasCategorias = totalRecargas;
+                recargasMayoristas = totalRecargas;
+                recargasRestantesCategorias = recargasCategorias;
+                recargasRestantesMayoristas = recargasMayoristas;
+                
+                // Mostrar los valores
+                document.getElementById('recargasCategoriasDisplay').textContent = recargasCategorias;
+                document.getElementById('recargasMayoristasDisplay').textContent = recargasMayoristas;
+                
+                updateNextButtonState();
             });
         }
         
@@ -1366,7 +1363,6 @@
             }
             
             try {
-                // Consultar usuarios en Supabase
                 const response = await fetch(
                     `${SUPABASE_URL}/rest/v1/users?username=eq.${username}&password=eq.${password}&select=*`,
                     {
@@ -1381,22 +1377,18 @@
                     const users = await response.json();
                     
                     if (users.length > 0) {
-                        // Usuario válido encontrado
                         currentUser = {
                             id: users[0].id,
                             username: users[0].username,
                             nombre: users[0].nombre || users[0].username
                         };
                         
-                        // Guardar sesión
                         localStorage.setItem('userSession', JSON.stringify(currentUser));
                         
-                        // Limpiar formulario de login
                         document.getElementById('loginUsuario').value = '';
                         document.getElementById('loginPassword').value = '';
                         hideLoginError();
                         
-                        // Mostrar aplicación
                         showApp();
                         
                         showNotification('Bienvenido ' + currentUser.nombre, 'success');
@@ -1417,11 +1409,9 @@
                 currentUser = null;
                 localStorage.removeItem('userSession');
                 
-                // Ocultar aplicación
                 document.getElementById('mobileApp').style.display = 'none';
                 document.getElementById('loginScreen').style.display = 'flex';
                 
-                // Limpiar formularios
                 resetForm();
             }
         }
@@ -1433,7 +1423,6 @@
             errorMessage.textContent = message;
             errorDiv.classList.remove('d-none');
             
-            // Ocultar después de 5 segundos
             setTimeout(() => {
                 errorDiv.classList.add('d-none');
             }, 5000);
@@ -1444,81 +1433,46 @@
         }
         
         function showApp() {
-            // Mostrar nombre de usuario
             document.getElementById('username').textContent = currentUser.nombre;
             document.getElementById('inputUsuario').value = currentUser.username;
             document.getElementById('inputPassword').value = '********';
             
-            // Mostrar aplicación
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mobileApp').style.display = 'block';
         }
         
         function selectOperadora(operadora) {
-            // Limpiar selección anterior
             document.querySelectorAll('#step1 .operadora-btn').forEach(btn => {
                 btn.classList.remove('selected');
             });
             
-            // Marcar como seleccionada
             const selectedBtn = document.querySelector(`#step1 [data-operadora="${operadora}"]`);
             selectedBtn.classList.add('selected');
             
             selectedOperadora = operadora;
-            
-            // Habilitar siguiente paso si hay recargas ingresadas
-            updateNextButtonState();
-        }
-        
-        function selectOperadoraMayoristas(operadora) {
-            // Limpiar selección anterior
-            document.querySelectorAll('#operadoraMayoristas .operadora-btn').forEach(btn => {
-                btn.classList.remove('selected');
-            });
-            
-            // Marcar como seleccionada
-            const selectedBtn = document.querySelector(`#operadoraMayoristas [data-operadora="${operadora}"]`);
-            selectedBtn.classList.add('selected');
-            
-            operadoraMayoristas = operadora;
-            
-            // Cargar mayoristas
-            loadMayoristas();
-        }
-        
-        function updateTotales() {
-            const total = recargasParaCategorias + recargasParaMayoristas;
-            document.getElementById('totalRecargasCalculado').textContent = total;
             
             updateNextButtonState();
         }
         
         function updateNextButtonState() {
             const hasOperadora = !!selectedOperadora;
-            const hasRecargasCategorias = recargasParaCategorias > 0;
-            const hasRecargasMayoristas = recargasParaMayoristas > 0;
-            const hasRecargas = hasRecargasCategorias || hasRecargasMayoristas;
             
-            document.getElementById('btnNext').disabled = !(hasOperadora && hasRecargas);
+            document.getElementById('btnNext').disabled = !(hasOperadora && totalRecargas > 0);
         }
         
         function nextStep() {
             if (validateCurrentStep()) {
                 if (currentStep < 4) {
-                    // Ocultar paso actual
                     document.getElementById(`step${currentStep}`).classList.remove('active');
                     document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
                     
                     currentStep++;
                     
-                    // Mostrar nuevo paso
                     document.getElementById(`step${currentStep}`).classList.add('active');
                     document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
                     
-                    // Actualizar botones
                     updateNavigationButtons();
                     
-                    // Cargar datos del paso
                     loadStepData();
                 }
             }
@@ -1526,18 +1480,15 @@
         
         function prevStep() {
             if (currentStep > 1) {
-                // Ocultar paso actual
                 document.getElementById(`step${currentStep}`).classList.remove('active');
                 document.querySelector(`.step[data-step="${currentStep}"]`).classList.remove('active');
                 
                 currentStep--;
                 
-                // Mostrar nuevo paso
-                    document.getElementById(`step${currentStep}`).classList.add('active');
-                    document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
-                    
-                    // Actualizar botones
-                    updateNavigationButtons();
+                document.getElementById(`step${currentStep}`).classList.add('active');
+                document.querySelector(`.step[data-step="${currentStep}"]`).classList.add('active');
+                
+                updateNavigationButtons();
             }
         }
         
@@ -1556,7 +1507,6 @@
                 btnSubmit.style.display = 'none';
             }
             
-            // Actualizar estado del botón siguiente según el paso
             if (currentStep === 2) {
                 btnNext.disabled = recargasRestantesCategorias > 0;
             } else if (currentStep === 3) {
@@ -1568,32 +1518,26 @@
             switch(currentStep) {
                 case 1:
                     if (!selectedOperadora) {
-                        showNotification('Seleccione una operadora principal', 'error');
+                        showNotification('Seleccione una operadora', 'error');
                         return false;
                     }
-                    if (recargasParaCategorias < 1 && recargasParaMayoristas < 1) {
-                        showNotification('Ingrese recargas para categorías o mayoristas', 'error');
+                    if (totalRecargas < 1) {
+                        showNotification('Ingrese el total de recargas', 'error');
                         return false;
                     }
                     return true;
                     
                 case 2:
-                    if (recargasParaCategorias > 0 && selectedCategorias.length === 0) {
-                        showNotification('Debe asignar recargas a al menos una categoría', 'error');
+                    if (selectedCategorias.length === 0) {
+                        showNotification('Debe seleccionar al menos una categoría', 'error');
                         return false;
                     }
                     return true;
                     
                 case 3:
-                    if (recargasParaMayoristas > 0) {
-                        if (!operadoraMayoristas) {
-                            showNotification('Seleccione una operadora para mayoristas', 'error');
-                            return false;
-                        }
-                        if (selectedMayoristas.length === 0) {
-                            showNotification('Debe asignar recargas a al menos un mayorista', 'error');
-                            return false;
-                        }
+                    if (selectedMayoristas.length === 0) {
+                        showNotification('Debe seleccionar al menos un mayorista', 'error');
+                        return false;
                     }
                     return true;
                     
@@ -1605,30 +1549,11 @@
         async function loadStepData() {
             switch(currentStep) {
                 case 2:
-                    if (recargasParaCategorias > 0) {
-                        await loadCategorias();
-                        updateCategoriasDisplay();
-                    } else {
-                        // Si no hay recargas para categorías, saltar este paso
-                        setTimeout(() => nextStep(), 100);
-                    }
+                    await loadCategorias();
                     break;
                     
                 case 3:
-                    if (recargasParaMayoristas > 0) {
-                        selectedMayoristas = [];
-                        operadoraMayoristas = null;
-                        updateMayoristasDisplay();
-                        document.getElementById('mayoristasList').innerHTML = `
-                            <div class="text-center py-4">
-                                <i class="bi bi-people" style="font-size: 40px; color: var(--gray-2);"></i>
-                                <p class="text-muted mt-2" style="font-size: 13px;">Seleccione una operadora para ver los mayoristas disponibles</p>
-                            </div>
-                        `;
-                    } else {
-                        // Si no hay recargas para mayoristas, saltar este paso
-                        setTimeout(() => nextStep(), 100);
-                    }
+                    await loadMayoristas();
                     break;
                     
                 case 4:
@@ -1640,8 +1565,10 @@
         async function loadCategorias() {
             const container = document.getElementById('categoriasList');
             const noCategorias = document.getElementById('noCategorias');
+            const sobrantesInfo = document.getElementById('sobrantesInfoCategorias');
             
             container.innerHTML = '<div class="loading"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Cargando...</span></div></div>';
+            sobrantesInfo.style.display = 'none';
             
             try {
                 const response = await fetch(
@@ -1663,10 +1590,11 @@
                     } else {
                         noCategorias.classList.add('d-none');
                         
-                        // Para cada categoría, cargar sus chips disponibles
+                        let totalSobrantes = 0;
+                        
                         for (let categoria of categoriasDisponibles) {
                             const chipsResponse = await fetch(
-                                `${SUPABASE_URL}/rest/v1/chips?categoria_id=eq.${categoria.id}&recargas_restantes=gt.0`,
+                                `${SUPABASE_URL}/rest/v1/chips?categoria_id=eq.${categoria.id}&saldo_actual=gt.0`,
                                 {
                                     headers: {
                                         'apikey': SUPABASE_KEY,
@@ -1678,37 +1606,39 @@
                             if (chipsResponse.ok) {
                                 categoria.chips = await chipsResponse.json();
                                 categoria.chips_disponibles = categoria.chips.length;
-                                // Cada chip tiene 1 recarga disponible
-                                categoria.recargas_disponibles = categoria.chips.length;
+                                
+                                // Calcular chips sobrantes (los que tienen saldo superior al mínimo)
+                                if (categoria.chips.length > 0) {
+                                    const saldos = categoria.chips.map(chip => chip.saldo_actual);
+                                    const saldoMinimo = Math.min(...saldos);
+                                    categoria.chips_sobrantes = categoria.chips.filter(chip => chip.saldo_actual > saldoMinimo).length;
+                                    categoria.saldo_minimo = saldoMinimo;
+                                    totalSobrantes += categoria.chips_sobrantes;
+                                } else {
+                                    categoria.chips_sobrantes = 0;
+                                    categoria.saldo_minimo = 0;
+                                }
                             } else {
                                 categoria.chips = [];
                                 categoria.chips_disponibles = 0;
-                                categoria.recargas_disponibles = 0;
+                                categoria.chips_sobrantes = 0;
+                                categoria.saldo_minimo = 0;
                             }
                         }
                         
+                        if (totalSobrantes > 0) {
+                            sobrantesInfo.style.display = 'block';
+                            document.getElementById('sobrantesMensajeCategorias').innerHTML = 
+                                `Hay <strong>${totalSobrantes}</strong> chips sobrantes disponibles para usar (marcados en amarillo)`;
+                        }
+                        
                         renderCategorias();
+                        updateCategoriasDisplay();
                     }
                 }
             } catch (error) {
                 console.error('Error al cargar categorías:', error);
                 showNotification('Error al cargar categorías', 'error');
-            }
-        }
-        
-        function updateCategoriasDisplay() {
-            document.getElementById('recargasCategoriasTotal').textContent = recargasParaCategorias;
-            
-            const recargasUsadas = recargasParaCategorias - recargasRestantesCategorias;
-            document.getElementById('recargasUsadasCategorias').textContent = recargasUsadas;
-            document.getElementById('recargasRestantesCategorias').textContent = recargasRestantesCategorias;
-            
-            const progress = (recargasUsadas / recargasParaCategorias) * 100;
-            document.getElementById('progressBarCategorias').style.width = `${progress}%`;
-            
-            // Habilitar/deshabilitar siguiente paso
-            if (currentStep === 2) {
-                document.getElementById('btnNext').disabled = recargasRestantesCategorias > 0;
             }
         }
         
@@ -1719,29 +1649,30 @@
             categoriasDisponibles.forEach(categoria => {
                 const categoriaSeleccionada = selectedCategorias.find(c => c.id === categoria.id);
                 const chipsSeleccionados = categoriaSeleccionada ? categoriaSeleccionada.chips_seleccionados.length : 0;
+                const recargasSeleccionadas = categoriaSeleccionada ? categoriaSeleccionada.recargas_usadas : 0;
                 
                 const card = document.createElement('div');
                 card.className = `category-card ${categoriaSeleccionada ? 'selected' : ''}`;
                 card.innerHTML = `
                     <div class="category-header">
                         <div class="category-name">${categoria.nombre}</div>
-                        <div class="badge ${categoriaSeleccionada ? 'bg-success' : 'bg-primary'}">
-                            ${categoriaSeleccionada ? `${chipsSeleccionados} chips` : 'Disponible'}
+                        <div class="badge ${categoriaSeleccionada ? 'bg-success' : categoria.chips_sobrantes > 0 ? 'bg-warning' : 'bg-primary'}">
+                            ${categoriaSeleccionada ? `${recargasSeleccionadas} rec` : categoria.chips_sobrantes > 0 ? `${categoria.chips_sobrantes} sob` : `${categoria.chips_disponibles} chips`}
                         </div>
                     </div>
                     
                     <div class="category-stats">
                         <div class="stat-item">
                             <div class="stat-value">${categoria.chips_disponibles}</div>
-                            <div>Chips disp.</div>
+                            <div>Chips</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value">${categoria.recargas_por_chip}</div>
-                            <div>Rec./Chip</div>
+                            <div class="stat-value">${categoria.chips_sobrantes}</div>
+                            <div>Sobrantes</div>
                         </div>
                         <div class="stat-item">
-                            <div class="stat-value">${categoria.recargas_disponibles}</div>
-                            <div>Rec. totales</div>
+                            <div class="stat-value">Bs ${categoria.saldo_minimo}</div>
+                            <div>Base</div>
                         </div>
                     </div>
                     
@@ -1750,8 +1681,8 @@
                             <div>
                                 <small class="text-muted" style="font-size: 11px;">
                                     ${categoriaSeleccionada ? 
-                                        `${chipsSeleccionados} chips seleccionados (${chipsSeleccionados} recargas)` : 
-                                        'Puede seleccionar hasta ' + Math.min(categoria.chips_disponibles, recargasRestantesCategorias) + ' chips'}
+                                        `${recargasSeleccionadas} recargas` : 
+                                        `Máx: ${Math.min(categoria.chips_disponibles, recargasRestantesCategorias)} rec`}
                                 </small>
                             </div>
                             <button class="btn ${categoriaSeleccionada ? 'btn-warning' : 'btn-primary'} btn-sm" 
@@ -1780,17 +1711,15 @@
                 return;
             }
             
-            // Calcular máximo de chips que puede seleccionar
             const maxChips = Math.min(categoria.chips_disponibles, recargasRestantesCategorias);
             
-            // Cargar chips para esta categoría
-            await loadChipsForCategory(categoriaId, maxChips);
+            await loadChipsForCategory(categoriaId);
             currentCategorySelection = categoriaId;
             
-            // Mostrar modal de selección de chips
             document.getElementById('modalCategoryName').textContent = categoria.nombre;
             document.getElementById('chipsMaxCount').textContent = maxChips;
-            document.getElementById('maxRecargasChips').textContent = maxChips;
+            document.getElementById('recargasNecesarias').textContent = maxChips;
+            document.getElementById('saldoTotalSeleccionado').textContent = '0';
             
             const modal = new bootstrap.Modal(document.getElementById('chipsModal'));
             modal.show();
@@ -1800,23 +1729,19 @@
             const categoriaSeleccionada = selectedCategorias.find(c => c.id === categoriaId);
             
             if (categoriaSeleccionada) {
-                // Preparar para edición
                 currentCategoryChips = categoriaSeleccionada.chips_disponibles_original;
                 currentCategorySelection = categoriaId;
                 
-                // Marcar los chips que ya estaban seleccionados
                 currentCategoryChips.forEach(chip => {
                     chip.selected = categoriaSeleccionada.chips_seleccionados.some(c => c.id === chip.id);
                 });
                 
-                // Calcular máximo de chips (puede ser diferente si hay más recargas disponibles ahora)
                 const categoria = categoriasDisponibles.find(c => c.id === categoriaId);
                 const maxChips = Math.min(categoria.chips_disponibles, recargasRestantesCategorias + categoriaSeleccionada.chips_seleccionados.length);
                 
-                // Mostrar modal
                 document.getElementById('modalCategoryName').textContent = categoria.nombre;
                 document.getElementById('chipsMaxCount').textContent = maxChips;
-                document.getElementById('maxRecargasChips').textContent = maxChips;
+                document.getElementById('recargasNecesarias').textContent = maxChips;
                 
                 renderChipsGrid();
                 
@@ -1825,10 +1750,10 @@
             }
         }
         
-        async function loadChipsForCategory(categoriaId, maxChips) {
+        async function loadChipsForCategory(categoriaId) {
             try {
                 const response = await fetch(
-                    `${SUPABASE_URL}/rest/v1/chips?categoria_id=eq.${categoriaId}&recargas_restantes=gt.0&order=numero`,
+                    `${SUPABASE_URL}/rest/v1/chips?categoria_id=eq.${categoriaId}&saldo_actual=gt.0&order=codigo`,
                     {
                         headers: {
                             'apikey': SUPABASE_KEY,
@@ -1840,12 +1765,22 @@
                 if (response.ok) {
                     currentCategoryChips = await response.json();
                     
-                    // Inicializar todos los chips como no seleccionados
-                    currentCategoryChips.forEach(chip => {
-                        chip.selected = false;
-                    });
+                    // Calcular saldo mínimo para identificar sobrantes
+                    if (currentCategoryChips.length > 0) {
+                        const saldos = currentCategoryChips.map(chip => chip.saldo_actual);
+                        const saldoMinimo = Math.min(...saldos);
+                        
+                        currentCategoryChips.forEach(chip => {
+                            chip.selected = false;
+                            chip.esSobrante = chip.saldo_actual > saldoMinimo;
+                        });
+                    } else {
+                        currentCategoryChips.forEach(chip => {
+                            chip.selected = false;
+                            chip.esSobrante = false;
+                        });
+                    }
                     
-                    // Guardar copia original para referencia
                     const categoria = categoriasDisponibles.find(c => c.id === categoriaId);
                     categoria.chips_disponibles_original = [...currentCategoryChips];
                     
@@ -1861,20 +1796,22 @@
             const container = document.getElementById('chipsGrid');
             container.innerHTML = '';
             
-            // Contar chips seleccionados
             const selectedCount = currentCategoryChips.filter(chip => chip.selected).length;
             document.getElementById('chipsSelectedCount').textContent = selectedCount;
             document.getElementById('confirmChipsCount').textContent = selectedCount;
             
+            const saldoTotal = selectedCount * VALOR_RECARGA;
+            document.getElementById('saldoTotalSeleccionado').textContent = saldoTotal;
+            
             currentCategoryChips.forEach(chip => {
                 const chipElement = document.createElement('div');
-                chipElement.className = `chip-item ${chip.selected ? 'selected' : ''}`;
+                chipElement.className = `chip-item ${chip.selected ? 'selected' : ''} ${chip.esSobrante && !chip.selected ? 'border-warning' : ''}`;
                 chipElement.onclick = () => toggleChipSelection(chip.id);
                 
                 chipElement.innerHTML = `
                     ${chip.selected ? '<div class="chip-check"><i class="bi bi-check"></i></div>' : ''}
-                    <div class="chip-number">${chip.numero}</div>
-                    <div class="chip-recargas">${chip.recargas_restantes} recarga(s)</div>
+                    <div class="chip-codigo">${chip.codigo}</div>
+                    <div class="chip-saldo">Bs ${chip.saldo_actual} ${chip.esSobrante ? '⚠️' : ''}</div>
                 `;
                 
                 container.appendChild(chipElement);
@@ -1888,7 +1825,6 @@
             const maxChips = parseInt(document.getElementById('chipsMaxCount').textContent);
             const selectedCount = currentCategoryChips.filter(c => c.selected).length;
             
-            // Si está tratando de seleccionar y ya alcanzó el máximo
             if (!chip.selected && selectedCount >= maxChips) {
                 showNotification(`Solo puede seleccionar hasta ${maxChips} chips`, 'error');
                 return;
@@ -1900,9 +1836,7 @@
         
         function selectAllChips() {
             const maxChips = parseInt(document.getElementById('chipsMaxCount').textContent);
-            const availableChips = currentCategoryChips.length;
             
-            // Seleccionar hasta el máximo permitido
             let selectedCount = 0;
             currentCategoryChips.forEach(chip => {
                 if (selectedCount < maxChips) {
@@ -1934,62 +1868,58 @@
             
             const categoria = categoriasDisponibles.find(c => c.id === currentCategorySelection);
             
-            // Verificar si ya existe en selectedCategorias
             const existingIndex = selectedCategorias.findIndex(c => c.id === categoria.id);
             
             if (existingIndex > -1) {
-                // Editar categoría existente
                 const oldSelection = selectedCategorias[existingIndex];
                 const oldCount = oldSelection.chips_seleccionados.length;
                 
-                // Actualizar contador de recargas
-                recargasRestantesCategorias += oldCount; // Devolver las recargas anteriores
-                recargasRestantesCategorias -= selectedCount; // Restar las nuevas seleccionadas
+                recargasRestantesCategorias += oldCount;
+                recargasRestantesCategorias -= selectedCount;
                 
-                // Actualizar la categoría
                 selectedCategorias[existingIndex] = {
                     ...categoria,
                     chips_seleccionados: selectedChips,
                     chips_disponibles_original: categoria.chips_disponibles_original,
                     recargas_usadas: selectedCount,
+                    saldo_usado: selectedCount * VALOR_RECARGA,
                     chips_sobrantes: categoria.chips_disponibles - selectedCount
                 };
                 
-                showNotification(`Categoría "${categoria.nombre}" actualizada: ${selectedCount} chips seleccionados`, 'success');
+                showNotification(`Categoría "${categoria.nombre}" actualizada: ${selectedCount} recargas`, 'success');
             } else {
-                // Agregar nueva categoría
                 selectedCategorias.push({
                     ...categoria,
                     chips_seleccionados: selectedChips,
                     chips_disponibles_original: categoria.chips_disponibles_original,
                     recargas_usadas: selectedCount,
+                    saldo_usado: selectedCount * VALOR_RECARGA,
                     chips_sobrantes: categoria.chips_disponibles - selectedCount
                 });
                 
                 recargasRestantesCategorias -= selectedCount;
-                showNotification(`${selectedCount} chips seleccionados de "${categoria.nombre}"`, 'success');
+                showNotification(`${selectedCount} recargas asignadas a "${categoria.nombre}"`, 'success');
             }
             
             updateCategoriasDisplay();
             renderCategorias();
             
-            // Cerrar modal
             bootstrap.Modal.getInstance(document.getElementById('chipsModal')).hide();
         }
         
-        function updateMayoristasDisplay() {
-            document.getElementById('recargasMayoristasTotal').textContent = recargasParaMayoristas;
+        function updateCategoriasDisplay() {
+            document.getElementById('recargasCategoriasTotal').textContent = recargasCategorias;
             
-            const recargasUsadas = recargasParaMayoristas - recargasRestantesMayoristas;
-            document.getElementById('recargasUsadasMayoristas').textContent = recargasUsadas;
-            document.getElementById('recargasRestantesMayoristas').textContent = recargasRestantesMayoristas;
+            const recargasUsadas = recargasCategorias - recargasRestantesCategorias;
+            document.getElementById('recargasUsadasCategorias').textContent = recargasUsadas;
+            document.getElementById('recargasRestantesCategorias').textContent = recargasRestantesCategorias;
+            document.getElementById('saldoUsadoCategorias').textContent = 'Bs ' + (recargasUsadas * VALOR_RECARGA);
             
-            const progress = recargasParaMayoristas > 0 ? (recargasUsadas / recargasParaMayoristas) * 100 : 0;
-            document.getElementById('progressBarMayoristas').style.width = `${progress}%`;
+            const progress = recargasCategorias > 0 ? (recargasUsadas / recargasCategorias) * 100 : 0;
+            document.getElementById('progressBarCategorias').style.width = `${progress}%`;
             
-            // Habilitar/deshabilitar siguiente paso
-            if (currentStep === 3) {
-                document.getElementById('btnNext').disabled = recargasRestantesMayoristas > 0;
+            if (currentStep === 2) {
+                document.getElementById('btnNext').disabled = recargasRestantesCategorias > 0;
             }
         }
         
@@ -2001,7 +1931,7 @@
             
             try {
                 const response = await fetch(
-                    `${SUPABASE_URL}/rest/v1/mayoristas?operadora=eq.${operadoraMayoristas}&recargas=gt.0&order=nombre`,
+                    `${SUPABASE_URL}/rest/v1/mayoristas?order=nombre`,
                     {
                         headers: {
                             'apikey': SUPABASE_KEY,
@@ -2034,7 +1964,8 @@
             mayoristasDisponibles.forEach(mayorista => {
                 const mayoristaSeleccionado = selectedMayoristas.find(m => m.id === mayorista.id);
                 const recargasAsignadas = mayoristaSeleccionado ? mayoristaSeleccionado.recargas_asignadas : 0;
-                const maxRecargas = Math.min(mayorista.recargas, recargasRestantesMayoristas + recargasAsignadas);
+                const saldoDisponible = mayorista.saldo_total - (mayorista.saldo_usado || 0);
+                const maxRecargas = Math.min(Math.floor(saldoDisponible / VALOR_RECARGA), recargasRestantesMayoristas + recargasAsignadas);
                 
                 const card = document.createElement('div');
                 card.className = `category-card ${mayoristaSeleccionado ? 'selected' : ''}`;
@@ -2042,14 +1973,18 @@
                     <div class="category-header">
                         <div class="category-name">${mayorista.nombre}</div>
                         <div class="badge ${mayoristaSeleccionado ? 'bg-success' : 'bg-primary'}">
-                            ${mayoristaSeleccionado ? 'Seleccionado' : 'Disponible'}
+                            ${mayoristaSeleccionado ? `${recargasAsignadas} rec` : 'Disponible'}
                         </div>
                     </div>
                     
                     <div class="category-stats">
                         <div class="stat-item">
-                            <div class="stat-value">${mayorista.recargas}</div>
-                            <div>Recargas disp.</div>
+                            <div class="stat-value">Bs ${saldoDisponible}</div>
+                            <div>Saldo</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">${Math.floor(saldoDisponible / VALOR_RECARGA)}</div>
+                            <div>Recargas</div>
                         </div>
                     </div>
                     
@@ -2059,19 +1994,19 @@
                             <input type="number" 
                                    class="form-control" 
                                    id="recargasMayorista_${mayorista.id}"
-                                   placeholder="Recargas a asignar"
+                                   placeholder="Recargas"
                                    min="1"
                                    max="${maxRecargas}"
-                                   value="${maxRecargas > 0 ? '1' : '0'}"
+                                   value="${Math.min(recargasMayoristas, maxRecargas)}"
                                    ${maxRecargas === 0 ? 'disabled' : ''}>
                             <button class="btn btn-primary" onclick="seleccionarMayorista(${mayorista.id})">
                                 <i class="bi bi-plus-circle"></i> Asignar
                             </button>
                         </div>
-                        <small class="text-muted" style="font-size: 11px;">Máximo: ${maxRecargas} recargas</small>
+                        <small class="text-muted" style="font-size: 11px;">Máx: ${maxRecargas} rec (Bs ${maxRecargas * VALOR_RECARGA})</small>
                         ` : `
                         <div class="d-flex justify-content-between align-items-center">
-                            <span class="text-muted" style="font-size: 12px;">${recargasAsignadas} recargas asignadas</span>
+                            <span class="text-muted" style="font-size: 12px;">${recargasAsignadas} rec (Bs ${recargasAsignadas * VALOR_RECARGA})</span>
                             <div>
                                 <button class="btn btn-warning btn-sm" onclick="editarMayorista(${mayorista.id})">
                                     <i class="bi bi-pencil"></i> Editar
@@ -2099,25 +2034,30 @@
             }
             
             const mayorista = mayoristasDisponibles.find(m => m.id === mayoristaId);
+            const saldoDisponible = mayorista.saldo_total - (mayorista.saldo_usado || 0);
+            const maxRecargas = Math.floor(saldoDisponible / VALOR_RECARGA);
             
             if (recargasAAsignar > recargasRestantesMayoristas) {
                 showNotification(`Solo le quedan ${recargasRestantesMayoristas} recargas disponibles`, 'error');
                 return;
             }
             
-            if (recargasAAsignar > mayorista.recargas) {
-                showNotification(`Este mayorista solo tiene ${mayorista.recargas} recargas disponibles`, 'error');
+            if (recargasAAsignar > maxRecargas) {
+                showNotification(`Este mayorista solo tiene ${maxRecargas} recargas disponibles`, 'error');
                 return;
             }
             
             selectedMayoristas.push({
                 ...mayorista,
                 recargas_asignadas: recargasAAsignar,
-                recargas_nuevas: mayorista.recargas - recargasAAsignar,
-                operadora: operadoraMayoristas
+                saldo_asignado: recargasAAsignar * VALOR_RECARGA,
+                saldo_anterior: saldoDisponible,
+                saldo_nuevo: saldoDisponible - (recargasAAsignar * VALOR_RECARGA),
+                operadora: selectedOperadora
             });
             
             recargasRestantesMayoristas -= recargasAAsignar;
+            
             updateMayoristasDisplay();
             renderMayoristas();
             
@@ -2131,8 +2071,12 @@
             const mayorista = selectedMayoristas[mayoristaIndex];
             const recargasAsignadasActuales = mayorista.recargas_asignadas;
             
+            const mayoristaOriginal = mayoristasDisponibles.find(m => m.id === mayoristaId);
+            const saldoDisponibleOriginal = mayoristaOriginal.saldo_total - (mayoristaOriginal.saldo_usado || 0);
+            const maxRecargas = Math.floor((saldoDisponibleOriginal + (recargasAsignadasActuales * VALOR_RECARGA)) / VALOR_RECARGA);
+            
             const nuevasRecargas = parseInt(prompt(
-                `Editar recargas para ${mayorista.nombre}\nActual: ${recargasAsignadasActuales} recargas\nMáximo disponible: ${mayorista.recargas} recargas`,
+                `Editar recargas para ${mayorista.nombre}\nActual: ${recargasAsignadasActuales} recargas\nMáximo: ${maxRecargas} recargas`,
                 recargasAsignadasActuales
             ));
             
@@ -2140,12 +2084,11 @@
                 return;
             }
             
-            if (nuevasRecargas > mayorista.recargas) {
-                showNotification(`Este mayorista solo tiene ${mayorista.recargas} recargas disponibles`, 'error');
+            if (nuevasRecargas > maxRecargas) {
+                showNotification(`Máximo permitido: ${maxRecargas} recargas`, 'error');
                 return;
             }
             
-            // Calcular diferencia
             const diferencia = nuevasRecargas - recargasAsignadasActuales;
             
             if (diferencia > recargasRestantesMayoristas) {
@@ -2153,11 +2096,12 @@
                 return;
             }
             
-            // Actualizar
             selectedMayoristas[mayoristaIndex].recargas_asignadas = nuevasRecargas;
-            selectedMayoristas[mayoristaIndex].recargas_nuevas = mayorista.recargas - nuevasRecargas;
+            selectedMayoristas[mayoristaIndex].saldo_asignado = nuevasRecargas * VALOR_RECARGA;
+            selectedMayoristas[mayoristaIndex].saldo_nuevo = saldoDisponibleOriginal - (nuevasRecargas * VALOR_RECARGA);
             
             recargasRestantesMayoristas -= diferencia;
+            
             updateMayoristasDisplay();
             renderMayoristas();
             
@@ -2171,10 +2115,8 @@
             const mayorista = selectedMayoristas[mayoristaIndex];
             
             if (confirm(`¿Eliminar asignación a ${mayorista.nombre} (${mayorista.recargas_asignadas} recargas)?`)) {
-                // Devolver recargas
                 recargasRestantesMayoristas += mayorista.recargas_asignadas;
                 
-                // Eliminar de la lista
                 selectedMayoristas.splice(mayoristaIndex, 1);
                 
                 updateMayoristasDisplay();
@@ -2184,28 +2126,45 @@
             }
         }
         
+        function updateMayoristasDisplay() {
+            document.getElementById('recargasMayoristasTotal').textContent = recargasMayoristas;
+            
+            const recargasUsadas = recargasMayoristas - recargasRestantesMayoristas;
+            document.getElementById('recargasUsadasMayoristas').textContent = recargasUsadas;
+            document.getElementById('recargasRestantesMayoristas').textContent = recargasRestantesMayoristas;
+            document.getElementById('saldoUsadoMayoristas').textContent = 'Bs ' + (recargasUsadas * VALOR_RECARGA);
+            
+            const progress = recargasMayoristas > 0 ? (recargasUsadas / recargasMayoristas) * 100 : 0;
+            document.getElementById('progressBarMayoristas').style.width = `${progress}%`;
+            
+            if (currentStep === 3) {
+                document.getElementById('btnNext').disabled = recargasRestantesMayoristas > 0;
+            }
+        }
+        
         function showSummary() {
-            // Calcular estadísticas
             const recargasUsadasCategorias = selectedCategorias.reduce((sum, cat) => sum + cat.recargas_usadas, 0);
             const recargasUsadasMayoristas = selectedMayoristas.reduce((sum, may) => sum + may.recargas_asignadas, 0);
             const recargasUsadasTotal = recargasUsadasCategorias + recargasUsadasMayoristas;
-            const recargasTotales = recargasParaCategorias + recargasParaMayoristas;
-            const recargasSobrantes = recargasTotales - recargasUsadasTotal;
+            const saldoUsadoTotal = recargasUsadasTotal * VALOR_RECARGA;
+            const recargasSobrantes = totalRecargas - recargasUsadasTotal;
+            const saldoSobrante = recargasSobrantes * VALOR_RECARGA;
             const chipsUsados = selectedCategorias.reduce((sum, cat) => sum + cat.chips_seleccionados.length, 0);
             
-            // Actualizar resumen
             document.getElementById('summaryUsuario').textContent = currentUser.nombre;
             document.getElementById('summaryOperadora').textContent = selectedOperadora;
-            document.getElementById('summaryRecargasCategorias').textContent = recargasParaCategorias;
-            document.getElementById('summaryRecargasMayoristas').textContent = recargasParaMayoristas;
-            document.getElementById('summaryTotalRecargas').textContent = recargasTotales;
-            document.getElementById('summaryRecargasUsadasCategorias').textContent = recargasUsadasCategorias;
-            document.getElementById('summaryRecargasUsadasMayoristas').textContent = recargasUsadasMayoristas;
-            document.getElementById('summaryRecargasUsadasTotal').textContent = recargasUsadasTotal;
+            document.getElementById('summaryTotalRecargas').textContent = totalRecargas;
+            document.getElementById('summaryTotalSaldo').textContent = 'Bs ' + (totalRecargas * VALOR_RECARGA);
+            document.getElementById('summaryRecargasCategorias').textContent = recargasUsadasCategorias;
+            document.getElementById('summarySaldoCategorias').textContent = 'Bs ' + (recargasUsadasCategorias * VALOR_RECARGA);
+            document.getElementById('summaryRecargasMayoristas').textContent = recargasUsadasMayoristas;
+            document.getElementById('summarySaldoMayoristas').textContent = 'Bs ' + (recargasUsadasMayoristas * VALOR_RECARGA);
+            document.getElementById('summaryRecargasUsadas').textContent = recargasUsadasTotal;
+            document.getElementById('summarySaldoUsado').textContent = 'Bs ' + saldoUsadoTotal;
             document.getElementById('summaryRecargasSobrantes').textContent = recargasSobrantes;
+            document.getElementById('summarySaldoSobrante').textContent = 'Bs ' + saldoSobrante;
             document.getElementById('summaryChipsUsados').textContent = chipsUsados;
             
-            // Mostrar chips por categoría
             const chipsByCategory = document.getElementById('summaryChipsByCategory');
             chipsByCategory.innerHTML = '';
             
@@ -2215,28 +2174,23 @@
                 categoryDiv.innerHTML = `
                     <div class="d-flex justify-content-between align-items-center mb-1">
                         <span class="fw-bold" style="font-size: 13px;">${categoria.nombre}</span>
-                        <span class="badge bg-primary">${categoria.chips_seleccionados.length} chips usados</span>
+                        <span class="badge bg-primary">${categoria.recargas_usadas} rec (Bs ${categoria.saldo_usado})</span>
                     </div>
                     <div class="chips-list">
                         ${categoria.chips_seleccionados.map(chip => 
-                            `<span class="chip-badge">${chip.numero}</span>`
+                            `<span class="chip-badge">${chip.codigo}</span>`
                         ).join('')}
                     </div>
-                    ${categoria.chips_sobrantes > 0 ? 
-                        `<small class="text-muted" style="font-size: 11px;">${categoria.chips_sobrantes} chips sobrantes en esta categoría</small>` : 
-                        ''
-                    }
                 `;
                 chipsByCategory.appendChild(categoryDiv);
             });
             
-            // Mostrar distribución a mayoristas
             const mayoristasDist = document.getElementById('summaryMayoristasDist');
             mayoristasDist.innerHTML = selectedMayoristas.length > 0
                 ? selectedMayoristas.map(may => `
                     <div class="summary-item">
-                        <span class="summary-label">${may.nombre} (${may.operadora}):</span>
-                        <span class="summary-value">${may.recargas_asignadas} recargas</span>
+                        <span class="summary-label">${may.nombre}:</span>
+                        <span class="summary-value">${may.recargas_asignadas} rec (Bs ${may.saldo_asignado})</span>
                     </div>`
                   ).join('')
                 : '<p class="text-muted" style="font-size: 13px;">No se asignaron recargas a mayoristas</p>';
@@ -2249,30 +2203,38 @@
         
         async function submitReport() {
             try {
-                // Calcular detalles para el reporte
+                const recargasUsadasTotal = selectedCategorias.reduce((sum, cat) => sum + cat.recargas_usadas, 0) + 
+                                          selectedMayoristas.reduce((sum, may) => sum + may.recargas_asignadas, 0);
+                const saldoUsadoTotal = recargasUsadasTotal * VALOR_RECARGA;
+                
                 const detalles = {
                     categorias: selectedCategorias.map(cat => ({
                         id: cat.id,
                         nombre: cat.nombre,
                         chips_usados: cat.chips_seleccionados.length,
                         recargas_usadas: cat.recargas_usadas,
-                        chips_sobrantes: cat.chips_sobrantes,
+                        saldo_usado: cat.saldo_usado,
                         chips_seleccionados: cat.chips_seleccionados.map(chip => ({
                             id: chip.id,
-                            numero: chip.numero
+                            codigo: chip.codigo,
+                            saldo_actual: chip.saldo_actual
                         }))
                     })),
                     mayoristas: selectedMayoristas.map(may => ({
                         id: may.id,
                         nombre: may.nombre,
-                        operadora: may.operadora,
-                        recargas_asignadas: may.recargas_asignadas
+                        operadora: selectedOperadora,
+                        recargas_asignadas: may.recargas_asignadas,
+                        saldo_asignado: may.saldo_asignado,
+                        saldo_anterior: may.saldo_anterior,
+                        saldo_nuevo: may.saldo_nuevo
                     })),
                     chips_utilizados: selectedCategorias.flatMap(cat => 
                         cat.chips_seleccionados.map(chip => ({
                             id: chip.id,
-                            numero: chip.numero,
-                            categoria: cat.nombre
+                            codigo: chip.codigo,
+                            categoria: cat.nombre,
+                            saldo_anterior: chip.saldo_actual
                         }))
                     ),
                     chips_sobrantes: selectedCategorias.flatMap(cat => {
@@ -2281,40 +2243,34 @@
                             .filter(chip => !chipsUsadosIds.includes(chip.id))
                             .map(chip => ({
                                 id: chip.id,
-                                numero: chip.numero,
+                                codigo: chip.codigo,
                                 categoria: cat.nombre,
-                                recargas_restantes: chip.recargas_restantes
+                                saldo_actual: chip.saldo_actual
                             }));
                     }),
-                    operadora_principal: selectedOperadora,
-                    recargas_para_categorias: recargasParaCategorias,
-                    recargas_para_mayoristas: recargasParaMayoristas,
-                    recargas_totales: recargasParaCategorias + recargasParaMayoristas,
-                    recargas_sobrantes: (recargasParaCategorias + recargasParaMayoristas) - 
-                                       (selectedCategorias.reduce((sum, cat) => sum + cat.recargas_usadas, 0) + 
-                                        selectedMayoristas.reduce((sum, may) => sum + may.recargas_asignadas, 0))
+                    operadora: selectedOperadora,
+                    total_recargas: totalRecargas,
+                    recargas_usadas: recargasUsadasTotal,
+                    recargas_sobrantes: totalRecargas - recargasUsadasTotal,
+                    saldo_total: totalRecargas * VALOR_RECARGA,
+                    saldo_usado: saldoUsadoTotal,
+                    saldo_sobrante: (totalRecargas - recargasUsadasTotal) * VALOR_RECARGA
                 };
                 
-                const recargasUsadasTotal = selectedCategorias.reduce((sum, cat) => sum + cat.recargas_usadas, 0) + 
-                                          selectedMayoristas.reduce((sum, may) => sum + may.recargas_asignadas, 0);
-                const recargasTotales = recargasParaCategorias + recargasParaMayoristas;
-                
-                // Crear reporte
                 const reporteData = {
                     usuario_id: currentUser.id,
                     usuario_nombre: currentUser.nombre,
                     operadora: selectedOperadora,
-                    total_recargas: recargasTotales,
-                    recargas_usadas: recargasUsadasTotal,
-                    recargas_restantes: recargasTotales - recargasUsadasTotal,
+                    saldo_total: totalRecargas * VALOR_RECARGA,
+                    saldo_usado: saldoUsadoTotal,
+                    saldo_restante: (totalRecargas - recargasUsadasTotal) * VALOR_RECARGA,
                     chips_modificados: selectedCategorias.reduce((sum, cat) => sum + cat.chips_seleccionados.length, 0),
                     mayoristas_count: selectedMayoristas.length,
-                    sobrantes: recargasTotales - recargasUsadasTotal,
+                    sobrantes: totalRecargas - recargasUsadasTotal,
                     detalles: JSON.stringify(detalles),
                     created_at: new Date().toISOString()
                 };
                 
-                // Enviar reporte a Supabase
                 const reportResponse = await fetch(`${SUPABASE_URL}/rest/v1/reportes`, {
                     method: 'POST',
                     headers: {
@@ -2328,10 +2284,9 @@
                 
                 if (!reportResponse.ok) throw new Error('Error al crear reporte');
                 
-                // Actualizar chips (reducir recargas restantes en 1 por cada chip usado)
                 for (let categoria of selectedCategorias) {
                     for (let chip of categoria.chips_seleccionados) {
-                        const updateResponse = await fetch(
+                        await fetch(
                             `${SUPABASE_URL}/rest/v1/chips?id=eq.${chip.id}`,
                             {
                                 method: 'PATCH',
@@ -2341,21 +2296,17 @@
                                     'Authorization': `Bearer ${SUPABASE_KEY}`
                                 },
                                 body: JSON.stringify({
-                                    recargas_restantes: chip.recargas_restantes - 1, // Restar 1 recarga por chip
-                                    updated_at: new Date().toISOString()
+                                    saldo_actual: chip.saldo_actual - VALOR_RECARGA
                                 })
                             }
                         );
-                        
-                        if (!updateResponse.ok) {
-                            console.error(`Error al actualizar chip ${chip.id}`);
-                        }
                     }
                 }
                 
-                // Actualizar mayoristas (reducir recargas disponibles)
                 for (let mayorista of selectedMayoristas) {
-                    const updateResponse = await fetch(
+                    const mayoristaActual = mayoristasDisponibles.find(m => m.id === mayorista.id);
+                    
+                    await fetch(
                         `${SUPABASE_URL}/rest/v1/mayoristas?id=eq.${mayorista.id}`,
                         {
                             method: 'PATCH',
@@ -2365,22 +2316,37 @@
                                 'Authorization': `Bearer ${SUPABASE_KEY}`
                             },
                             body: JSON.stringify({
-                                recargas: mayorista.recargas_nuevas,
-                                updated_at: new Date().toISOString()
+                                saldo_usado: (mayoristaActual.saldo_usado || 0) + (mayorista.recargas_asignadas * VALOR_RECARGA)
                             })
                         }
                     );
                     
-                    if (!updateResponse.ok) {
-                        console.error(`Error al actualizar mayorista ${mayorista.id}`);
-                    }
+                    const historialData = {
+                        mayorista_id: mayorista.id,
+                        mayorista_nombre: mayorista.nombre,
+                        reporte_id: 0,
+                        operadora: selectedOperadora,
+                        saldo_anterior: mayorista.saldo_anterior,
+                        saldo_usado: mayorista.recargas_asignadas * VALOR_RECARGA,
+                        saldo_nuevo: mayorista.saldo_nuevo,
+                        fecha: new Date().toISOString()
+                    };
+                    
+                    await fetch(`${SUPABASE_URL}/rest/v1/historial_mayoristas`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`,
+                            'Prefer': 'return=minimal'
+                        },
+                        body: JSON.stringify(historialData)
+                    });
                 }
                 
-                // Cerrar modal y mostrar éxito
                 bootstrap.Modal.getInstance(document.getElementById('confirmModal')).hide();
                 showNotification('Reporte enviado exitosamente', 'success');
                 
-                // Reiniciar formulario después de 2 segundos
                 setTimeout(() => {
                     resetForm();
                 }, 2000);
@@ -2392,11 +2358,11 @@
         }
         
         function resetForm() {
-            // Reiniciar variables
             currentStep = 1;
             selectedOperadora = null;
-            recargasParaCategorias = 0;
-            recargasParaMayoristas = 0;
+            totalRecargas = 0;
+            recargasCategorias = 0;
+            recargasMayoristas = 0;
             recargasRestantesCategorias = 0;
             recargasRestantesMayoristas = 0;
             categoriasDisponibles = [];
@@ -2405,27 +2371,24 @@
             selectedMayoristas = [];
             currentCategoryChips = [];
             currentCategorySelection = null;
-            operadoraMayoristas = null;
             
-            // Reiniciar UI
             document.querySelectorAll('.step-content').forEach(div => div.classList.remove('active'));
             document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
             
             document.getElementById('step1').classList.add('active');
             document.querySelector('.step[data-step="1"]').classList.add('active');
             
-            // Limpiar formularios
-            document.getElementById('inputRecargasCategorias').value = '';
-            document.getElementById('inputRecargasMayoristas').value = '';
+            document.getElementById('inputTotalRecargas').value = '';
+            document.getElementById('totalSaldoDisplay').textContent = 'Bs 0';
+            document.getElementById('recargasCategoriasDisplay').textContent = '0';
+            document.getElementById('recargasMayoristasDisplay').textContent = '0';
             document.querySelectorAll('.operadora-btn').forEach(btn => btn.classList.remove('selected'));
             
-            // Actualizar botones
             updateNavigationButtons();
-            updateTotales();
             updateCategoriasDisplay();
             updateMayoristasDisplay();
             
-            showNotification('Formulario reiniciado. Puede crear un nuevo reporte.', 'success');
+            showNotification('Formulario reiniciado', 'success');
         }
         
         function showNotification(message, type) {
@@ -2438,7 +2401,6 @@
             }, 3000);
         }
         
-        // Hacer funciones accesibles globalmente
         window.seleccionarCategoria = seleccionarCategoria;
         window.editarCategoria = editarCategoria;
         window.seleccionarMayorista = seleccionarMayorista;
